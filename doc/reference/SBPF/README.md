@@ -1,6 +1,6 @@
 # Software Best Practice Framework (SBPF)
 
-**Total Documents:** 38
+**Total Documents:** 40
 **Last Updated:** December 21, 2024
 
 ---
@@ -140,18 +140,20 @@ Use architectural pattern guides when making technology decisions. Link to these
 
 ---
 
-### 📝 Documentation & Governance (2 documents) ⭐ **NEW**
+### 📝 Documentation & Governance (4 documents) ⭐ **NEW**
 
 | Document | Description |
 |----------|-------------|
 | [Architecture-Decision-Records.md](Architecture-Decision-Records.md) ⭐ **NEW** | ADR template, lifecycle, when to write ADRs vs PDRs vs POLs, integration with ceremonies, MDSlides examples (11 ADRs), best practices |
+| [Product-Decision-Records.md](Product-Decision-Records.md) ⭐ **NEW** | PDR template for product/business decisions, distinction from ADRs (technical) and POLs (process), user impact metrics, MDSlides examples (8 PDRs) |
+| [Policy-Documents.md](Policy-Documents.md) ⭐ **NEW** | POL template for team practices/standards, enforcement mechanisms (linters, CI), MUST/SHOULD/MAY guidelines, MDSlides examples (5 POLs) |
 | [Anticorruption-Layer-Patterns.md](Anticorruption-Layer-Patterns.md) ⭐ **NEW** | ACL patterns (Adapter, Translator, Facade, Gateway), protecting domain from external libraries, MDSlides examples (Flexmark, Scalatags, Circe) |
 
 ---
 
 ## New Documents (December 2024)
 
-Three critical documents were added based on gaps identified during the MDSlides project:
+Five critical documents were added based on gaps identified during the MDSlides project:
 
 1. **[Architecture-Decision-Records.md](Architecture-Decision-Records.md)** (22 KB)
    - Practical ADR writing guide
@@ -159,19 +161,31 @@ Three critical documents were added based on gaps identified during the MDSlides
    - Integration with ceremony-based development
    - Real-world examples from MDSlides (11 ADRs documented)
 
-2. **[Property-Based-Testing-Implementation.md](Property-Based-Testing-Implementation.md)** (25 KB)
+2. **[Product-Decision-Records.md](Product-Decision-Records.md)** (24 KB)
+   - Practical PDR writing guide for product/business decisions
+   - When to use PDRs vs ADRs vs POLs
+   - User impact and business metrics
+   - Real-world examples from MDSlides (8 PDRs documented)
+
+3. **[Policy-Documents.md](Policy-Documents.md)** (26 KB)
+   - Practical POL writing guide for team practices/standards
+   - Enforcement mechanisms (automated linters, CI checks, manual reviews)
+   - MUST/SHOULD/MAY requirement levels (RFC 2119)
+   - Real-world examples from MDSlides (5 POLs documented)
+
+4. **[Property-Based-Testing-Implementation.md](Property-Based-Testing-Implementation.md)** (25 KB)
    - ScalaCheck practical implementation guide
    - Building domain-specific generators
    - Writing effective properties for invariants
    - MDSlides examples (29 property tests, custom generators)
 
-3. **[Anticorruption-Layer-Patterns.md](Anticorruption-Layer-Patterns.md)** (21 KB)
+5. **[Anticorruption-Layer-Patterns.md](Anticorruption-Layer-Patterns.md)** (21 KB)
    - Protecting pure functional domain from external dependencies
    - Four ACL patterns with implementation examples
    - Testing strategies for domain and ACL separately
    - MDSlides examples (Flexmark, Scalatags, Circe adapters)
 
-These complement existing documents by providing **practical implementation guidance** rather than just principles.
+These complement existing documents by providing **practical implementation guidance** and **governance frameworks** rather than just principles.
 
 ---
 
@@ -279,8 +293,6 @@ To add or update SBPF documents:
 Based on MDSlides experience, these topics would add value:
 
 **Tier 2 (High Value):**
-- Product-Decision-Records.md (distinction from ADRs)
-- Policy-Documents.md (when to use POLs)
 - Pure-Functional-Domain-Implementation.md (3-layer architecture pattern)
 - CLI-Application-Architecture.md (non-service architectures)
 
@@ -317,5 +329,5 @@ Adapted and refined through real-world application in projects like MDSlides.
 ---
 
 **Last Updated:** December 21, 2024
-**Document Count:** 38 (35 original + 3 new in December 2024)
+**Document Count:** 40 (35 original + 5 new in December 2024)
 **Maintainer:** Development Team
