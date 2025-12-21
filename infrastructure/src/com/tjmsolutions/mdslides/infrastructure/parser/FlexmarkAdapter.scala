@@ -108,6 +108,7 @@ object FlexmarkAdapter:
             code = false
           )
           textSpans += span
+          // Note: Don't visit children - we've already extracted the text
 
         case _: SoftLineBreak =>
           // Soft line break (single newline in source) -> space in output

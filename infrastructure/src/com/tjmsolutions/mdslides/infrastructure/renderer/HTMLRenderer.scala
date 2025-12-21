@@ -109,17 +109,17 @@ object HTMLRenderer:
   /**
    * Render formatted text with inline markdown.
    *
-   * Parses markdown and renders bold, italic, code, and links.
+   * Parses markdown once and renders all content including links.
    *
    * @param text Plain text or markdown text
    * @return HTML fragments with formatting
    */
   private def renderFormattedText(text: String): Frag =
     val formatted = FlexmarkAdapter.parseInlineFormatting(text)
-    renderFormattedContent(formatted)
+    renderFormattedContentWithParagraphs(formatted)
 
   /**
-   * Render FormattedContent to HTML.
+   * Render FormattedContent to HTML with paragraph structure.
    *
    * Converts TextSpan and Link domain objects to HTML.
    * Splits into paragraphs for proper HTML structure.
@@ -127,7 +127,10 @@ object HTMLRenderer:
    * @param content Formatted content from domain
    * @return HTML fragments
    */
-  private def renderFormattedContent(content: FormattedContent): Frag =
+  private def renderFormattedContentWithParagraphs(content: FormattedContent): Frag =
+    // Build a map of link text → URL for easy lookup
+    val linkMap = content.links.map(link => link.text -> link.url).toMap
+
     // Split text spans by newlines to create paragraphs
     val spans = content.textSpans
     val paragraphs = scala.collection.mutable.ListBuffer.empty[List[TextSpan]]
@@ -160,8 +163,20 @@ object HTMLRenderer:
       Seq.empty[Frag]
     else
       paragraphs.toList.map { paraSpans =>
-        p(paraSpans.map(renderTextSpan))
+        p(paraSpans.map(span => renderTextSpanWithLinks(span, linkMap)))
       }
+
+  /**
+   * Render a TextSpan, converting to link if text matches a link.
+   */
+  private def renderTextSpanWithLinks(span: TextSpan, linkMap: Map[String, String]): Frag =
+    linkMap.get(span.text) match
+      case Some(url) =>
+        // This text is a link
+        a(href := url)(span.text)
+      case None =>
+        // Regular text span
+        renderTextSpan(span)
 
   /**
    * Render a single TextSpan to HTML.
