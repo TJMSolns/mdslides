@@ -1,6 +1,7 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link}
+import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
 import scalatags.Text.all.*
 
 /**
@@ -80,13 +81,13 @@ object HTMLRenderer:
   private def renderTitleSlide(slide: Slide): Frag =
     div(cls := "title-slide")(
       slide.getSlot("title").map(title =>
-        h1(cls := "slide-title")(title)
+        h1(cls := "slide-title")(renderFormattedText(title))
       ),
       slide.getSlot("subtitle").map(subtitle =>
-        h2(cls := "slide-subtitle")(subtitle)
+        h2(cls := "slide-subtitle")(renderFormattedText(subtitle))
       ),
       slide.getSlot("author").map(author =>
-        p(cls := "slide-author")(author)
+        p(cls := "slide-author")(renderFormattedText(author))
       )
     )
 
@@ -96,17 +97,90 @@ object HTMLRenderer:
   private def renderContentSlide(slide: Slide): Frag =
     div(cls := "content-slide")(
       slide.getSlot("heading").map(heading =>
-        h2(cls := "slide-heading")(heading)
+        h2(cls := "slide-heading")(renderFormattedText(heading))
       ),
       slide.getSlot("body").map(body =>
         div(cls := "slide-body")(
-          // For now, render body as paragraphs (markdown parsing comes later)
-          body.split("\n").filter(_.trim.nonEmpty).map(line =>
-            p(line)
-          )
+          renderFormattedText(body)
         )
       )
     )
+
+  /**
+   * Render formatted text with inline markdown.
+   *
+   * Parses markdown and renders bold, italic, code, and links.
+   *
+   * @param text Plain text or markdown text
+   * @return HTML fragments with formatting
+   */
+  private def renderFormattedText(text: String): Frag =
+    val formatted = FlexmarkAdapter.parseInlineFormatting(text)
+    renderFormattedContent(formatted)
+
+  /**
+   * Render FormattedContent to HTML.
+   *
+   * Converts TextSpan and Link domain objects to HTML.
+   * Splits into paragraphs for proper HTML structure.
+   *
+   * @param content Formatted content from domain
+   * @return HTML fragments
+   */
+  private def renderFormattedContent(content: FormattedContent): Frag =
+    // Split text spans by newlines to create paragraphs
+    val spans = content.textSpans
+    val paragraphs = scala.collection.mutable.ListBuffer.empty[List[TextSpan]]
+    val currentParagraph = scala.collection.mutable.ListBuffer.empty[TextSpan]
+
+    spans.foreach { span =>
+      if span.text.contains("\n") then
+        // Split on newlines
+        val lines = span.text.split("\n", -1)
+        lines.zipWithIndex.foreach { case (line, idx) =>
+          if line.nonEmpty then
+            currentParagraph += TextSpan(line, span.bold, span.italic, span.code)
+
+          if idx < lines.length - 1 then
+            // Newline encountered - finish current paragraph
+            if currentParagraph.nonEmpty then
+              paragraphs += currentParagraph.toList
+              currentParagraph.clear()
+        }
+      else
+        currentParagraph += span
+    }
+
+    // Add final paragraph
+    if currentParagraph.nonEmpty then
+      paragraphs += currentParagraph.toList
+
+    // Render each paragraph
+    if paragraphs.isEmpty then
+      Seq.empty[Frag]
+    else
+      paragraphs.toList.map { paraSpans =>
+        p(paraSpans.map(renderTextSpan))
+      }
+
+  /**
+   * Render a single TextSpan to HTML.
+   *
+   * Applies bold, italic, and code formatting.
+   */
+  private def renderTextSpan(span: TextSpan): Frag =
+    val text: Frag = span.text
+
+    if span.code then
+      tag("code")(text)
+    else if span.bold && span.italic then
+      tag("strong")(tag("em")(text))
+    else if span.bold then
+      tag("strong")(text)
+    else if span.italic then
+      tag("em")(text)
+    else
+      text
 
   /**
    * Default CSS styles.
@@ -187,6 +261,33 @@ object HTMLRenderer:
 
     .slide-body p {
       margin-bottom: 15px;
+    }
+
+    /* Inline formatting (US-003) */
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
 
     .controls {
