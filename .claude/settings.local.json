@@ -7,7 +7,14 @@
       "Bash(mill:*)",
       "Bash(java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar:*)",
       "Bash(chmod:*)",
-      "Bash(./mdslides:*)"
+      "Bash(./mdslides:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)"
     ]
   }
 }
