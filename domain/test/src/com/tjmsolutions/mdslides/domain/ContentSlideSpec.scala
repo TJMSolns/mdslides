@@ -74,7 +74,7 @@ class ContentSlideSpec extends munit.FunSuite:
         assertEquals(validSlide.getSlot("heading"), Some("Key Principles"))
         assertEquals(validSlide.getSlot("body"), Some(body))
         // Body has 4 lines
-        assertEquals(SlotContent(body).lineCount, 4)
+        assertEquals(SlotContent.fromPlainText(body).lineCount, 4)
 
       case Left(errors) =>
         fail(s"Expected validation to succeed, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -106,7 +106,7 @@ class ContentSlideSpec extends munit.FunSuite:
         assert(validSlide.getSlot("body").get.contains("*no side effects*"))
         assert(validSlide.getSlot("body").get.contains("[FP Resources]"))
         // Body has 5 lines
-        assertEquals(SlotContent(body).lineCount, 5)
+        assertEquals(SlotContent.fromPlainText(body).lineCount, 5)
 
       case Left(errors) =>
         fail(s"Expected validation to succeed, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -251,7 +251,7 @@ class ContentSlideSpec extends munit.FunSuite:
 
     result match
       case Right(validSlide) =>
-        assertEquals(SlotContent(body).lineCount, 12)
+        assertEquals(SlotContent.fromPlainText(body).lineCount, 12)
 
       case Left(errors) =>
         fail(s"Expected validation to succeed for 12 lines, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -274,7 +274,7 @@ class ContentSlideSpec extends munit.FunSuite:
 
     result match
       case Right(validSlide) =>
-        assertEquals(SlotContent(body).wordCount, 150)
+        assertEquals(SlotContent.fromPlainText(body).wordCount, 150)
 
       case Left(errors) =>
         fail(s"Expected validation to succeed for 150 words, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")

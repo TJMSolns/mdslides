@@ -49,7 +49,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
         case Right(validSlide) =>
           validSlide.getSlot("title") match
             case Some(title) =>
-              val lineCount = SlotContent(title).lineCount
+              val lineCount = SlotContent.fromPlainText(title).lineCount
               lineCount <= 2
 
             case None =>

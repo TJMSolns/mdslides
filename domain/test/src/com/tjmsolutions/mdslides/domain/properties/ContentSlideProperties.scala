@@ -76,7 +76,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Right(validSlide) =>
           validSlide.getSlot("body") match
             case Some(body) =>
-              val lineCount = SlotContent(body).lineCount
+              val lineCount = SlotContent.fromPlainText(body).lineCount
               lineCount <= 12
 
             case None =>
@@ -100,7 +100,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Right(validSlide) =>
           validSlide.getSlot("body") match
             case Some(body) =>
-              val wordCount = SlotContent(body).wordCount
+              val wordCount = SlotContent.fromPlainText(body).wordCount
               wordCount <= 150
 
             case None =>

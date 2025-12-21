@@ -138,7 +138,7 @@ object Slide:
 
     // Check max lines
     constraints.maxLines.foreach { maxLines =>
-      val lines = SlotContent(content).lineCount
+      val lines = SlotContent.fromPlainText(content).lineCount
       if lines > maxLines then
         errors += ValidationError.ContentError(
           slideId,
@@ -160,7 +160,7 @@ object Slide:
 
     // Check max words
     constraints.maxWords.foreach { maxWords =>
-      val words = SlotContent(content).wordCount
+      val words = SlotContent.fromPlainText(content).wordCount
       if words > maxWords then
         errors += ValidationError.ContentError(
           slideId,
