@@ -1,0 +1,45 @@
+{
+  "name": "default",
+  "description": "Default theme with high contrast for WCAG AA compliance",
+  "colors": {
+    "background": "#FFFFFF",
+    "foreground": "#000000",
+    "accent": "#0066CC",
+    "heading": "#1a1a1a",
+    "code_background": "#f5f5f5",
+    "code_foreground": "#24292e"
+  },
+  "fonts": {
+    "family": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "titleSize": 52,
+    "subtitleSize": 40,
+    "headingSize": 36,
+    "bodySize": 28,
+    "codeSize": 24,
+    "codeFontFamily": "'JetBrains Mono', 'Fira Code', 'Courier New', monospace"
+  },
+  "layout": {
+    "slidePadding": 40,
+    "maxBodyLines": 12,
+    "slideWidth": 1920,
+    "slideHeight": 1080,
+    "lineHeight": 1.5
+  },
+  "content": {
+    "preserveMarkdownInHeadings": true,
+    "allowEmoji": true,
+    "allowUnicodeSymbols": true
+  },
+  "accessibility": {
+    "contrastRatio": 21.0,
+    "minFontSize": 24,
+    "requireAltText": true,
+    "enforceHeadingHierarchy": true
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Tony Moores, TJM Solutions",
+    "created": "2024-12-19",
+    "wcagLevel": "AA"
+  }
+}

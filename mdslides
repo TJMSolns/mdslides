@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# MDSlides launcher script
+#
+# Usage: ./mdslides input.md output.html
+#
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+JAR_FILE="$SCRIPT_DIR/mdslides.jar"
+
+if [ ! -f "$JAR_FILE" ]; then
+    echo "Error: mdslides.jar not found in $SCRIPT_DIR"
+    echo "Please run: mill cli.assembly"
+    exit 1
+fi
+
+exec java -jar "$JAR_FILE" "$@"

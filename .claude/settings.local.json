@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(mill resolve:*)",
+      "Bash(tree:*)",
+      "Bash(mill:*)",
+      "Bash(java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar:*)",
+      "Bash(chmod:*)",
+      "Bash(./mdslides:*)"
+    ]
+  }
+}
