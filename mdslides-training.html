@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>MDSlides Presentation</title><style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .slides {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 60px;
+      background-color: #ffffff;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .title-slide {
+      text-align: center;
+      max-width: 800px;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      color: #333333;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 36px;
+      color: #666666;
+      margin-bottom: 40px;
+      font-weight: normal;
+    }
+
+    .slide-author {
+      font-size: 24px;
+      color: #999999;
+    }
+
+    .content-slide {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .slide-heading {
+      font-size: 36px;
+      color: #333333;
+      margin-bottom: 30px;
+    }
+
+    .slide-body {
+      font-size: 24px;
+      color: #333333;
+      line-height: 1.6;
+    }
+
+    .slide-body p {
+      margin-bottom: 15px;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 18px;
+    }
+
+    .error {
+      color: red;
+      font-size: 24px;
+      padding: 40px;
+    }
+  </style></head><body><div class="slides"><div class="slide active" data-slide-index="0"><div class="title-slide"><h1 class="slide-title">MDSlides Training</h1><h2 class="slide-subtitle">Learn to Create Professional Slide Decks</h2><p class="slide-author">MDSlides Development Team</p></div></div><div class="slide" data-slide-index="1"><div class="content-slide"><h2 class="slide-heading">What is MDSlides?</h2><div class="slide-body"><p>MDSlides is a command-line tool for converting Markdown to HTML slides.</p><p>Built with Domain-Driven Design and comprehensive testing.</p><p>Key benefits:</p><p>- Type-safe validation</p><p>- Enforces readability constraints</p><p>- Clean, standalone HTML output</p></div></div></div><div class="slide" data-slide-index="2"><div class="content-slide"><h2 class="slide-heading">Why Use MDSlides?</h2><div class="slide-body"><p>Traditional presentation tools have limitations.</p><p>MDSlides enforces best practices automatically.</p><p>Benefits:</p><p>- Version control friendly (plain text)</p><p>- Automated density validation</p><p>- No vendor lock-in</p><p>- Keyboard-first navigation</p></div></div></div><div class="slide" data-slide-index="3"><div class="title-slide"><h1 class="slide-title">Getting Started</h1><h2 class="slide-subtitle">Installation and Setup</h2></div></div><div class="slide" data-slide-index="4"><div class="content-slide"><h2 class="slide-heading">Installation Requirements</h2><div class="slide-body"><p>You need two things to use MDSlides.</p><p>Prerequisites:</p><p>- Java 11 or higher</p><p>- Mill build tool (for building from source)</p><p>Optional:</p><p>- Git (for cloning the repository)</p></div></div></div><div class="slide" data-slide-index="5"><div class="content-slide"><h2 class="slide-heading">Quick Installation</h2><div class="slide-body"><p>Clone and build the project.</p><p>Steps:</p><p>1. Clone: git clone &lt;repo-url&gt;</p><p>2. Build: mill __.compile</p><p>3. Test: mill __.test</p><p>4. Run: mill cli.run input.md output.html</p><p>Ready to create your first presentation!</p></div></div></div><div class="slide" data-slide-index="6"><div class="title-slide"><h1 class="slide-title">Slide Templates</h1><h2 class="slide-subtitle">Available Template Types</h2></div></div><div class="slide" data-slide-index="7"><div class="content-slide"><h2 class="slide-heading">Title Slide Template</h2><div class="slide-body"><p>Use for opening slides and section dividers.</p><p>Required:</p><p>- Title (max 2 lines)</p><p>Optional:</p><p>- Subtitle (max 2 lines)</p><p>- Author (max 80 characters)</p><p>Perfect for presentation openings!</p></div></div></div><div class="slide" data-slide-index="8"><div class="content-slide"><h2 class="slide-heading">Content Slide Template</h2><div class="slide-body"><p>Use for main content delivery.</p><p>Required:</p><p>- Heading (max 80 chars, single line)</p><p>- Body (max 12 lines, max 150 words)</p><p>Enforces cognitive load limits.</p><p>Keeps slides focused and readable.</p></div></div></div><div class="slide" data-slide-index="9"><div class="title-slide"><h1 class="slide-title">Creating Your First Deck</h1><h2 class="slide-subtitle">Hands-On Tutorial</h2></div></div><div class="slide" data-slide-index="10"><div class="content-slide"><h2 class="slide-heading">Markdown Structure</h2><div class="slide-body"><p>Each slide starts with frontmatter.</p><p>Format:</p><p>- Use --- to separate slides</p><p>- Specify template type</p><p>- Add your content</p><p>- Repeat for each slide</p><p>Simple and clean!</p></div></div></div><div class="slide" data-slide-index="11"><div class="content-slide"><h2 class="slide-heading">Example Title Slide</h2><div class="slide-body"><p>Start with frontmatter and content.</p><p>Code:</p></div></div></div><div class="slide" data-slide-index="12"><div class="title-slide"><h1 class="slide-title">My Presentation</h1><h2 class="slide-subtitle">A Great Topic</h2><p class="slide-author">See how easy that is?</p></div></div><div class="slide" data-slide-index="13"><div class="content-slide"><h2 class="slide-heading">Example Content Slide</h2><div class="slide-body"><p>Add heading and body content.</p><p>Code:</p></div></div></div><div class="slide" data-slide-index="14"><div class="content-slide"><h2 class="slide-heading">Key Points</h2><div class="slide-body"><p>Body text goes here.</p><p>Markdown formatting preserved for now.</p></div></div></div><div class="slide" data-slide-index="15"><div class="title-slide"><h1 class="slide-title">Validation Rules</h1><h2 class="slide-subtitle">Keeping Your Slides Readable</h2></div></div><div class="slide" data-slide-index="16"><div class="content-slide"><h2 class="slide-heading">Why Validation Matters</h2><div class="slide-body"><p>Cognitive load affects learning.</p><p>Too much text overwhelms audiences.</p><p>MDSlides enforces limits:</p><p>- Line count limits</p><p>- Word count limits</p><p>- Character count limits</p><p>Science-backed constraints!</p></div></div></div><div class="slide" data-slide-index="17"><div class="content-slide"><h2 class="slide-heading">Title Slide Constraints</h2><div class="slide-body"><p>Keep titles concise and impactful.</p><p>Limits:</p><p>- Title: max 2 lines</p><p>- Subtitle: max 2 lines</p><p>- Author: max 80 characters</p><p>Exceeding limits causes validation errors.</p></div></div></div><div class="slide" data-slide-index="18"><div class="content-slide"><h2 class="slide-heading">Content Slide Constraints</h2><div class="slide-body"><p>Balance information and readability.</p><p>Limits:</p><p>- Heading: max 80 characters</p><p>- Body: max 12 lines</p><p>- Body: max 150 words</p><p>Forces clear, focused messaging.</p></div></div></div><div class="slide" data-slide-index="19"><div class="content-slide"><h2 class="slide-heading">Validation Error Messages</h2><div class="slide-body"><p>MDSlides reports all errors together.</p><p>Example output:</p><p>- Slide 1: Content Error in body - exceeds max 12 lines</p><p>- Slide 2: Structure Error - missing heading</p><p>Fix all issues before generating HTML.</p></div></div></div><div class="slide" data-slide-index="20"><div class="title-slide"><h1 class="slide-title">Using the CLI</h1><h2 class="slide-subtitle">Command-Line Interface</h2></div></div><div class="slide" data-slide-index="21"><div class="content-slide"><h2 class="slide-heading">Basic CLI Usage</h2><div class="slide-body"><p>Simple command structure.</p><p>Syntax:</p><p>mill cli.run input.md output.html</p><p>Or with JAR:</p><p>java -jar mdslides.jar input.md output.html</p><p>That's all you need!</p></div></div></div><div class="slide" data-slide-index="22"><div class="content-slide"><h2 class="slide-heading">CLI Output</h2><div class="slide-body"><p>MDSlides provides detailed feedback.</p><p>Shows:</p><p>- Reading input file</p><p>- Parsing progress</p><p>- Validation results</p><p>- HTML generation status</p><p>- Output file location</p><p>Know exactly what's happening!</p></div></div></div><div class="slide" data-slide-index="23"><div class="content-slide"><h2 class="slide-heading">Handling Validation Errors</h2><div class="slide-body"><p>Errors are clear and actionable.</p><p>Process:</p><p>1. Run conversion</p><p>2. Read error messages</p><p>3. Fix violations</p><p>4. Re-run conversion</p><p>5. Success!</p><p>Iterative improvement workflow.</p></div></div></div><div class="slide" data-slide-index="24"><div class="title-slide"><h1 class="slide-title">Keyboard Navigation</h1><h2 class="slide-subtitle">Presenting Your Slides</h2></div></div><div class="slide" data-slide-index="25"><div class="content-slide"><h2 class="slide-heading">Navigation Controls</h2><div class="slide-body"><p>Navigate with keyboard shortcuts.</p><p>Keys:</p><p>- Right Arrow or Space: Next slide</p><p>- Left Arrow: Previous slide</p><p>- Home: First slide</p><p>- End: Last slide</p><p>No mouse needed during presentation!</p></div></div></div><div class="slide" data-slide-index="26"><div class="content-slide"><h2 class="slide-heading">Presentation Tips</h2><div class="slide-body"><p>Open HTML in any browser.</p><p>Best practices:</p><p>- Use full-screen mode (F11)</p><p>- Test navigation beforehand</p><p>- Practice your timing</p><p>- Keep backup copy</p><p>Professional delivery guaranteed!</p></div></div></div><div class="slide" data-slide-index="27"><div class="title-slide"><h1 class="slide-title">Architecture Overview</h1><h2 class="slide-subtitle">How MDSlides Works</h2></div></div><div class="slide" data-slide-index="28"><div class="content-slide"><h2 class="slide-heading">Three-Layer Architecture</h2><div class="slide-body"><p>Clean separation of concerns.</p><p>Layers:</p><p>- CLI: User interface and I/O</p><p>- Infrastructure: Parsing and rendering</p><p>- Domain: Pure business logic</p><p>Pure functional domain model!</p></div></div></div><div class="slide" data-slide-index="29"><div class="content-slide"><h2 class="slide-heading">Domain-Driven Design</h2><div class="slide-body"><p>Business logic in domain layer.</p><p>Concepts:</p><p>- Aggregates: Slide, SlideDeck</p><p>- Value Objects: SlideId, SlotContent</p><p>- Validation: Structure and content</p><p>Type-safe and testable!</p></div></div></div><div class="slide" data-slide-index="30"><div class="content-slide"><h2 class="slide-heading">Testing Strategy</h2><div class="slide-body"><p>Comprehensive test coverage.</p><p>Includes:</p><p>- 81 total tests</p><p>- Property-based testing</p><p>- Example-based testing</p><p>- Edge case coverage</p><p>Quality you can trust!</p></div></div></div><div class="slide" data-slide-index="31"><div class="title-slide"><h1 class="slide-title">Best Practices</h1><h2 class="slide-subtitle">Creating Great Presentations</h2></div></div><div class="slide" data-slide-index="32"><div class="content-slide"><h2 class="slide-heading">One Idea Per Slide</h2><div class="slide-body"><p>Focus on single concepts.</p><p>Guidelines:</p><p>- Clear heading</p><p>- 3-5 key points</p><p>- Use bullet lists</p><p>- Avoid paragraphs</p><p>Audiences retain more!</p></div></div></div><div class="slide" data-slide-index="33"><div class="content-slide"><h2 class="slide-heading">Use Consistent Structure</h2><div class="slide-body"><p>Template selection matters.</p><p>Patterns:</p><p>- Title for section breaks</p><p>- Content for main points</p><p>- Title-Content-Content rhythm works well</p><p>Find your style!</p></div></div></div><div class="slide" data-slide-index="34"><div class="content-slide"><h2 class="slide-heading">Keep It Simple</h2><div class="slide-body"><p>Less is more in presentations.</p><p>Tips:</p><p>- Short sentences</p><p>- Active voice</p><p>- Concrete examples</p><p>- Visual hierarchy</p><p>Let validation guide you!</p></div></div></div><div class="slide" data-slide-index="35"><div class="title-slide"><h1 class="slide-title">Current Limitations</h1><h2 class="slide-subtitle">v0.1.0 MVP Scope</h2></div></div><div class="slide" data-slide-index="36"><div class="content-slide"><h2 class="slide-heading">What's Not Included Yet</h2><div class="slide-body"><p>MVP focuses on core functionality.</p><p>Not available:</p><p>- Full markdown rendering (bold, italic, links)</p><p>- Code syntax highlighting</p><p>- Image support</p><p>- Custom themes</p><p>Coming in future releases!</p></div></div></div><div class="slide" data-slide-index="37"><div class="content-slide"><h2 class="slide-heading">Planned Features</h2><div class="slide-body"><p>Roadmap for future versions.</p><p>v0.2.0:</p><p>- Markdown rendering</p><p>- Code blocks</p><p>- Image embedding</p><p>v0.3.0:</p><p>- Speaker notes</p><p>- PDF export</p><p>- Live preview</p></div></div></div><div class="slide" data-slide-index="38"><div class="title-slide"><h1 class="slide-title">Getting Help</h1><h2 class="slide-subtitle">Resources and Support</h2></div></div><div class="slide" data-slide-index="39"><div class="content-slide"><h2 class="slide-heading">Documentation</h2><div class="slide-body"><p>Comprehensive docs available.</p><p>Resources:</p><p>- README.md: User guide</p><p>- INSTALL.md: Setup instructions</p><p>- CHANGELOG.md: Version history</p><p>- doc/governance/: Design decisions</p><p>Everything is documented!</p></div></div></div><div class="slide" data-slide-index="40"><div class="content-slide"><h2 class="slide-heading">Example Files</h2><div class="slide-body"><p>Learn by example.</p><p>Included:</p><p>- example.md: Sample presentation</p><p>- mdslides-training.md: This deck!</p><p>- Test files in test suites</p><p>Study and adapt!</p></div></div></div><div class="slide" data-slide-index="41"><div class="content-slide"><h2 class="slide-heading">Contributing</h2><div class="slide-body"><p>Help improve MDSlides!</p><p>Ways to contribute:</p><p>- Report bugs</p><p>- Suggest features</p><p>- Submit pull requests</p><p>- Write documentation</p><p>Community-driven development!</p></div></div></div><div class="slide" data-slide-index="42"><div class="title-slide"><h1 class="slide-title">Quick Reference</h1><h2 class="slide-subtitle">Essential Commands</h2></div></div><div class="slide" data-slide-index="43"><div class="content-slide"><h2 class="slide-heading">Build Commands</h2><div class="slide-body"><p>Common operations.</p><p>Commands:</p><p>- mill __.compile: Build all modules</p><p>- mill __.test: Run all tests</p><p>- mill cli.run: Convert markdown</p><p>- mill clean: Clean build artifacts</p><p>Your daily toolkit!</p></div></div></div><div class="slide" data-slide-index="44"><div class="content-slide"><h2 class="slide-heading">File Structure</h2><div class="slide-body"><p>Organize your project.</p><p>Layout:</p><p>- presentation.md: Your slides</p><p>- output.html: Generated presentation</p><p>- images/: Supporting assets (future)</p><p>Keep it organized!</p></div></div></div><div class="slide" data-slide-index="45"><div class="title-slide"><h1 class="slide-title">Conclusion</h1><h2 class="slide-subtitle">Start Creating Amazing Slides!</h2></div></div><div class="slide" data-slide-index="46"><div class="content-slide"><h2 class="slide-heading">What You Learned Today</h2><div class="slide-body"><p>Comprehensive MDSlides training complete.</p><p>Covered:</p><p>- Installation and setup</p><p>- Template types</p><p>- Validation rules</p><p>- CLI usage</p><p>- Best practices</p><p>You're ready to create!</p></div></div></div><div class="slide" data-slide-index="47"><div class="content-slide"><h2 class="slide-heading">Next Steps</h2><div class="slide-body"><p>Put your knowledge into practice.</p><p>Actions:</p><p>1. Create your first presentation</p><p>2. Experiment with templates</p><p>3. Learn from validation errors</p><p>4. Share your work</p><p>5. Provide feedback</p><p>Happy presenting!</p></div></div></div><div class="slide" data-slide-index="48"><div class="title-slide"><h1 class="slide-title">Thank You!</h1><h2 class="slide-subtitle">Questions?</h2><p class="slide-author">MDSlides Development Team</p></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 49</span></div><script>
+    let currentSlide = 0;
+    const totalSlides = 49;
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      const counter = document.getElementById('slide-counter');
+      counter.textContent = (index + 1) + ' / ' + totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    function firstSlide() {
+      currentSlide = 0;
+      showSlide(currentSlide);
+    }
+
+    function lastSlide() {
+      currentSlide = totalSlides - 1;
+      showSlide(currentSlide);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          firstSlide();
+          break;
+        case 'End':
+          e.preventDefault();
+          lastSlide();
+          break;
+      }
+    });
+  </script></body></html>
