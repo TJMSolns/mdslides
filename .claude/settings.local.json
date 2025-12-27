@@ -1,41 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)",
-      "Bash(mill resolve:*)",
-      "Bash(tree:*)",
-      "Bash(mill:*)",
-      "Bash(java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar:*)",
-      "Bash(chmod:*)",
-      "Bash(./mdslides:*)",
-      "Bash(git commit:*)",
-      "Bash(git tag:*)",
-      "Bash(gh repo create:*)",
-      "Bash(git remote add:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(git add:*)",
-      "Bash(find:*)",
-      "Bash(grep:*)",
-      "Bash(cat:*)",
-      "Bash(unzip:*)",
-      "Bash(test:*)",
-      "Bash(test -f:*)",
-      "Bash(! test -d /home/tjm/TJMSolns/Projects/mdslides/doc/governance)",
-      "Bash(! test -d /home/tjm/TJMSolns/Projects/mdslides/doc/domain-models)",
-      "Bash(! test -d /home/tjm/TJMSolns/Projects/mdslides/doc/specifications)",
-      "Bash(java -jar /home/tjm/TJMSolns/Projects/mdslides/mdslides.jar --version:*)",
-      "Bash(java -jar /home/tjm/TJMSolns/Projects/mdslides/out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar:*)",
-      "Bash(java -jar mdslides.jar:*)",
-      "Bash(java -jar:*)",
-      "Bash(wc:*)",
-      "Bash(examples/mdslides-tutorial.md )",
-      "Bash(examples/output/tutorial-light.html )",
-      "Bash(examples/output/tutorial-dark.html )",
-      "Bash(examples/output/tutorial-tjm-solutions.html )",
-      "Bash(examples/output/tutorial-retisio.html )",
-      "Bash(./generate-all-themes.sh:*)",
-      "Bash(./examples/generate-all-themes.sh:*)"
+      "Bash",
+      "Bash(git reset:*)"
     ]
   }
 }
