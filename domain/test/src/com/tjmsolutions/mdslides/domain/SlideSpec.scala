@@ -264,4 +264,113 @@ class SlideSpec extends munit.FunSuite:
         fail("Expected validation to fail with multiple errors")
   }
 
+  // US-011: Per-Slide Background Images
+  test("slide with no backgroundImage defaults to None") {
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title")
+    )
+
+    assertEquals(slide.backgroundImage, None)
+  }
+
+  test("slide accepts backgroundImage as simple string") {
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title"),
+      backgroundImage = Some("backgrounds/custom.png")
+    )
+
+    assertEquals(slide.backgroundImage, Some("backgrounds/custom.png"))
+  }
+
+  test("slide accepts backgroundImage as BackgroundConfig") {
+    val config = BackgroundConfig(
+      image = "backgrounds/custom.png",
+      opacity = Some(0.5)
+    )
+
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title"),
+      backgroundImage = Some(config)
+    )
+
+    slide.backgroundImage match
+      case Some(bg: BackgroundConfig) =>
+        assertEquals(bg.image, "backgrounds/custom.png")
+        assertEquals(bg.opacity, Some(0.5))
+      case _ =>
+        fail("Expected BackgroundConfig")
+  }
+
+  test("slide.backgroundImage preserves union type (String | BackgroundConfig)") {
+    val slideWithString = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "Test"),
+      backgroundImage = Some("path/to/bg.png")
+    )
+
+    val slideWithConfig = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "Test"),
+      backgroundImage = Some(BackgroundConfig("path/to/bg.png", Some(0.3)))
+    )
+
+    // Both should compile and work
+    assert(slideWithString.backgroundImage.isDefined)
+    assert(slideWithConfig.backgroundImage.isDefined)
+  }
+
+  // US-004: Speaker Notes Parsing
+
+  test("slide with no notes defaults to None") {
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title")
+    )
+
+    assertEquals(slide.notes, None)
+  }
+
+  test("slide accepts notes as Some(String)") {
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title"),
+      notes = Some("Remember to pause after this point.")
+    )
+
+    assertEquals(slide.notes, Some("Remember to pause after this point."))
+  }
+
+  test("slide accepts empty notes string") {
+    val slide = Slide(
+      id = slideId,
+      templateName = "title",
+      slots = Map("title" -> "My Title"),
+      notes = Some("")
+    )
+
+    assertEquals(slide.notes, Some(""))
+  }
+
+  test("slide accepts multi-line notes") {
+    val multiLineNotes = "Point one\nPoint two\nPoint three"
+    val slide = Slide(
+      id = slideId,
+      templateName = "content",
+      slots = Map("heading" -> "My Heading", "body" -> "Content"),
+      notes = Some(multiLineNotes)
+    )
+
+    assertEquals(slide.notes, Some(multiLineNotes))
+  }
+
 end SlideSpec

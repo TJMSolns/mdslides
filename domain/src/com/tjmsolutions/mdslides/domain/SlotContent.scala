@@ -25,20 +25,42 @@ object SlotContent:
   def apply(content: FormattedContent): SlotContent = content
 
   /**
-   * Creates SlotContent from plain text.
+   * Creates SlotContent from plain text or markdown.
    *
-   * Convenience method for backward compatibility and simple use cases.
-   * Converts plain text to FormattedContent with no formatting.
+   * For validation purposes, strips fenced code blocks before counting lines/words.
+   * This ensures code blocks don't count toward body line limits (PDR-006).
    *
-   * @param text Plain text (no markdown)
-   * @return SlotContent with single unformatted text span
+   * Note: This is a simplified version for validation only.
+   * Full markdown parsing happens in FlexmarkAdapter for rendering.
+   *
+   * @param text Plain text or markdown text
+   * @return SlotContent with single unformatted text span (code blocks excluded)
    */
   def fromPlainText(text: String): SlotContent =
     if text.isEmpty then FormattedContent.empty
-    else FormattedContent(
-      List(TextSpan(text, bold = false, italic = false, code = false)),
-      List.empty
-    )
+    else
+      // Remove fenced code blocks for validation (PDR-006)
+      val textWithoutCodeBlocks = stripFencedCodeBlocks(text)
+      FormattedContent(
+        List(TextSpan(textWithoutCodeBlocks, bold = false, italic = false, code = false)),
+        List.empty,
+        List.empty
+      )
+
+  /**
+   * Strip fenced code blocks from markdown text.
+   *
+   * Removes ```...``` blocks to exclude them from line/word counts.
+   * Simple regex-based approach for validation purposes.
+   *
+   * @param text Markdown text potentially containing code blocks
+   * @return Text with code blocks removed
+   */
+  private def stripFencedCodeBlocks(text: String): String =
+    // Pattern matches: ``` (optional language) ... ``` across multiple lines
+    // Use (?s) for DOTALL mode so . matches newlines
+    val fencedCodePattern = "(?s)```[^\\n]*\\n.*?```".r
+    fencedCodePattern.replaceAllIn(text, "")
 
   /**
    * Empty slot content.

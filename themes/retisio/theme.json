@@ -1,0 +1,47 @@
+{
+  "name": "Retisio",
+  "version": "1.0.0",
+  "background": {
+    "color": "#FFFFFF"
+  },
+  "templateBackgrounds": {
+    "content": "backgrounds/retisio-content-page.png",
+    "diagram": "backgrounds/retisio-diagram-page.png",
+    "closing": "backgrounds/retisio-end-page.png",
+    "section-title": "backgrounds/retisio-section-title-page.png",
+    "title": "backgrounds/retisio-title-page.png"
+  },
+  "colors": {
+    "text": "#002C74",
+    "heading": "#002C74",
+    "accent": "#FCC010",
+    "link": "#0B9655",
+    "linkHover": "#0B9655",
+    "codeBackground": "#F5F5F5",
+    "codeText": "#002C74"
+  },
+  "fonts": {
+    "body": "'Varela Round', Arial, sans-serif",
+    "heading": "'Varela Round', Arial, sans-serif",
+    "code": "monospace"
+  },
+  "spacing": {
+    "slideMargin": "2rem",
+    "headingMargin": "1.5rem 0",
+    "paragraphMargin": "0.75rem 0",
+    "lineHeight": "1.6"
+  },
+  "syntax": {
+    "keyword": "#0B9655",
+    "string": "#FCC010",
+    "comment": "#888888",
+    "function": "#002C74",
+    "number": "#FCC010",
+    "operator": "#002C74"
+  },
+  "slideCounter": {
+    "color": "#002C74",
+    "background": "rgba(252, 192, 16, 0.1)",
+    "fontSize": "18px"
+  }
+}

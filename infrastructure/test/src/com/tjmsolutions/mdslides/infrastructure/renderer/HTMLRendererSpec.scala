@@ -285,4 +285,199 @@ class HTMLRendererSpec extends munit.FunSuite:
     assert(html.contains("const totalSlides = 5"))
   }
 
+  // US-011: Per-Slide Background Images - Fallback Chain
+  test("render slide with per-slide background (highest priority)") {
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("heading" -> "Test", "body" -> "Content"),
+      backgroundImage = Some("backgrounds/custom.png")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck)
+
+    // Should include inline style with per-slide background
+    assert(html.contains("background-image"))
+    assert(html.contains("backgrounds/custom.png"))
+  }
+
+  test("render slide using template background from theme") {
+    import com.tjmsolutions.mdslides.domain.{Theme, Background, ColorScheme, FontScheme, Spacing, SyntaxColors, SlideCounter}
+
+    // Create theme with template-specific backgrounds
+    val theme = Theme(
+      name = "TestTheme",
+      version = "1.0.0",
+      background = Background(color = "#FFFFFF", image = None),
+      colors = ColorScheme(
+        text = "#000000",
+        heading = "#000000",
+        accent = "#0000FF",
+        link = "#0000FF",
+        linkHover = "#0000FF",
+        codeBackground = "#F0F0F0",
+        codeText = "#000000"
+      ),
+      fonts = FontScheme(
+        body = "Arial",
+        heading = "Arial",
+        code = "monospace"
+      ),
+      spacing = Spacing(
+        slideMargin = "2rem",
+        headingMargin = "1rem 0",
+        paragraphMargin = "0.5rem 0",
+        lineHeight = "1.6"
+      ),
+      syntax = SyntaxColors(
+        keyword = "#0000FF",
+        string = "#008000",
+        comment = "#808080",
+        function = "#000080",
+        number = "#FF0000",
+        operator = "#000000"
+      ),
+      slideCounter = SlideCounter(
+        color = "#666666",
+        background = "rgba(255,255,255,0.9)",
+        fontSize = "0.9rem"
+      ),
+      templateBackgrounds = Map(
+        "content" -> "backgrounds/content-bg.png"
+      )
+    )
+
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("heading" -> "Test", "body" -> "Content"),
+      backgroundImage = None  // No per-slide override
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, theme)
+
+    // Should use template background from theme
+    assert(html.contains("background-image"))
+    assert(html.contains("backgrounds/content-bg.png"))
+  }
+
+  test("per-slide background overrides template background") {
+    import com.tjmsolutions.mdslides.domain.{Theme, Background, ColorScheme, FontScheme, Spacing, SyntaxColors, SlideCounter}
+
+    val theme = Theme(
+      name = "TestTheme",
+      version = "1.0.0",
+      background = Background(color = "#FFFFFF", image = None),
+      colors = ColorScheme(
+        text = "#000000",
+        heading = "#000000",
+        accent = "#0000FF",
+        link = "#0000FF",
+        linkHover = "#0000FF",
+        codeBackground = "#F0F0F0",
+        codeText = "#000000"
+      ),
+      fonts = FontScheme(
+        body = "Arial",
+        heading = "Arial",
+        code = "monospace"
+      ),
+      spacing = Spacing(
+        slideMargin = "2rem",
+        headingMargin = "1rem 0",
+        paragraphMargin = "0.5rem 0",
+        lineHeight = "1.6"
+      ),
+      syntax = SyntaxColors(
+        keyword = "#0000FF",
+        string = "#008000",
+        comment = "#808080",
+        function = "#000080",
+        number = "#FF0000",
+        operator = "#000000"
+      ),
+      slideCounter = SlideCounter(
+        color = "#666666",
+        background = "rgba(255,255,255,0.9)",
+        fontSize = "0.9rem"
+      ),
+      templateBackgrounds = Map(
+        "content" -> "backgrounds/content-bg.png"
+      )
+    )
+
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("heading" -> "Test", "body" -> "Content"),
+      backgroundImage = Some("backgrounds/override.png")  // Should override template
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, theme)
+
+    // Should use per-slide background, not template background
+    assert(html.contains("backgrounds/override.png"))
+    assert(!html.contains("backgrounds/content-bg.png"))
+  }
+
+  test("slide without background falls back to theme default") {
+    import com.tjmsolutions.mdslides.domain.{Theme, Background, ColorScheme, FontScheme, Spacing, SyntaxColors, SlideCounter}
+
+    val theme = Theme(
+      name = "TestTheme",
+      version = "1.0.0",
+      background = Background(color = "#FFFFFF", image = Some("backgrounds/theme-default.png")),
+      colors = ColorScheme(
+        text = "#000000",
+        heading = "#000000",
+        accent = "#0000FF",
+        link = "#0000FF",
+        linkHover = "#0000FF",
+        codeBackground = "#F0F0F0",
+        codeText = "#000000"
+      ),
+      fonts = FontScheme(
+        body = "Arial",
+        heading = "Arial",
+        code = "monospace"
+      ),
+      spacing = Spacing(
+        slideMargin = "2rem",
+        headingMargin = "1rem 0",
+        paragraphMargin = "0.5rem 0",
+        lineHeight = "1.6"
+      ),
+      syntax = SyntaxColors(
+        keyword = "#0000FF",
+        string = "#008000",
+        comment = "#808080",
+        function = "#000080",
+        number = "#FF0000",
+        operator = "#000000"
+      ),
+      slideCounter = SlideCounter(
+        color = "#666666",
+        background = "rgba(255,255,255,0.9)",
+        fontSize = "0.9rem"
+      ),
+      templateBackgrounds = Map.empty  // No template backgrounds
+    )
+
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("heading" -> "Test", "body" -> "Content"),
+      backgroundImage = None
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, theme)
+
+    // Should fall back to theme default background
+    assert(html.contains("backgrounds/theme-default.png"))
+  }
+
 end HTMLRendererSpec

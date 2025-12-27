@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>MDSlides Presentation</title><style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      overflow: hidden;
+    }
+
+    .slides {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+      background-color: #1e1e1e;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .title-slide {
+      text-align: center;
+      max-width: 800px;
+      justify-content: space-between;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .title-slide-header {
+      margin-bottom: auto;
+    }
+
+    .title-slide-footer {
+      margin-top: auto;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #4ec9b0;
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
+
+    .slide-subtitle {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #4ec9b0;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .slide-author {
+      font-size: 24px;
+      color: #d4d4d4;
+      margin-top: 20px;
+    }
+
+    .content-slide {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .slide-heading {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #4ec9b0;
+      margin: 1rem 0;
+    }
+
+    .slide-body {
+      font-size: 24px;
+      color: #d4d4d4;
+      line-height: 1.6;
+    }
+
+    .slide-body p {
+      margin: 0.5rem 0;
+    }
+
+    /* Inline formatting (US-003) */
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background-color: #2d2d2d;
+      color: #d4d4d4;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    /* Code blocks (US-004) */
+    pre {
+      background-color: #2d2d2d;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      font-size: 18px;
+    }
+
+    pre code {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      font-family: Consolas, 'Courier New', monospace;
+      color: #d4d4d4;
+      font-size: inherit;
+    }
+
+    /* Syntax highlighting using theme colors */
+    .syntax-keyword { color: #569cd6; }
+    .syntax-string { color: #ce9178; }
+    .syntax-comment { color: #6a9955; }
+    .syntax-function { color: #dcdcaa; }
+    .syntax-number { color: #b5cea8; }
+    .syntax-operator { color: #d4d4d4; }
+
+    /* Content images (US-005) */
+    .content-image {
+      max-width: 100%;
+      height: auto;
+      margin: 0.5rem 0;
+      display: block;
+      border-radius: 5px;
+    }
+
+    a {
+      color: #4ec9b0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #3aa89a;
+      text-decoration: underline;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(30, 30, 30, 0.9);
+      color: #cccccc;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: red;
+      font-size: 24px;
+      padding: 40px;
+    }
+    </style></head><body><div class="slides"><div class="slide active" data-slide-index="0"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title"><p>MDSlides Tutorial</p></h1><h2 class="slide-subtitle"><p>Master Markdown-to-Presentation Conversion</p></h2></div><div class="title-slide-footer"><p class="slide-author"><p><strong>Your Name</strong></p></p></div></div></div><div class="slide" data-slide-index="1"><div class="content-slide"><h2 class="slide-heading"><p>What is MDSlides?</p></h2><div class="slide-body"><p>MDSlides converts Markdown files into beautiful HTML presentations.</p><p><strong>Key Features:</strong></p><ul><li>Write slides in plain Markdown</li><li>Multiple built-in themes</li><li>Automatic formatting</li><li>Template-based layouts</li></ul></div></div></div><div class="slide" data-slide-index="2"><div class="content-slide"><h2 class="slide-heading"><p>Installation</p></h2><div class="slide-body"><p>Install MDSlides using your package manager.</p><p><strong>Requirements:</strong> Java 11 or higher</p><pre><code class="language-bash"># Download the latest release
+wget mdslides.jar
+
+# Run MDSlides
+java -jar mdslides.jar slides.md output/
+</code></pre></div></div></div><div class="slide" data-slide-index="3"><div class="content-slide"><h2 class="slide-heading"><p>Basic Slide Structure</p></h2><div class="slide-body"><p>Slides are separated by <code>---</code> (three dashes on a line).</p><p><strong>Required Elements:</strong></p><p><strong>Optional Frontmatter:</strong></p><p><strong>Two templates available:</strong> <code>title</code> and <code>content</code></p><ul><li>Heading: <code>## My Slide Title</code></li><li>Body: Regular markdown text</li></ul><ul><li><code>template: content</code> (default with heading + body)</li><li><code>template: title</code> (centered title page)</li></ul></div></div></div><div class="slide" data-slide-index="4"><div class="content-slide"><h2 class="slide-heading"><p>Text Formatting</p></h2><div class="slide-body"><p>MDSlides supports standard Markdown formatting:</p><p><strong>Bold text</strong> using <code>**bold**</code></p><p><em>Italic text</em> using <code>*italic*</code></p><p><code>Inline code</code> using backticks</p></div></div></div><div class="slide" data-slide-index="5"><div class="content-slide"><h2 class="slide-heading"><p>Code Blocks</p></h2><div class="slide-body"><p>Display code with syntax highlighting:</p><p><strong>Supports many languages!</strong></p><pre><code class="language-scala">def renderSlides(input: Path): IO[Unit] =
+  for
+    deck &lt;- parseMarkdown(input)
+    html &lt;- renderHTML(deck, theme)
+    _ &lt;- writeOutput(html)
+  yield ()
+</code></pre></div></div></div><div class="slide" data-slide-index="6"><div class="content-slide"><h2 class="slide-heading"><p>Lists and Bullets</p></h2><div class="slide-body"><p>MDSlides supports ordered and unordered lists:</p><p><strong>Ordered Lists:</strong></p><p><strong>Unordered Lists:</strong></p><ul><li>Main concept</li><li>Supporting detail</li><li>Additional point</li></ul><ol><li>First step</li><li>Second step</li><li>Third step</li></ol></div></div></div><div class="slide" data-slide-index="7"><div class="content-slide"><h2 class="slide-heading"><p>Using Themes</p></h2><div class="slide-body"><p>MDSlides includes multiple themes:</p><p>Each theme provides unique styling.</p><pre><code class="language-bash"># Light theme (default)
+mdslides render slides.md output.html
+
+# Dark theme
+mdslides render slides.md output.html --theme dark
+
+# Retisio theme (template backgrounds!)
+mdslides render slides.md output.html --theme retisio
+</code></pre></div></div></div><div class="slide" data-slide-index="8"><div class="content-slide"><h2 class="slide-heading"><p>Template-Specific Backgrounds</p></h2><div class="slide-body"><p>The Retisio theme demonstrates template backgrounds:</p><p><strong>Each template gets its own visual treatment!</strong></p><p>This is powered by the new directory-based theme system.</p><ul><li><strong>Title slides:</strong> Dynamic title background</li><li><strong>Content slides:</strong> Clean content background</li></ul></div></div></div><div class="slide" data-slide-index="9"><div class="content-slide"><h2 class="slide-heading"><p>Directory-Based Themes</p></h2><div class="slide-body"><p>Themes are self-contained directories:</p><p><strong>Benefits:</strong> Portable, assets bundled, easy to share</p><pre><code>themes/
+  retisio/
+    theme.json
+    backgrounds/
+      title-page.png
+      content-page.png
+</code></pre></div></div></div><div class="slide" data-slide-index="10"><div class="content-slide"><h2 class="slide-heading"><p>Creating Custom Themes</p></h2><div class="slide-body"><p>Build your own theme in 3 steps:</p><p><strong>1. Create directory:</strong> <code>mkdir mytheme/backgrounds</code></p><p><strong>2. Write theme.json</strong> with colors, fonts, backgrounds</p><p><strong>3. Add to themes directory</strong></p><p>Share your theme as a zip file!</p></div></div></div><div class="slide" data-slide-index="11"><div class="content-slide"><h2 class="slide-heading"><p>Command Line Interface</p></h2><div class="slide-body"><p>MDSlides provides a simple CLI for converting markdown to presentations:</p><p><strong>Available themes:</strong> light, dark, tjm-solutions, retisio</p><pre><code class="language-bash"># Basic usage (light theme by default)
+mdslides slides.md presentation.html
+
+# Select a theme
+mdslides slides.md output.html --theme dark
+mdslides slides.md output.html --theme retisio
+
+# Disable automatic image copying
+mdslides slides.md output.html --no-copy-images
+
+# Get help and version info
+mdslides --version
+mdslides --help
+</code></pre></div></div></div><div class="slide" data-slide-index="12"><div class="content-slide"><h2 class="slide-heading"><p>Image Assets</p></h2><div class="slide-body"><p>Images are embedded using standard markdown:</p><p><strong>Automatic Handling:</strong></p><p><strong>Supports:</strong> PNG, JPG, SVG, and more</p><img class="content-image" src="images/architecture.svg" alt="MDSlides Architecture" /><ul><li>Local images copied to output directory</li><li>Remote URLs (https://) referenced directly</li><li>Relative paths preserved</li></ul></div></div></div><div class="slide" data-slide-index="13"><div class="content-slide"><h2 class="slide-heading"><p>Best Practices</p></h2><div class="slide-body"><p>Follow these guidelines for effective presentations:</p><p><strong>Content:</strong></p><p><strong>Visuals:</strong></p><ul><li>One main idea per slide</li><li>Max 12 lines of body text</li><li>Keep headings under 80 characters</li></ul><ul><li>Use diagrams to clarify</li><li>Include alt text for images</li></ul></div></div></div><div class="slide" data-slide-index="14"><div class="content-slide"><h2 class="slide-heading"><p>Thank You!</p></h2><div class="slide-body"><p><strong>Questions?</strong></p><p>Visit: github.com/yourorg/mdslides</p><p>Docs: mdslides.dev/docs</p><p><strong>Happy Presenting!</strong></p></div></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 15</span></div><script>
+    let currentSlide = 0;
+    const totalSlides = 15;
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      const counter = document.getElementById('slide-counter');
+      counter.textContent = (index + 1) + ' / ' + totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    function firstSlide() {
+      currentSlide = 0;
+      showSlide(currentSlide);
+    }
+
+    function lastSlide() {
+      currentSlide = totalSlides - 1;
+      showSlide(currentSlide);
+    }
+
+    // Auto-scale code blocks that exceed 20 lines (PDR-006)
+    function scaleCodeBlocks() {
+      document.querySelectorAll('pre code').forEach(codeBlock => {
+        const lines = codeBlock.textContent.split('\n').length;
+        if (lines > 20) {
+          // Calculate scale factor: 20 lines = 1.0, 40 lines = 0.7, 60+ lines = 0.5
+          const scaleFactor = Math.max(0.5, 1.0 - ((lines - 20) * 0.015));
+          codeBlock.parentElement.style.fontSize = (18 * scaleFactor) + 'px';
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          firstSlide();
+          break;
+        case 'End':
+          e.preventDefault();
+          lastSlide();
+          break;
+      }
+    });
+
+    // Run auto-scaling on page load
+    window.addEventListener('DOMContentLoaded', scaleCodeBlocks);
+  </script></body></html>

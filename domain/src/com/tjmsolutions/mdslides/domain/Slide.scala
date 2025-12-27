@@ -11,15 +11,28 @@ import cats.data.NonEmptyList
  * - All required slots must be present (validated separately)
  * - Slot content must satisfy template constraints (validated separately)
  *
+ * Background images (US-011):
+ * - Per-slide background images override template and theme defaults
+ * - Background is presentation metadata (not content/slot)
+ * - Supports both simple string paths and BackgroundConfig objects
+ *
+ * Speaker notes (US-004):
+ * - Per-slide speaker notes for presenter reference
+ * - Notes are presentation metadata (not rendered content)
+ * - Optional field (None if no notes provided)
+ *
  * Related Governance:
  * - ADR-008: Slot-Based Content Model
+ * - PDR-011: Background Image Architecture
  * - POL-001: Ubiquitous Language Enforcement
  * - POL-003: Pure Functional Domain
  */
 case class Slide(
   id: SlideId,
   templateName: String,
-  slots: Map[String, String]  // Slot name → content
+  slots: Map[String, String],  // Slot name → content
+  backgroundImage: Option[SlideBackground] = None,  // Optional per-slide background override
+  notes: Option[String] = None  // Optional speaker notes (US-004)
 ):
   /**
    * Get content for a slot.
@@ -53,6 +66,8 @@ object Slide:
    * @param id Slide identifier
    * @param templateName Template to bind to
    * @param slots Slot content map
+   * @param backgroundImage Optional per-slide background image
+   * @param notes Optional speaker notes (US-004)
    * @return Right(slide) if all validations pass, Left(errors) otherwise
    *
    * Related: ADR-002 (Validation Pipeline)
@@ -60,9 +75,11 @@ object Slide:
   def validated(
     id: SlideId,
     templateName: String,
-    slots: Map[String, String]
+    slots: Map[String, String],
+    backgroundImage: Option[SlideBackground] = None,
+    notes: Option[String] = None
   ): Either[NonEmptyList[ValidationError], Slide] =
-    val slide = Slide(id, templateName, slots)
+    val slide = Slide(id, templateName, slots, backgroundImage, notes)
 
     // Phase 1: Structure validation
     val structureErrors = validateStructure(slide)

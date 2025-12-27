@@ -249,4 +249,269 @@ class MarkdownParserSpec extends munit.FunSuite:
         fail(s"Expected successful parse, got error: $error")
   }
 
+  // US-011: Per-Slide Background Images
+  test("parse slide with background field (simple string)") {
+    val markdown = """---
+                     |template: content
+                     |background: backgrounds/custom.png
+                     |---
+                     |## Slide with Background
+                     |This slide has a custom background.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.templateName, "content")
+
+        // Background should be extracted as string
+        slide.backgroundImage match
+          case Some(bg: String) =>
+            assertEquals(bg, "backgrounds/custom.png")
+          case _ =>
+            fail("Expected backgroundImage to be Some(String)")
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse slide without background field defaults to None") {
+    val markdown = """---
+                     |template: content
+                     |---
+                     |## Slide Without Background
+                     |Default behavior.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.backgroundImage, None)
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse title slide with background") {
+    val markdown = """---
+                     |template: title
+                     |background: backgrounds/title-bg.png
+                     |---
+                     |# Title with Background""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.templateName, "title")
+
+        slide.backgroundImage match
+          case Some(bg: String) =>
+            assertEquals(bg, "backgrounds/title-bg.png")
+          case _ =>
+            fail("Expected backgroundImage to be Some(String)")
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse multi-slide deck with mixed backgrounds") {
+    val markdown = """---
+                     |template: title
+                     |background: backgrounds/title.png
+                     |---
+                     |# Slide 1
+                     |
+                     |---
+                     |template: content
+                     |---
+                     |## Slide 2
+                     |No custom background
+                     |
+                     |---
+                     |template: content
+                     |background: backgrounds/special.png
+                     |---
+                     |## Slide 3
+                     |Special background""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        assertEquals(deck.slideCount, 3)
+
+        // Slide 1 has background
+        val slide1 = deck.getSlide(0).get
+        slide1.backgroundImage match
+          case Some(bg: String) => assertEquals(bg, "backgrounds/title.png")
+          case _ => fail("Slide 1 should have background")
+
+        // Slide 2 has no background
+        val slide2 = deck.getSlide(1).get
+        assertEquals(slide2.backgroundImage, None)
+
+        // Slide 3 has background
+        val slide3 = deck.getSlide(2).get
+        slide3.backgroundImage match
+          case Some(bg: String) => assertEquals(bg, "backgrounds/special.png")
+          case _ => fail("Slide 3 should have background")
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  // US-004: Speaker Notes Parsing
+
+  test("parse slide with notes field (simple string)") {
+    val markdown = """---
+                     |template: content
+                     |notes: "Remember to pause after this point."
+                     |---
+                     |## Slide with Notes
+                     |This slide has speaker notes.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.notes, Some("Remember to pause after this point."))
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse slide without notes field defaults to None") {
+    val markdown = """---
+                     |template: content
+                     |---
+                     |## Slide Without Notes
+                     |Default behavior.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.notes, None)
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse slide with notes array (multi-line)") {
+    val markdown = """---
+                     |template: content
+                     |notes:
+                     |  - "Point one"
+                     |  - "Point two"
+                     |  - "Point three"
+                     |---
+                     |## Slide with Array Notes
+                     |Multi-line speaker notes.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        // Array should be joined with newlines
+        assertEquals(slide.notes, Some("Point one\nPoint two\nPoint three"))
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse slide with empty notes string") {
+    val markdown = """---
+                     |template: content
+                     |notes: ""
+                     |---
+                     |## Slide with Empty Notes
+                     |Empty notes.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+        assertEquals(slide.notes, Some(""))
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse multi-slide deck with mixed notes") {
+    val markdown = """---
+                     |template: title
+                     |notes: "Title slide note"
+                     |---
+                     |# Slide 1
+                     |
+                     |---
+                     |template: content
+                     |---
+                     |## Slide 2
+                     |No notes
+                     |
+                     |---
+                     |template: content
+                     |notes:
+                     |  - "First point"
+                     |  - "Second point"
+                     |---
+                     |## Slide 3
+                     |Array notes""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        assertEquals(deck.slideCount, 3)
+
+        // Slide 1 has notes
+        val slide1 = deck.getSlide(0).get
+        assertEquals(slide1.notes, Some("Title slide note"))
+
+        // Slide 2 has no notes
+        val slide2 = deck.getSlide(1).get
+        assertEquals(slide2.notes, None)
+
+        // Slide 3 has array notes
+        val slide3 = deck.getSlide(2).get
+        assertEquals(slide3.notes, Some("First point\nSecond point"))
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
+  test("parse slide with both background and notes") {
+    val markdown = """---
+                     |template: content
+                     |background: backgrounds/special.png
+                     |notes: "This is a special slide"
+                     |---
+                     |## Combined Metadata
+                     |Both background and notes.""".stripMargin
+
+    val result = MarkdownParser.parse(markdown)
+
+    result match
+      case Right(deck) =>
+        val slide = deck.getSlide(0).get
+
+        slide.backgroundImage match
+          case Some(bg: String) => assertEquals(bg, "backgrounds/special.png")
+          case _ => fail("Expected backgroundImage")
+
+        assertEquals(slide.notes, Some("This is a special slide"))
+
+      case Left(error) =>
+        fail(s"Expected successful parse, got error: $error")
+  }
+
 end MarkdownParserSpec

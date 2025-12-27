@@ -1,0 +1,252 @@
+package com.tjmsolutions.mdslides.cli
+
+import cats.effect.{ExitCode, IO, IOApp}
+import cats.implicits.*
+import com.tjmsolutions.mdslides.domain.{SlideDeck, Theme}
+import com.tjmsolutions.mdslides.infrastructure.parser.{MarkdownParser, FlexmarkAdapter}
+import com.tjmsolutions.mdslides.infrastructure.renderer.HTMLRenderer
+import com.tjmsolutions.mdslides.infrastructure.theme.{ThemeJsonAdapter, ThemeLoader}
+import com.tjmsolutions.mdslides.infrastructure.assets.{ImageAssetCopier, CopiedImage}
+import com.monovore.decline.*
+
+import java.nio.file.{Files, Paths, StandardOpenOption}
+
+/**
+ * CLI entry point for MDSlides.
+ *
+ * Commands:
+ * - render: Convert markdown to HTML
+ *
+ * Usage:
+ * ```
+ * mdslides input.md output.html
+ * mdslides input.md output.html --theme light
+ * mdslides input.md output.html --theme themes/custom.json
+ * mdslides input.md output.html --no-copy-images
+ * ```
+ *
+ * Related Governance:
+ * - ADR-001: CLI Architecture
+ * - ADR-012: Image Asset Copying Strategy
+ * - PDR-002: Error Handling Guidelines
+ * - PDR-009: Image Copy Default Behavior
+ * - US-006: Image Asset Copying
+ * - US-008: Theme System
+ * - US-009: Built-in Themes
+ */
+object Main extends IOApp:
+
+  /**
+   * Command-line options parser.
+   */
+  val inputFile = Opts.argument[String]("input")
+  val outputFile = Opts.argument[String]("output")
+  val themeOpt = Opts.option[String]("theme", help = "Theme name (light, dark, corporate) or path to JSON file").withDefault("light")
+  val noCopyImagesOpt = Opts.flag("no-copy-images", help = "Don't copy image files to output directory").orFalse
+
+  val command = Command(
+    name = "mdslides",
+    header = "MDSlides - Markdown to HTML Slide Deck Converter"
+  ) {
+    (inputFile, outputFile, themeOpt, noCopyImagesOpt).mapN { (input, output, theme, noCopyImages) =>
+      (Paths.get(input), Paths.get(output), theme, !noCopyImages)
+    }
+  }
+
+  /**
+   * Load theme from name using directory-based themes (US-016).
+   *
+   * Theme names are resolved from the themes/ directory:
+   * - "retisio" → themes/retisio/theme.json
+   * - "minimal" → themes/minimal/theme.json
+   *
+   * Built-in themes: "light", "dark", "corporate" (fallback to domain objects)
+   */
+  def loadTheme(themeName: String): IO[Theme] =
+    themeName match
+      case "light" => IO.pure(Theme.light)
+      case "dark" => IO.pure(Theme.dark)
+      case "corporate" => IO.pure(Theme.corporate)
+      case name =>
+        // Load theme from directory
+        val themeDir = Paths.get("./themes")
+        ThemeLoader.loadTheme(name, themeDir)
+          .flatTap(t => IO.println(s"✓ Loaded theme: ${t.name} v${t.version}"))
+          .handleErrorWith { error =>
+            IO.println(s"✗ Theme load error: ${error.getMessage}") *>
+              IO.raiseError(error)
+          }
+
+  /**
+   * Extract all image URLs from deck (content + backgrounds).
+   *
+   * Includes:
+   * - Content images from slot markdown
+   * - Per-slide background images (US-011)
+   *
+   * Theme background images are handled separately in extractThemeImages.
+   */
+  def extractImageUrls(deck: SlideDeck): List[String] =
+    import com.tjmsolutions.mdslides.domain.{SlideBackground, BackgroundConfig}
+
+    val contentImages = deck.slides.toList.flatMap { slide =>
+      slide.slots.values.toList.flatMap { slotContent =>
+        // Parse slot content to extract images
+        FlexmarkAdapter.parseInlineFormatting(slotContent).contentImages.map(_.url)
+      }
+    }
+
+    val backgroundImages = deck.slides.toList.flatMap { slide =>
+      slide.backgroundImage match
+        case Some(bg: String) => List(bg)
+        case Some(bg: BackgroundConfig) => List(bg.imagePath)
+        case None => List()
+    }
+
+    (contentImages ++ backgroundImages).distinct
+
+  /**
+   * Extract theme background images (US-011, US-012).
+   *
+   * Includes:
+   * - Theme default background image
+   * - Template-specific background images
+   */
+  def extractThemeImages(theme: Theme): List[String] =
+    val defaultBg = theme.background.image.toList
+    val templateBgs = theme.templateBackgrounds.values.toList
+    (defaultBg ++ templateBgs).distinct
+
+  /**
+   * Main program logic.
+   */
+  def renderSlides(inputPath: java.nio.file.Path, outputPath: java.nio.file.Path, themeName: String, copyImages: Boolean): IO[ExitCode] =
+    for {
+      // Load theme
+      _ <- IO.println(s"Loading theme: $themeName")
+      theme <- loadTheme(themeName)
+
+      // Read input file
+      _ <- IO.println(s"Reading markdown from: $inputPath")
+      markdown <- IO.blocking(Files.readString(inputPath))
+
+      // Parse markdown
+      _ <- IO.println("Parsing markdown...")
+      deck <- MarkdownParser.parse(markdown) match
+        case Right(deck) =>
+          IO.println(s"✓ Parsed ${deck.slideCount} slide(s)").as(deck)
+        case Left(error) =>
+          IO.println(s"✗ Parse error: $error") *> IO.raiseError(new RuntimeException(error))
+
+      // Validate deck
+      _ <- IO.println("Validating slide deck...")
+      validatedDeck <- SlideDeck.validated(deck.slides) match
+        case Right(validDeck) =>
+          IO.println("✓ Validation passed").as(validDeck)
+        case Left(errors) =>
+          val errorMessages = errors.toList.map(_.displayMessage).mkString("\n  - ")
+          IO.println(s"✗ Validation failed:\n  - $errorMessages") *>
+            IO.raiseError(new RuntimeException("Validation failed"))
+
+      // Copy images if enabled (US-011: includes background images)
+      _ <- if copyImages then
+        for {
+          _ <- IO.println("Copying images...")
+
+          // Extract content + per-slide background images
+          deckImages = extractImageUrls(validatedDeck)
+
+          // Extract theme background images
+          themeImages = extractThemeImages(theme)
+
+          // Combine all images
+          allImages = (deckImages ++ themeImages).distinct
+
+          sourceDir = inputPath.getParent match
+            case null => Paths.get(".")
+            case dir => dir
+          outputDir = outputPath.getParent match
+            case null => Paths.get(".")
+            case dir => dir
+
+          // Copy deck images from presentation directory
+          deckResult <- IO.fromEither(
+            ImageAssetCopier.copyImages(deckImages, sourceDir, outputDir)
+              .left.map(err => new RuntimeException(err))
+          ).handleErrorWith { error =>
+            IO.println(s"✗ Image copy error: ${error.getMessage}") *>
+              IO.raiseError(error)
+          }
+
+          // Copy theme background images from theme directory (if not a built-in theme)
+          themeResult <- if themeName == "light" || themeName == "dark" || themeName == "corporate" then
+            // Built-in themes have no background images to copy
+            IO.pure(List.empty[CopiedImage])
+          else
+            // Directory-based themes: copy background images from themes/{name}/
+            val themeDir = Paths.get("./themes").resolve(themeName)
+            IO.fromEither(
+              ImageAssetCopier.copyImages(themeImages, themeDir, outputDir)
+                .left.map(err => new RuntimeException(err))
+            ).handleErrorWith { error =>
+              IO.println(s"✗ Theme image copy error: ${error.getMessage}") *>
+                IO.raiseError(error)
+            }
+
+          result = deckResult ++ themeResult
+          _ <- if result.isEmpty then
+            IO.println("  No local images to copy")
+          else
+            val totalSize = result.map(_.sizeBytes).sum
+            val totalSizeKB = totalSize / 1024.0
+            val totalSizeMB = totalSize / (1024.0 * 1024.0)
+
+            // Size warnings (PDR-010)
+            val sizeWarnings = List.newBuilder[String]
+
+            // Check individual image sizes (warn if >5MB)
+            result.foreach { copied =>
+              val sizeMB = copied.sizeBytes / (1024.0 * 1024.0)
+              if sizeMB > 5.0 then
+                sizeWarnings += s"  ⚠ Large image: ${copied.originalPath} (${f"$sizeMB%.1f"} MB) exceeds 5MB guideline"
+            }
+
+            // Check total payload size (warn if >20MB)
+            if totalSizeMB > 20.0 then
+              sizeWarnings += s"  ⚠ Total image payload (${f"$totalSizeMB%.1f"} MB) exceeds 20MB guideline"
+
+            IO.println(s"✓ Copied ${result.length} image(s) (${f"$totalSizeKB%.1f"} KB total)") *>
+              result.traverse_ { copied =>
+                val sizeKB = copied.sizeBytes / 1024.0
+                IO.println(s"  - ${copied.originalPath} (${f"$sizeKB%.1f"} KB)")
+              } *>
+              sizeWarnings.result().traverse_(IO.println)
+        } yield ()
+      else
+        IO.println("Image copying disabled (--no-copy-images)")
+
+      // Render to HTML with theme
+      _ <- IO.println(s"Rendering HTML with theme: ${theme.name}")
+      html = HTMLRenderer.renderDeck(validatedDeck, theme)
+      _ <- IO.println(s"✓ Generated ${html.length} characters of HTML")
+
+      // Write output file
+      _ <- IO.println(s"Writing HTML to: $outputPath")
+      _ <- IO.blocking(Files.writeString(outputPath, html, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+
+      _ <- IO.println(s"✓ Successfully created presentation: $outputPath")
+    } yield ExitCode.Success
+
+  /**
+   * Parse args and run program.
+   */
+  override def run(args: List[String]): IO[ExitCode] =
+    command.parse(args) match
+      case Right((inputPath, outputPath, themeName, copyImages)) =>
+        renderSlides(inputPath, outputPath, themeName, copyImages).handleErrorWith { error =>
+          IO.println(s"Error: ${error.getMessage}").as(ExitCode.Error)
+        }
+      case Left(help) =>
+        IO.println(help.toString).as(ExitCode.Error)
+
+end Main

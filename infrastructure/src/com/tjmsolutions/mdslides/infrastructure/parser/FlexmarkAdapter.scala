@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link}
+import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link, CodeBlock, ContentImage, UnorderedList, OrderedList, ListItem}
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.ast.{Node, NodeVisitor, VisitHandler}
 import com.vladsch.flexmark.ast.*
@@ -18,10 +18,17 @@ import scala.jdk.CollectionConverters.*
  * - Inline code: `text`
  * - Links: [text](url)
  *
+ * Supported block elements:
+ * - Fenced code blocks: ```language\ncode\n```
+ * - Images: ![alt text](url)
+ *
  * Related Governance:
  * - ADR-010: Markdown Library Selection (Flexmark)
  * - ADR-007: Anticorruption Layer
  * - US-003: Full Markdown Rendering
+ * - US-004: Code Block Support
+ * - US-005: Image Embedding
+ * - PDR-008: Image Policy
  * - POL-003: Pure Functional Domain (this adapter keeps domain pure)
  */
 object FlexmarkAdapter:
@@ -47,11 +54,15 @@ object FlexmarkAdapter:
   /**
    * Extract FormattedContent from Flexmark document AST.
    *
-   * Walks the AST and builds TextSpan and Link objects.
+   * Walks the AST and builds TextSpan, Link, CodeBlock, ContentImage, and List objects.
    */
   private def extractFormattedContent(node: Node): FormattedContent =
     val textSpans = scala.collection.mutable.ListBuffer.empty[TextSpan]
     val links = scala.collection.mutable.ListBuffer.empty[Link]
+    val codeBlocks = scala.collection.mutable.ListBuffer.empty[CodeBlock]
+    val contentImages = scala.collection.mutable.ListBuffer.empty[ContentImage]
+    val unorderedLists = scala.collection.mutable.ListBuffer.empty[UnorderedList]
+    val orderedLists = scala.collection.mutable.ListBuffer.empty[OrderedList]
 
     // Track current formatting state as we traverse
     var currentBold = false
@@ -125,6 +136,45 @@ object FlexmarkAdapter:
           if n.getNext != null then
             textSpans += TextSpan("\n", bold = false, italic = false, code = false)
 
+        case fencedCode: FencedCodeBlock =>
+          // Fenced code block: ```language\ncode\n```
+          val code = fencedCode.getContentChars.toString
+          val language = Option(fencedCode.getInfo.toString).filter(_.nonEmpty)
+          codeBlocks += CodeBlock(code, language)
+          // Don't visit children - we've extracted the code
+
+        case image: Image =>
+          // Content image: ![alt text](url)
+          val url = image.getUrl.toString
+          val altText = image.getText.toString
+          // Use validated constructor to ensure alt text is non-empty
+          ContentImage.validated(url, altText) match
+            case Right(img) =>
+              contentImages += img
+            case Left(error) =>
+              // Invalid image (empty alt text) - skip it
+              // Validation layer will catch this
+              ()
+          // Don't visit children - we've extracted the image data
+
+        case bulletList: BulletList =>
+          // Unordered list: - Item one\n- Item two
+          val items = extractListItems(bulletList)
+          if items.nonEmpty then
+            unorderedLists += UnorderedList(items)
+          // Don't visit children - we've extracted the list
+
+        case orderedList: com.vladsch.flexmark.ast.OrderedList =>
+          // Ordered list: 1. Item one\n2. Item two
+          val items = extractListItems(orderedList)
+          if items.nonEmpty then
+            orderedLists += com.tjmsolutions.mdslides.domain.OrderedList(items)
+          // Don't visit children - we've extracted the list
+
+        case _: BulletListItem | _: OrderedListItem =>
+          // List items are handled by extractListItems, skip here
+          ()
+
         case _ =>
           // For other nodes, recursively visit children
           n.getChildren.asScala.foreach(visitNode)
@@ -134,7 +184,14 @@ object FlexmarkAdapter:
     // Merge consecutive text spans with same formatting
     val mergedSpans = mergeConsecutiveSpans(textSpans.toList)
 
-    FormattedContent(mergedSpans, links.toList)
+    FormattedContent(
+      mergedSpans,
+      links.toList,
+      codeBlocks.toList,
+      contentImages.toList,
+      unorderedLists.toList,
+      orderedLists.toList
+    )
 
   /**
    * Merge consecutive TextSpans with identical formatting.
@@ -156,5 +213,82 @@ object FlexmarkAdapter:
           // Different formatting - append new span
           span :: acc
     }.reverse
+
+  /**
+   * Extract list items from a BulletList or OrderedList node.
+   *
+   * Processes each list item and extracts its text spans with formatting.
+   *
+   * @param listNode The BulletList or OrderedList node
+   * @return List of ListItem objects with formatted text
+   */
+  private def extractListItems(listNode: Node): List[ListItem] =
+    listNode.getChildren.asScala.toList.flatMap {
+      case item: BulletListItem =>
+        Some(extractListItemContent(item))
+      case item: OrderedListItem =>
+        Some(extractListItemContent(item))
+      case _ =>
+        None
+    }
+
+  /**
+   * Extract formatted content from a single list item.
+   *
+   * Recursively processes the list item's children to extract text spans
+   * with inline formatting (bold, italic, code).
+   *
+   * @param itemNode The list item node (BulletListItem or OrderedListItem)
+   * @return ListItem with formatted text spans
+   */
+  private def extractListItemContent(itemNode: Node): ListItem =
+    val itemSpans = scala.collection.mutable.ListBuffer.empty[TextSpan]
+    var currentBold = false
+    var currentItalic = false
+    var currentCode = false
+
+    def visitItemNode(n: Node): Unit =
+      n match
+        case text: Text =>
+          val span = TextSpan(
+            text.getChars.toString,
+            bold = currentBold,
+            italic = currentItalic,
+            code = currentCode
+          )
+          itemSpans += span
+
+        case strong: StrongEmphasis =>
+          val prevBold = currentBold
+          currentBold = true
+          n.getChildren.asScala.foreach(visitItemNode)
+          currentBold = prevBold
+
+        case emphasis: Emphasis =>
+          val prevItalic = currentItalic
+          currentItalic = true
+          n.getChildren.asScala.foreach(visitItemNode)
+          currentItalic = prevItalic
+
+        case code: Code =>
+          val span = TextSpan(
+            code.getChars.toString.stripPrefix("`").stripSuffix("`"),
+            bold = false,
+            italic = false,
+            code = true
+          )
+          itemSpans += span
+
+        case _: SoftLineBreak =>
+          itemSpans += TextSpan(" ", bold = false, italic = false, code = false)
+
+        case _ =>
+          // Recursively visit children
+          n.getChildren.asScala.foreach(visitItemNode)
+
+    visitItemNode(itemNode)
+
+    val mergedSpans = mergeConsecutiveSpans(itemSpans.toList)
+    ListItem(mergedSpans)
 
 end FlexmarkAdapter

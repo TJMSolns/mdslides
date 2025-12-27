@@ -1,24 +1,28 @@
-# MDSlides v0.1.0-MVP
+# MDSlides v0.2.0
 
 **A domain-driven, test-first presentation framework for converting Markdown to HTML slides.**
 
-[![Tests](https://img.shields.io/badge/tests-81%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-171%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-domain%20%2B%20infrastructure-blue)]()
-[![Version](https://img.shields.io/badge/version-0.1.0--MVP-orange)]()
+[![Version](https://img.shields.io/badge/version-0.2.0-orange)]()
 
 ## Overview
 
-MDSlides is a command-line tool that converts structured Markdown files into standalone HTML presentations with keyboard navigation. Built using Domain-Driven Design principles with comprehensive test coverage (81 tests including property-based testing).
+MDSlides is a command-line tool that converts structured Markdown files into standalone HTML presentations with keyboard navigation. Built using Domain-Driven Design principles with comprehensive test coverage (171 tests including property-based testing).
 
 ### Key Features
 
 - ✅ **Two Slide Templates**: Title slides and content slides
+- ✅ **Full Markdown Rendering**: Bold, italic, inline code, links (US-003)
+- ✅ **Code Blocks**: Fenced code blocks with language hints (US-004)
+- ✅ **Image Embedding**: Support for local images, external URLs, and data URLs (US-005)
+- ✅ **Theme System**: Built-in themes (light, dark, corporate) and custom JSON themes (US-008, US-009)
 - ✅ **Validation**: Enforces slide density constraints (max lines, words, characters)
 - ✅ **Standalone Output**: Self-contained HTML with inline CSS and JavaScript
 - ✅ **Keyboard Navigation**: Arrow keys, Space, Home, End
 - ✅ **Responsive Design**: Works on all screen sizes
 - ✅ **Type-Safe**: Pure functional domain model with comprehensive validation
-- ✅ **Well-Tested**: 61 domain tests (29 property-based, 32 example-based) + 20 infrastructure tests
+- ✅ **Well-Tested**: 171 tests (property-based + example-based)
 
 ## Quick Start
 
@@ -130,6 +134,96 @@ The content is validated to ensure readability.
 - Heading: Required, max 80 characters, single line
 - Body: Required, max 12 lines, max 150 words
 
+## Working with Images
+
+MDSlides supports embedding images in your presentations (US-005).
+
+### Image Syntax
+
+```markdown
+![Alt text description](image-path-or-url)
+```
+
+### Supported Image Sources
+
+- **Relative paths** (recommended): `![Logo](images/logo.svg)`
+- **Absolute URLs**: `![Logo](https://example.com/logo.png)`
+- **Data URLs**: `![Icon](data:image/svg+xml;base64,...)`
+
+### Recommended Directory Structure
+
+For presentations with images, use this structure:
+
+```
+my-presentation/
+├── slides.md           # Your markdown source
+├── index.html          # Generated presentation
+└── images/             # Image assets
+    ├── logo.svg
+    └── diagram.png
+```
+
+**Workflow:**
+
+```bash
+# 1. Create directory structure
+mkdir my-presentation
+mkdir my-presentation/images
+
+# 2. Add your images to images/
+cp logo.svg my-presentation/images/
+
+# 3. Reference images with relative paths in markdown
+echo "![Logo](images/logo.svg)" >> my-presentation/slides.md
+
+# 4. Generate HTML in the same directory
+mdslides my-presentation/slides.md my-presentation/index.html
+
+# 5. View with local web server (recommended)
+cd my-presentation
+python3 -m http.server 8000
+# Open http://localhost:8000/
+```
+
+### Image Requirements
+
+**Accessibility (PDR-005):**
+- All images MUST have descriptive alt text
+- Empty alt text `![]()` is rejected during validation
+
+**Visual Density (PDR-008):**
+- 1-2 images per slide: ✓ Optimal
+- 3-4 images per slide: ⚠ Warning (high density)
+- 5+ images per slide: ⚠ Warning (excessive density)
+
+### Example
+
+See [examples/image-demo/](examples/image-demo/) for a complete working example with:
+- Recommended directory structure
+- Sample SVG images
+- Generated presentation
+- Usage instructions
+
+### Image Path Best Practices
+
+✅ **DO**: Use relative paths
+```markdown
+![Architecture](images/architecture.svg)
+![Screenshot](./screenshots/demo.png)
+```
+
+⚠️ **AVOID**: Absolute filesystem paths (not portable)
+```markdown
+![Logo](/home/user/my-images/logo.png)  # Won't work on other systems
+```
+
+⚠️ **CAUTION**: External URLs (requires internet)
+```markdown
+![Logo](https://example.com/logo.png)  # May not work with file:// protocol
+```
+
+**Note:** MDSlides generates `<img>` tags with the paths you provide. You are responsible for ensuring image files exist at those paths relative to the generated HTML file.
+
 ## Architecture
 
 MDSlides follows a clean, layered architecture:
@@ -198,7 +292,7 @@ mill __.test
 
 ### Test Coverage
 
-**81 Tests Total:**
+**171 Tests Total (v0.2.0):**
 
 **Domain Layer (61 tests):**
 - `SlideSpec.scala`: 10 example-based tests for title slides
@@ -208,9 +302,15 @@ mill __.test
 - `ContentSlideProperties.scala`: 9 property-based tests for content slide invariants
 - `SlideDeckProperties.scala`: 10 property-based tests for deck invariants
 
-**Infrastructure Layer (20 tests):**
+**Infrastructure Layer (110 tests):**
 - `MarkdownParserSpec.scala`: 10 tests for parsing
 - `HTMLRendererSpec.scala`: 10 tests for rendering
+- `FlexmarkAdapterSpec.scala`: 32 tests for markdown formatting (bold, italic, code, links)
+- `FlexmarkAdapterCodeBlockSpec.scala`: 16 tests for code block parsing
+- `FlexmarkAdapterImageSpec.scala`: 10 tests for image parsing
+- `HTMLRendererCodeBlockSpec.scala`: 23 tests for code block rendering
+- `HTMLRendererImageSpec.scala`: 1 test for image rendering
+- `ThemeJsonAdapterSpec.scala`: 8 tests for theme JSON parsing
 
 ### Property-Based Testing
 
@@ -282,38 +382,42 @@ mdslides/
 This project follows strict governance with documented decisions:
 
 - **ADR (Architecture Decision Records)**: Technical decisions
-  - [ADR-001](doc/governance/ADR/ADR-001-technology-stack.md): Technology Stack Selection
-  - [ADR-002](doc/governance/ADR/ADR-002-validation-pipeline.md): Validation Pipeline Architecture
-  - [ADR-006](doc/governance/ADR/ADR-006-rendering-architecture.md): Rendering Architecture
-  - [ADR-007](doc/governance/ADR/ADR-007-anticorruption-layer.md): Anticorruption Layer
-  - [ADR-008](doc/governance/ADR/ADR-008-slot-based-content.md): Slot-Based Content Model
-  - [ADR-009](doc/governance/ADR/ADR-009-property-based-testing.md): Property-Based Testing Strategy
+  - [ADR-001](doc/internal/governance/adr/ADR-001-technology-stack.md): Technology Stack Selection
+  - [ADR-002](doc/internal/governance/adr/ADR-002-validation-pipeline.md): Validation Pipeline Architecture
+  - [ADR-006](doc/internal/governance/adr/ADR-006-rendering-architecture.md): Rendering Architecture
+  - [ADR-007](doc/internal/governance/adr/ADR-007-anticorruption-layer.md): Anticorruption Layer
+  - [ADR-008](doc/internal/governance/adr/ADR-008-slot-based-content.md): Slot-Based Content Model
+  - [ADR-009](doc/internal/governance/adr/ADR-009-property-based-testing.md): Property-Based Testing Strategy
 
 - **PDR (Product Decision Records)**: Product decisions
-  - [PDR-001](doc/governance/PDR/PDR-001-density-limits.md): Density Validation Limits
-  - [PDR-003](doc/governance/PDR/PDR-003-deck-size-limits.md): Slide Deck Size Limits
-  - [PDR-005](doc/governance/PDR/PDR-005-accessibility.md): Accessibility Requirements
+  - [PDR-001](doc/internal/governance/pdr/PDR-001-density-limits.md): Density Validation Limits
+  - [PDR-003](doc/internal/governance/pdr/PDR-003-deck-size-limits.md): Slide Deck Size Limits
+  - [PDR-005](doc/internal/governance/pdr/PDR-005-accessibility.md): Accessibility Requirements
 
 - **POL (Policy Documents)**: Development policies
-  - [POL-001](doc/governance/POL/POL-001-ubiquitous-language.md): Ubiquitous Language Enforcement
-  - [POL-003](doc/governance/POL/POL-003-pure-functional-domain.md): Pure Functional Domain
-  - [POL-004](doc/governance/POL/POL-004-property-based-testing.md): Property-Based Testing Requirements
+  - [POL-001](doc/internal/governance/pol/POL-001-ubiquitous-language.md): Ubiquitous Language Enforcement
+  - [POL-003](doc/internal/governance/pol/POL-003-pure-functional-domain.md): Pure Functional Domain
+  - [POL-004](doc/internal/governance/pol/POL-004-property-based-testing.md): Property-Based Testing Requirements
 
-See [doc/governance/](doc/governance/) for full documentation.
+See [doc/internal/governance/](doc/internal/governance/) for full documentation.
 
-## Current Limitations (v0.1.0 MVP)
+## v0.2.0 Status
 
-This MVP focuses on core functionality. Future iterations will add:
+**Completed:**
+- ✅ Full markdown rendering (bold, italic, inline code, links) - US-003
+- ✅ Code blocks with language hints - US-004
+- ✅ Image embedding (local, URLs, data URLs) - US-005
+- ✅ Custom themes via JSON - US-008
+- ✅ Built-in themes (light, dark, corporate) - US-009
 
-- ❌ Full markdown rendering (bold, italic, links) - text preserved as-is
-- ❌ Code syntax highlighting
-- ❌ Image support
-- ❌ Custom themes
+**Future Enhancements:**
+- ❌ Image asset copying (auto-copy referenced images to output directory) - US-006
+- ❌ Code syntax highlighting (currently just styled blocks)
 - ❌ Speaker notes
 - ❌ PDF export
-- ❌ Live preview
+- ❌ Live preview server
 
-See [CHANGELOG.md](CHANGELOG.md) for planned features.
+See [CHANGELOG.md](CHANGELOG.md) for version history and planned features.
 
 ## Development
 

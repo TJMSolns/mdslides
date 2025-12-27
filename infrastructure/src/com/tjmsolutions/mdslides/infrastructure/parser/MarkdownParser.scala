@@ -107,6 +107,12 @@ object MarkdownParser:
     // Get template name from frontmatter
     val templateName = frontmatter.getOrElse("template", "content")
 
+    // Get background image from frontmatter (optional, US-011)
+    val backgroundImage = frontmatter.get("background")
+
+    // Get speaker notes from frontmatter (optional, US-004)
+    val notes = frontmatter.get("notes")
+
     // Parse content based on template
     val slots = templateName match
       case "title" => parseTitleSlide(content)
@@ -116,7 +122,7 @@ object MarkdownParser:
     // Create slide ID
     SlideId(slideNumber) match
       case Left(error) => Left(s"Slide $slideNumber: $error")
-      case Right(id) => Right(Slide(id, templateName, slots))
+      case Right(id) => Right(Slide(id, templateName, slots, backgroundImage, notes))
 
   /**
    * Extract frontmatter from raw slide content.
@@ -125,31 +131,97 @@ object MarkdownParser:
    * ```
    * template: title
    * key: value
+   * notes:
+   *   - "item 1"
+   *   - "item 2"
    * ---
    * content here
    * ```
+   *
+   * Supports both simple string values and YAML arrays.
+   * Arrays are joined with newlines.
    *
    * @param raw The raw slide content
    * @return (frontmatter map, remaining content)
    */
   private def extractFrontmatter(raw: String): (Map[String, String], String) =
     val lines = raw.split("\n")
-    // Extract frontmatter (lines with : before the --- delimiter)
-    val frontmatterLines = lines.takeWhile(line =>
-      line.trim.nonEmpty && line.contains(":") && line.trim != "---"
-    )
-    // Skip frontmatter, --- delimiter, and empty lines to get content
-    val contentLines = lines
-      .dropWhile(line => line.trim.isEmpty || line.contains(":") || line.trim == "---")
 
-    val frontmatter = frontmatterLines.map { line =>
-      val parts = line.split(":", 2)
-      if parts.length == 2 then
-        Some(parts(0).trim -> parts(1).trim)
-      else None
-    }.flatten.toMap
+    // Find end of frontmatter (--- delimiter or start of content)
+    val frontmatterEndIndex = lines.indexWhere(_.trim == "---", 0)
+    val frontmatterLines = if frontmatterEndIndex >= 0 then
+      lines.take(frontmatterEndIndex)
+    else
+      lines.takeWhile(line => line.trim.nonEmpty && (line.contains(":") || line.trim.startsWith("-")))
+
+    // Content starts after --- delimiter or after frontmatter
+    val contentStartIndex = if frontmatterEndIndex >= 0 then frontmatterEndIndex + 1 else frontmatterLines.length
+    val contentLines = lines.drop(contentStartIndex).dropWhile(_.trim.isEmpty)
+
+    // Parse frontmatter key-value pairs
+    val frontmatter = parseFrontmatterLines(frontmatterLines.toList)
 
     (frontmatter, contentLines.mkString("\n"))
+
+  /**
+   * Parse frontmatter lines into key-value pairs.
+   *
+   * Handles both simple values and arrays:
+   * - `key: value` → Map("key" -> "value")
+   * - `key:\n  - item1\n  - item2` → Map("key" -> "item1\nitem2")
+   */
+  private def parseFrontmatterLines(lines: List[String]): Map[String, String] =
+    val result = Map.newBuilder[String, String]
+    var currentKey: Option[String] = None
+    val currentArrayItems = List.newBuilder[String]
+
+    lines.foreach { line =>
+      val trimmed = line.trim
+
+      if trimmed.startsWith("- ") then
+        // Array item
+        val item = trimmed.drop(2).trim.stripPrefix("\"").stripSuffix("\"")
+        currentArrayItems += item
+      else if trimmed.contains(":") then
+        // Finish previous key if it was an array
+        currentKey.foreach { key =>
+          val items = currentArrayItems.result()
+          if items.nonEmpty then
+            result += (key -> items.mkString("\n"))
+          currentArrayItems.clear()
+        }
+
+        // New key-value pair
+        val parts = trimmed.split(":", 2)
+        if parts.length == 2 then
+          val key = parts(0).trim
+          val rawValue = parts(1).trim
+          val value = rawValue.stripPrefix("\"").stripSuffix("\"")
+
+          // Check if this is an explicit empty string ("") or truly empty (array follows)
+          if rawValue.startsWith("\"") && rawValue.endsWith("\"") then
+            // Explicit string value (including empty string)
+            result += (key -> value)
+            currentKey = None
+          else if value.nonEmpty then
+            // Simple non-quoted value
+            result += (key -> value)
+            currentKey = None
+          else
+            // Array starting on next line
+            currentKey = Some(key)
+        end if
+      end if
+    }
+
+    // Finish last key if it was an array
+    currentKey.foreach { key =>
+      val items = currentArrayItems.result()
+      if items.nonEmpty then
+        result += (key -> items.mkString("\n"))
+    }
+
+    result.result()
 
   /**
    * Parse title slide content.

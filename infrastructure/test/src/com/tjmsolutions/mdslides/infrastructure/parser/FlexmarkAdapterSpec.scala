@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link}
+import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link, CodeBlock}
 import munit.FunSuite
 
 /**
@@ -12,6 +12,7 @@ import munit.FunSuite
  * - ADR-010: Markdown Library Selection
  * - ADR-007: Anticorruption Layer
  * - US-003: Full Markdown Rendering
+ * - US-004: Code Block Support
  */
 class FlexmarkAdapterSpec extends FunSuite:
 
@@ -129,5 +130,70 @@ class FlexmarkAdapterSpec extends FunSuite:
     // Should have both bold and italic text
     assert(result.textSpans.exists(span => span.bold))
     assert(result.textSpans.exists(span => span.italic))
+
+  test("parse fenced code block without language"):
+    val markdown = "```\ndef hello():\n    print('Hello')\n```"
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.codeBlocks.length, 1)
+    val codeBlock = result.codeBlocks.head
+    assertEquals(codeBlock.code, "def hello():\n    print('Hello')\n")
+    assertEquals(codeBlock.language, None)
+
+  test("parse fenced code block with language"):
+    val markdown = "```scala\ndef add(a: Int, b: Int): Int =\n  a + b\n```"
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.codeBlocks.length, 1)
+    val codeBlock = result.codeBlocks.head
+    assert(codeBlock.code.contains("def add"))
+    assertEquals(codeBlock.language, Some("scala"))
+
+  test("parse multiple code blocks"):
+    val markdown = """
+      |Some text
+      |```python
+      |print('hello')
+      |```
+      |More text
+      |```javascript
+      |console.log('world');
+      |```
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.codeBlocks.length, 2)
+    assertEquals(result.codeBlocks(0).language, Some("python"))
+    assertEquals(result.codeBlocks(1).language, Some("javascript"))
+
+  test("parse text with inline code and code block"):
+    val markdown = """
+      |Use `println` for output.
+      |
+      |Example:
+      |```scala
+      |println("Hello")
+      |```
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Should have inline code span
+    assert(result.textSpans.exists(span => span.text == "println" && span.code))
+    // Should have code block
+    assertEquals(result.codeBlocks.length, 1)
+    assert(result.codeBlocks.head.code.contains("println"))
+
+  test("code blocks don't appear in plain text"):
+    val markdown = """
+      |Some text
+      |```
+      |code here
+      |```
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Plain text should not contain code block content (per PDR-006)
+    assert(!result.plainText.contains("code here"))
+    assert(result.plainText.contains("Some text"))
 
 end FlexmarkAdapterSpec

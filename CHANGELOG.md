@@ -5,6 +5,77 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2024-12-27
+
+### Added
+
+#### US-019: Improved CLI UX ⚠️ BREAKING CHANGE
+- **Simple form**: `mdslides render DECK_NAME` infers input/output paths
+  - Reads `DECK_NAME.md` (or `.markdown`)
+  - Creates `DECK_NAME/` directory with `index.html`
+  - Copies assets to `DECK_NAME/images/` and `DECK_NAME/backgrounds/`
+- **Explicit form**: `mdslides render -i INPUT -o OUTPUT` for custom paths
+- **Directory output**: Self-contained presentation directories
+- **Relative paths**: All assets use relative URLs for portability
+- **Path resolution**: Smart input file discovery with helpful error messages
+
+#### US-004: Speaker Notes Parsing
+- **Notes field** in slide frontmatter: `notes: "Speaker talking points"`
+- **Multi-line support**: `notes: ["Point 1", "Point 2", "Point 3"]`
+- **Array joining**: Multi-line arrays joined with newlines
+- **Domain model**: Added `notes: Option[String]` field to Slide aggregate
+- **Parser integration**: Enhanced frontmatter parser for YAML-like arrays
+- **Note**: Notes are parsed but NOT rendered (rendering deferred to v1.1)
+
+### Changed
+
+#### Breaking Changes
+- **CLI syntax changed**: Old `mdslides slides.md output.html` → New `mdslides render my-preso`
+- **Output structure**: Single HTML file → Directory with index.html
+- **Asset organization**: Images now in `OUTPUT_DIR/images/` instead of parent directory
+- **Removed Decline library**: Custom argument parser for better UX
+
+#### Enhancements
+- Updated tutorial with v1.0 CLI examples
+- Added speaker notes examples to tutorial
+- Improved error messages with file suggestions
+- Portable presentations (entire directory can be moved/shared)
+
+### Technical
+
+#### New Components
+- `CLIArguments.scala` - Dual-mode argument parsing (10 tests)
+- `PathResolver.scala` - Input file discovery and output directory creation (9 tests)
+- `AssetPathResolver.scala` - Relative path generation (5 tests)
+
+#### Modified Components
+- `Main.scala` - Completely rewritten for directory output
+- `Slide.scala` - Added `notes` field
+- `MarkdownParser.scala` - Enhanced frontmatter parsing with array support
+
+#### Test Coverage
+- **Total**: 261 tests passing
+- **New**: 24 CLI tests, 10 speaker notes tests
+- **Coverage**: Domain (127), Infrastructure (110), CLI (24)
+
+### Documentation
+- Updated [INSTALL.md](INSTALL.md) with v1.0 usage
+- Updated [examples/mdslides-tutorial.md](examples/mdslides-tutorial.md)
+- Created governance documents:
+  - PDR-015: CLI UX Design
+  - Event Storming for US-019 and US-004
+  - Three Amigos session notes
+  - Example Mapping for both features
+
+## [0.4.0] - 2024-12-26
+
+### Added
+- Directory-based theme system (US-016)
+- Template-specific backgrounds (US-012)
+- Per-slide background images (US-011)
+- List support (unordered and ordered)
+- Retisio theme with 5 template backgrounds
+
 ## [0.1.0-MVP] - 2024-12-21
 
 ### Added
@@ -185,16 +256,97 @@ This is the initial release. No migration required.
 
 ---
 
+## [0.2.0] - 2025-12-22
+
+### Added
+
+#### Core Features
+- **Full Markdown Rendering** (US-003)
+  - Bold text: `**text**` or `__text__`
+  - Italic text: `*text*` or `_text_`
+  - Inline code: `` `text` ``
+  - Hyperlinks: `[text](url)`
+  - Flexmark-based markdown parser (ADR-010)
+
+- **Code Block Support** (US-004)
+  - Fenced code blocks: ````language`
+  - Language hints for syntax (not highlighted yet)
+  - Auto-scaling for long code blocks (>20 lines)
+  - Code blocks excluded from line/word counts (PDR-006)
+  - 39 tests for code block parsing and rendering
+
+- **Image Embedding** (US-005)
+  - Relative paths: `![alt](images/logo.svg)`
+  - Absolute URLs: `![alt](https://example.com/img.png)`
+  - Data URLs: `![alt](data:image/svg+xml;base64,...)`
+  - Mandatory alt text for accessibility (PDR-005)
+  - Visual density warnings (PDR-008): 3+ images = warning
+  - Images excluded from line/word counts
+  - 11 tests for image parsing and rendering
+  - Example directory structure in `examples/image-demo/`
+
+- **Theme System** (US-008, US-009)
+  - JSON-based custom themes
+  - Built-in themes: light, dark, corporate
+  - Retisio corporate theme with Varela Round font
+  - Theme schema with colors, fonts, spacing, syntax highlighting
+  - 8 tests for theme JSON parsing
+
+#### Infrastructure
+- **Flexmark Integration** (ADR-010)
+  - Anticorruption layer for Flexmark parser
+  - FlexmarkAdapter isolates domain from library
+  - AST-based parsing for precise control
+  - 58 total tests for Flexmark integration
+
+#### Examples
+- `examples/image-demo/` - Recommended directory structure for images
+- `examples/embedded-image-test.md` - Data URL example
+- `examples/images-demo.md` - Comprehensive image feature demo
+- `examples/images-demo-retisio.html` - Corporate theme example
+
+#### Documentation
+- **README.md** updated to v0.2.0
+  - "Working with Images" section with workflow guide
+  - Image path best practices
+  - Directory structure recommendations
+  - Test count updated to 171 tests
+- **Governance Documents**
+  - PDR-006: Code Block Rendering Limits
+  - PDR-007: Theme JSON Schema
+  - PDR-008: Image Policy
+  - ADR-010: Markdown Library Selection (Flexmark)
+  - US-006: Image Asset Copying (proposed for v0.3.0)
+- `examples/image-demo/README.md` - Complete workflow guide
+
+### Changed
+- Test count: 81 → 171 tests (90 new tests)
+- CLI now supports `--theme` flag for custom themes
+- HTMLRenderer now renders full markdown formatting
+- Validation pipeline now excludes code blocks and images from density checks
+
+### Technical Details
+- Added `FormattedContent` domain type with `TextSpan`, `Link`, `CodeBlock`, `ContentImage`
+- Added `Theme` aggregate with `ColorScheme`, `FontScheme`, `Spacing`, `SyntaxColors`
+- Added `FlexmarkAdapter` anticorruption layer
+- Added `ThemeJsonAdapter` for JSON theme parsing
+- Updated `HTMLRenderer` with code block and image rendering
+
+### Breaking Changes
+None. This release is fully backward compatible with v0.1.0.
+
+### Bug Fixes
+- Fixed JAR deployment: `mill cli.assembly` now requires manual copy to `mdslides.jar`
+  ```bash
+  cp out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar mdslides.jar
+  ```
+
 ## [Unreleased]
 
-### Planned for v0.2.0
-- US-003: Full markdown rendering (bold, italic, links, images)
-- US-004: Code block support with syntax highlighting
-- US-005: Image embedding
-- US-008: Theme system (JSON-based theme definitions)
-- US-009: Built-in themes (light, dark, corporate)
-
 ### Planned for v0.3.0
+- US-006: Image asset copying (auto-copy referenced images to output directory)
+- Code syntax highlighting with highlight.js or Prism
+- Google Fonts integration for custom themes
 - Speaker notes support
 - PDF export functionality
 - Live preview mode
