@@ -93,6 +93,17 @@ case class FormattedContent(
     else
       None
 
+  /**
+   * Calculate the maximum nesting depth across all lists (US-003.3).
+   *
+   * Returns the maximum nesting depth found in any unordered or ordered list.
+   * Returns 0 if no lists are present.
+   */
+  def maxNestingDepth: Int =
+    val unorderedDepths = unorderedLists.map(_.maxNestingDepth)
+    val orderedDepths = orderedLists.map(_.maxNestingDepth)
+    (unorderedDepths ++ orderedDepths).maxOption.getOrElse(0)
+
 object FormattedContent:
   /**
    * Empty formatted content (no text, no links, no code blocks, no images, no lists).
@@ -137,20 +148,45 @@ case class Link(
 )
 
 /**
- * List item containing formatted text spans.
+ * List item containing formatted text spans and optional nested lists.
  *
  * Represents a single item in an ordered or unordered list.
  * List items can contain inline formatting (bold, italic, code).
+ * List items can contain nested unordered and/or ordered lists (US-003.3).
  *
  * @param textSpans Formatted text content of the list item
+ * @param nestedUnorderedLists Nested unordered lists (default empty)
+ * @param nestedOrderedLists Nested ordered lists (default empty)
  */
 case class ListItem(
-  textSpans: List[TextSpan]
+  textSpans: List[TextSpan],
+  nestedUnorderedLists: List[UnorderedList] = List.empty,
+  nestedOrderedLists: List[OrderedList] = List.empty
 ):
   /**
-   * Extract plain text from list item.
+   * Extract plain text from list item (including nested lists).
    */
-  def plainText: String = textSpans.map(_.text).mkString
+  def plainText: String =
+    val spanText = textSpans.map(_.text).mkString
+    val nestedUnorderedText = nestedUnorderedLists.flatMap(_.items.map(_.plainText)).mkString(" ")
+    val nestedOrderedText = nestedOrderedLists.flatMap(_.items.map(_.plainText)).mkString(" ")
+
+    List(spanText, nestedUnorderedText, nestedOrderedText)
+      .filter(_.nonEmpty)
+      .mkString(" ")
+
+  /**
+   * Calculate the maximum nesting depth of this list item.
+   *
+   * Returns 1 for leaf items (no nested lists).
+   * Returns 1 + max(child depths) for items with nested lists.
+   */
+  def maxNestingDepth: Int =
+    val unorderedDepths = nestedUnorderedLists.map(_.maxNestingDepth)
+    val orderedDepths = nestedOrderedLists.map(_.maxNestingDepth)
+    val maxChildDepth = (unorderedDepths ++ orderedDepths).maxOption.getOrElse(0)
+
+    if maxChildDepth == 0 then 1 else 1 + maxChildDepth
 
 /**
  * Unordered list (bullet points).
@@ -159,11 +195,20 @@ case class ListItem(
  * - Item one
  * - Item two
  *
+ * Can be nested inside other lists (US-003.3).
+ *
  * @param items List items in order
  */
 case class UnorderedList(
   items: List[ListItem]
-)
+):
+  /**
+   * Calculate the maximum nesting depth of this list.
+   *
+   * Returns the maximum depth across all items.
+   */
+  def maxNestingDepth: Int =
+    items.map(_.maxNestingDepth).maxOption.getOrElse(1)
 
 /**
  * Ordered list (numbered items).
@@ -172,8 +217,17 @@ case class UnorderedList(
  * 1. First item
  * 2. Second item
  *
+ * Can be nested inside other lists (US-003.3).
+ *
  * @param items List items in order
  */
 case class OrderedList(
   items: List[ListItem]
-)
+):
+  /**
+   * Calculate the maximum nesting depth of this list.
+   *
+   * Returns the maximum depth across all items.
+   */
+  def maxNestingDepth: Int =
+    items.map(_.maxNestingDepth).maxOption.getOrElse(1)

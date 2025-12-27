@@ -164,3 +164,44 @@ class FormattedContentSpec extends FunSuite:
 
     assertEquals(item.textSpans.length, 4)
     assertEquals(item.plainText, "Normal bold and italic")
+
+  // Nested list support tests (US-003.3 - v1.2)
+
+  test("calculateNestingDepth - single level unordered list has depth 1"):
+    val listItems = List(
+      ListItem(List(TextSpan("Item 1", bold = false, italic = false, code = false))),
+      ListItem(List(TextSpan("Item 2", bold = false, italic = false, code = false)))
+    )
+    val list = UnorderedList(listItems)
+    val content = FormattedContent(List.empty, List.empty, List.empty, List.empty, List(list), List.empty)
+
+    assertEquals(content.maxNestingDepth, 1)
+
+  test("calculateNestingDepth - two level nested unordered list has depth 2"):
+    val nestedItem = ListItem(
+      List(TextSpan("Level 2 item", bold = false, italic = false, code = false)),
+      nestedUnorderedLists = List(UnorderedList(List(
+        ListItem(List(TextSpan("Level 2 nested", bold = false, italic = false, code = false)))
+      )))
+    )
+    val list = UnorderedList(List(nestedItem))
+    val content = FormattedContent(List.empty, List.empty, List.empty, List.empty, List(list), List.empty)
+
+    assertEquals(content.maxNestingDepth, 2)
+
+  test("calculateNestingDepth - three level nested list has depth 3"):
+    val level3Item = ListItem(
+      List(TextSpan("Level 3", bold = false, italic = false, code = false))
+    )
+    val level2Item = ListItem(
+      List(TextSpan("Level 2", bold = false, italic = false, code = false)),
+      nestedUnorderedLists = List(UnorderedList(List(level3Item)))
+    )
+    val level1Item = ListItem(
+      List(TextSpan("Level 1", bold = false, italic = false, code = false)),
+      nestedUnorderedLists = List(UnorderedList(List(level2Item)))
+    )
+    val list = UnorderedList(List(level1Item))
+    val content = FormattedContent(List.empty, List.empty, List.empty, List.empty, List(list), List.empty)
+
+    assertEquals(content.maxNestingDepth, 3)

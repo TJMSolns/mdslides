@@ -6,10 +6,13 @@
   },
   "templateBackgrounds": {
     "content": "backgrounds/retisio-content-page.png",
+    "title": "backgrounds/retisio-title-page.png"
+  },
+  "futureTemplates": {
+    "_comment": "These templates will be added in v2.0 (US-005-007)",
     "diagram": "backgrounds/retisio-diagram-page.png",
     "closing": "backgrounds/retisio-end-page.png",
-    "section-title": "backgrounds/retisio-section-title-page.png",
-    "title": "backgrounds/retisio-title-page.png"
+    "section-title": "backgrounds/retisio-section-title-page.png"
   },
   "colors": {
     "text": "#002C74",

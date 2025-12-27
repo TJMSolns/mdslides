@@ -630,11 +630,24 @@ To promote a backlog item to a sprint:
 
 **Prioritized Features (MoSCoW):**
 
-### Should Have
+### Must Have
 - **US-003.3**: Nested List Support
   - Recursive list parsing in FlexmarkAdapter
   - Multi-level bullet styling (3 levels max)
   - Mixed nesting (ordered within unordered)
+  - **Status:** Event Storming, Three Amigos, Example Mapping complete
+- **BUG FIX**: Retisio Theme Template References
+  - Remove references to non-existent templates (diagram, closing, section-title)
+  - OR add these templates to domain/renderer (deferred to v2.0)
+  - **Action:** Update theme.json to only include title/content templates
+- **US-XXX**: Comprehensive Tutorial
+  - Demonstrate all current features
+  - Include CLI usage examples
+  - Show all working template types
+  - Verify all examples render correctly
+  - **Purpose:** Marketing/documentation completeness
+
+### Should Have
 - **Syntax Highlighting**: Code block colors
   - Integration with highlight.js or prism.js
   - Theme-based syntax colors
@@ -653,7 +666,7 @@ To promote a backlog item to a sprint:
 
 ### Won't Have (Deferred to v2.0+)
 - **US-022**: Mermaid Diagram Support → v2.0
-- **US-005-007**: Additional Templates → v2.0
+- **US-005-007**: Additional Templates (diagram, closing, section-title) → v2.0
 - **Configuration Management** → v2.0
 
 ---
