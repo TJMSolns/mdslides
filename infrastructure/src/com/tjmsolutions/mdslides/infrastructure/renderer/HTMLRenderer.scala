@@ -23,6 +23,24 @@ import scalatags.Text.all.*
 object HTMLRenderer:
 
   /**
+   * Map MDSlides theme to highlight.js theme name.
+   *
+   * Theme mapping (v1.3):
+   * - light → github (clean, familiar)
+   * - dark → monokai-sublime (high contrast)
+   * - corporate → github (light background)
+   * - retisio → github (light background)
+   * - unknown → github (default fallback)
+   *
+   * @param theme MDSlides theme
+   * @return highlight.js theme name
+   */
+  private def highlightJsTheme(theme: Theme): String =
+    theme.name match
+      case "dark" => "monokai-sublime"
+      case _ => "github"  // light, corporate, retisio, or unknown
+
+  /**
    * Render a complete SlideDeck to standalone HTML with theme.
    *
    * @param deck The slide deck to render
@@ -34,19 +52,27 @@ object HTMLRenderer:
       renderSlide(slide, index, deck.slideCount, theme)
     }
 
+    val hljsTheme = highlightJsTheme(theme)
+    val hljsCssUrl = s"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/$hljsTheme.min.css"
+
     val document = html(
       head(
         meta(charset := "UTF-8"),
         meta(name := "viewport", content := "width=device-width, initial-scale=1.0"),
         tag("title")("MDSlides Presentation"),
-        tag("style")(raw(generateCSS(theme)))
+        tag("style")(raw(generateCSS(theme))),
+        // Syntax highlighting (v1.3)
+        link(rel := "stylesheet", href := hljsCssUrl),
+        tag("script")(src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js")
       ),
       body(
         div(cls := "slides")(slideHtml),
         div(cls := "controls")(
           span(cls := "slide-counter", id := "slide-counter")("1 / " + deck.slideCount)
         ),
-        tag("script")(raw(navigationJS(deck.slideCount)))
+        tag("script")(raw(navigationJS(deck.slideCount))),
+        // Initialize syntax highlighting (v1.3)
+        tag("script")(raw("document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });"))
       )
     )
 

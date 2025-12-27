@@ -8,8 +8,8 @@
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #ffffff;
-      color: #333333;
+      background-color: #1e1e1e;
+      color: #d4d4d4;
       overflow: hidden;
     }
 
@@ -23,7 +23,7 @@
       width: 100%;
       height: 100%;
       padding: 2rem;
-      background-color: #ffffff;
+      background-color: #1e1e1e;
       justify-content: center;
       align-items: center;
       flex-direction: column;
@@ -52,7 +52,7 @@
     .slide-title {
       font-size: 48px;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #2c3e50;
+      color: #4ec9b0;
       margin: 1rem 0;
       line-height: 1.6;
     }
@@ -60,14 +60,14 @@
     .slide-subtitle {
       font-size: 36px;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #2c3e50;
+      color: #4ec9b0;
       margin-bottom: 20px;
       font-weight: normal;
     }
 
     .slide-author {
       font-size: 24px;
-      color: #333333;
+      color: #d4d4d4;
       margin-top: 20px;
     }
 
@@ -79,13 +79,13 @@
     .slide-heading {
       font-size: 36px;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #2c3e50;
+      color: #4ec9b0;
       margin: 1rem 0;
     }
 
     .slide-body {
       font-size: 24px;
-      color: #333333;
+      color: #d4d4d4;
       line-height: 1.6;
     }
 
@@ -103,8 +103,8 @@
     }
 
     code {
-      background-color: #f4f4f4;
-      color: #333333;
+      background-color: #2d2d2d;
+      color: #d4d4d4;
       border: 1px solid #ddd;
       border-radius: 3px;
       padding: 2px 6px;
@@ -114,7 +114,7 @@
 
     /* Code blocks (US-004) */
     pre {
-      background-color: #f4f4f4;
+      background-color: #2d2d2d;
       border: 1px solid #ddd;
       border-radius: 5px;
       padding: 15px;
@@ -128,7 +128,7 @@
       border: none;
       padding: 0;
       font-family: Consolas, 'Courier New', monospace;
-      color: #333333;
+      color: #d4d4d4;
       font-size: inherit;
     }
 
@@ -150,12 +150,12 @@
     }
 
     a {
-      color: #3498db;
+      color: #4ec9b0;
       text-decoration: none;
     }
 
     a:hover {
-      color: #2980b9;
+      color: #3aa89a;
       text-decoration: underline;
     }
 
@@ -210,8 +210,8 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background-color: rgba(255, 255, 255, 0.9);
-      color: #666666;
+      background-color: rgba(30, 30, 30, 0.9);
+      color: #cccccc;
       padding: 10px 20px;
       border-radius: 5px;
       font-size: 0.9rem;
@@ -222,7 +222,7 @@
       font-size: 24px;
       padding: 40px;
     }
-    </style></head><body><div class="slides"><div class="slide active" data-slide-index="0"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title"><p>MDSlides Tutorial</p></h1><h2 class="slide-subtitle"><p>Master Markdown-to-Presentation Conversion</p></h2></div><div class="title-slide-footer"><p class="slide-author"><p><strong>Your Name</strong></p></p></div></div></div><div class="slide" data-slide-index="1"><div class="content-slide"><h2 class="slide-heading"><p>What is MDSlides?</p></h2><div class="slide-body"><p>MDSlides converts Markdown files into beautiful HTML presentations.</p><p><strong>Key Features:</strong></p><ul><li>Write slides in plain Markdown</li><li>Multiple built-in themes</li><li>Automatic formatting</li><li>Template-based layouts</li></ul></div></div></div><div class="slide" data-slide-index="2"><div class="content-slide"><h2 class="slide-heading"><p>Installation</p></h2><div class="slide-body"><p>Install MDSlides using your package manager.</p><p><strong>Requirements:</strong> Java 11 or higher</p><pre><code class="language-bash"># Download the latest release
+    </style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai-sublime.min.css" /><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script></head><body><div class="slides"><div class="slide active" data-slide-index="0"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title"><p>MDSlides Tutorial</p></h1><h2 class="slide-subtitle"><p>Master Markdown-to-Presentation Conversion</p></h2></div><div class="title-slide-footer"><p class="slide-author"><p><strong>Your Name</strong></p></p></div></div></div><div class="slide" data-slide-index="1"><div class="content-slide"><h2 class="slide-heading"><p>What is MDSlides?</p></h2><div class="slide-body"><p>MDSlides converts Markdown files into beautiful HTML presentations.</p><p><strong>Key Features:</strong></p><ul><li>Write slides in plain Markdown</li><li>Multiple built-in themes</li><li>Automatic formatting</li><li>Template-based layouts</li></ul></div></div></div><div class="slide" data-slide-index="2"><div class="content-slide"><h2 class="slide-heading"><p>Installation</p></h2><div class="slide-body"><p>Install MDSlides using your package manager.</p><p><strong>Requirements:</strong> Java 11 or higher</p><pre><code class="language-bash"># Download the latest release
 wget mdslides.jar
 
 # Run MDSlides
@@ -337,4 +337,4 @@ mdslides --help
 
     // Run auto-scaling on page load
     window.addEventListener('DOMContentLoaded', scaleCodeBlocks);
-  </script></body></html>
+  </script><script>document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });</script></body></html>

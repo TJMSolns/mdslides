@@ -658,11 +658,39 @@ To promote a backlog item to a sprint:
 - Three Amigos: `three-amigos-US-003.3.md`
 - Example Mapping: `example-mapping-US-003.3.md`
 
-### Should Have
-- **Syntax Highlighting**: Code block colors
-  - Integration with highlight.js or prism.js
-  - Theme-based syntax colors
-  - Language auto-detection
+---
+
+## v1.3 Sprint ✅ COMPLETED (2025-12-27)
+
+**Goal:** Syntax highlighting for code blocks
+**Status:** ✅ RELEASED as v1.3.0
+**Release Date:** 2025-12-27
+
+**Implemented Features:**
+
+### ✅ SHOULD HAVE - Completed
+- **US-019**: Syntax Highlighting for Code Blocks
+  - CDN-based highlight.js v11.9.0 integration
+  - 190+ languages supported (Scala, Java, Python, JavaScript, TypeScript, SQL, Bash, JSON, YAML, XML, etc.)
+  - Theme-aware highlighting:
+    - Light themes (light, corporate, retisio) → GitHub theme
+    - Dark theme → Monokai Sublime theme
+  - Automatic highlighting on page load via `hljs.highlightAll()`
+  - Graceful degradation if CDN unavailable
+  - Preserves existing auto-scaling for long code blocks (PDR-006)
+  - **Implementation:**
+    - HTMLRenderer: Added CSS link, script tag, initialization script (8 tests)
+    - Theme mapping helper function: `highlightJsTheme(theme: Theme): String`
+    - No domain changes (CodeBlock already supported language hints)
+    - Infrastructure-only changes (CDN inclusion, theme mapping)
+
+**Test Coverage:** 322 tests passing (158 domain, 164 infrastructure)
+
+**Related Documentation:**
+- [CHANGELOG.md](../../../CHANGELOG.md) - v1.3.0 release notes
+- Event Storming: `event-storming-syntax-highlighting.md`
+- Three Amigos: `three-amigos-syntax-highlighting.md`
+- Example Mapping: `example-mapping-syntax-highlighting.md`
 
 ### Could Have
 - **US-014**: Accessibility Validation
@@ -683,5 +711,5 @@ To promote a backlog item to a sprint:
 ---
 
 **End of Backlog**
-**Last Updated:** 2024-12-27 (Post v1.2.0 Release)
+**Last Updated:** 2025-12-27 (Post v1.3.0 Release)
 **Maintainer:** Tony Moores, TJM Solutions

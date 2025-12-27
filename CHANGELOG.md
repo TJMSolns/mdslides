@@ -5,6 +5,56 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-12-27
+
+### Added
+
+#### US-019: Syntax Highlighting for Code Blocks
+- **Automatic code highlighting**: Code blocks with language hints now display syntax highlighting via highlight.js v11.9.0
+- **190+ languages supported**: Including Scala, Java, Python, JavaScript, TypeScript, SQL, Bash, JSON, YAML, XML, and more
+- **Theme-aware highlighting**:
+  - Light themes (light, corporate, retisio) → GitHub theme (clean, familiar syntax colors)
+  - Dark theme → Monokai Sublime theme (high contrast for dark backgrounds)
+- **CDN-based**: Uses cdnjs.cloudflare.com for highlight.js library and CSS (no local dependencies)
+- **Graceful degradation**: Code blocks remain readable even if CDN unavailable
+- **Preserves auto-scaling**: Code blocks >20 lines still auto-scale font size (PDR-006)
+
+### Changed
+
+#### Enhancements
+- Code blocks now render with syntax colors appropriate to their language
+- Theme system automatically maps MDSlides themes to appropriate highlight.js themes
+- README updated with syntax highlighting feature (322 tests)
+
+### Technical
+
+#### Modified Components
+- `HTMLRenderer.scala`: Added highlight.js CDN integration
+  - Added CSS link for theme-specific highlight.js stylesheet
+  - Added JavaScript library from CDN
+  - Added `hljs.highlightAll()` initialization on DOMContentLoaded
+  - Added `highlightJsTheme()` helper for theme mapping
+- Existing `renderCodeBlock()` already added language classes - no changes needed
+
+#### Test Coverage
+- Added 8 automated tests for syntax highlighting infrastructure
+- Total test count: 322 tests (all passing)
+  - 158 domain tests
+  - 164 infrastructure tests
+
+#### Implementation Approach
+- Followed Event Storming → Three Amigos → Example Mapping → TDD cycle
+- No domain changes required (CodeBlock already supported language hints)
+- Infrastructure-only changes (CDN inclusion, theme mapping)
+- Manual verification with light and dark themes
+
+### Related Documentation
+- Event Storming: `doc/internal/planning/event-storming-syntax-highlighting.md`
+- Three Amigos: `doc/internal/planning/three-amigos-syntax-highlighting.md`
+- Example Mapping: `doc/internal/planning/example-mapping-syntax-highlighting.md`
+
+---
+
 ## [1.2.0] - 2024-12-27
 
 ### Added

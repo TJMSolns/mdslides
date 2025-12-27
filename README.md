@@ -2,19 +2,20 @@
 
 **A domain-driven, test-first presentation framework for converting Markdown to HTML slides.**
 
-[![Tests](https://img.shields.io/badge/tests-171%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-322%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-domain%20%2B%20infrastructure-blue)]()
 [![Version](https://img.shields.io/badge/version-0.2.0-orange)]()
 
 ## Overview
 
-MDSlides is a command-line tool that converts structured Markdown files into standalone HTML presentations with keyboard navigation. Built using Domain-Driven Design principles with comprehensive test coverage (171 tests including property-based testing).
+MDSlides is a command-line tool that converts structured Markdown files into standalone HTML presentations with keyboard navigation. Built using Domain-Driven Design principles with comprehensive test coverage (322 tests including property-based testing).
 
 ### Key Features
 
 - ✅ **Two Slide Templates**: Title slides and content slides
 - ✅ **Full Markdown Rendering**: Bold, italic, inline code, links (US-003)
 - ✅ **Code Blocks**: Fenced code blocks with language hints (US-004)
+- ✅ **Syntax Highlighting**: Automatic code highlighting with highlight.js (190+ languages) (US-019)
 - ✅ **Image Embedding**: Support for local images, external URLs, and data URLs (US-005)
 - ✅ **Theme System**: Built-in themes (light, dark, corporate) and custom JSON themes (US-008, US-009)
 - ✅ **Validation**: Enforces slide density constraints (max lines, words, characters)
@@ -22,7 +23,7 @@ MDSlides is a command-line tool that converts structured Markdown files into sta
 - ✅ **Keyboard Navigation**: Arrow keys, Space, Home, End
 - ✅ **Responsive Design**: Works on all screen sizes
 - ✅ **Type-Safe**: Pure functional domain model with comprehensive validation
-- ✅ **Well-Tested**: 171 tests (property-based + example-based)
+- ✅ **Well-Tested**: 322 tests (property-based + example-based)
 
 ## Quick Start
 

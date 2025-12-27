@@ -743,4 +743,130 @@ class HTMLRendererSpec extends munit.FunSuite:
     assert(html.contains("List 2 parent"))
     assert(html.contains("List 2 child"))
 
+  // ========================================
+  // Syntax Highlighting Tests (v1.3)
+  // ========================================
+
+  test("render deck includes highlight.js script CDN"):
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck)
+
+    // Should include highlight.js script from CDN
+    assert(html.contains("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js\">"))
+
+  test("render deck with light theme includes github highlight.js CSS"):
+    import com.tjmsolutions.mdslides.domain.Theme
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, Theme.light)
+
+    // Should include github theme CSS for light theme
+    assert(html.contains("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css\" />"))
+
+  test("render deck with dark theme includes monokai-sublime highlight.js CSS"):
+    import com.tjmsolutions.mdslides.domain.Theme
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, Theme.dark)
+
+    // Should include monokai-sublime theme CSS for dark theme
+    assert(html.contains("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai-sublime.min.css\" />"))
+
+  test("render deck includes hljs.highlightAll() initialization script"):
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck)
+
+    // Should include DOMContentLoaded event listener with hljs.highlightAll()
+    assert(html.contains("document.addEventListener('DOMContentLoaded'"))
+    assert(html.contains("hljs.highlightAll()"))
+
+  test("render deck with corporate theme includes github highlight.js CSS"):
+    import com.tjmsolutions.mdslides.domain.Theme
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck, Theme.corporate)
+
+    // Corporate theme should map to github (light theme)
+    assert(html.contains("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css\" />"))
+
+  test("render code block with language hint includes language class"):
+    import com.tjmsolutions.mdslides.domain.{CodeBlock, FormattedContent}
+    val codeBlock = CodeBlock("val x = 42", Some("scala"))
+    val content = FormattedContent(
+      textSpans = List.empty,
+      links = List.empty,
+      codeBlocks = List(codeBlock),
+      contentImages = List.empty,
+      unorderedLists = List.empty,
+      orderedLists = List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should render with class="language-scala" for highlight.js
+    assert(html.contains("<code class=\"language-scala\">"))
+    assert(html.contains("val x = 42"))
+
+  test("render code block without language hint has no language class"):
+    import com.tjmsolutions.mdslides.domain.{CodeBlock, FormattedContent}
+    val codeBlock = CodeBlock("plain text code", None)
+    val content = FormattedContent(
+      textSpans = List.empty,
+      links = List.empty,
+      codeBlocks = List(codeBlock),
+      contentImages = List.empty,
+      unorderedLists = List.empty,
+      orderedLists = List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should render without language class (no highlighting)
+    assert(html.contains("<pre><code>plain text code</code></pre>"))
+    assert(!html.contains("class=\"language-"))
+
+  test("render empty code block with language hint"):
+    import com.tjmsolutions.mdslides.domain.{CodeBlock, FormattedContent}
+    val codeBlock = CodeBlock("", Some("python"))
+    val content = FormattedContent(
+      textSpans = List.empty,
+      links = List.empty,
+      codeBlocks = List(codeBlock),
+      contentImages = List.empty,
+      unorderedLists = List.empty,
+      orderedLists = List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should render empty block with language class
+    assert(html.contains("<code class=\"language-python\">"))
+
 end HTMLRendererSpec
