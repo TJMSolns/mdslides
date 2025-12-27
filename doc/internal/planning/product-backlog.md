@@ -683,5 +683,5 @@ To promote a backlog item to a sprint:
 ---
 
 **End of Backlog**
-**Last Updated:** 2024-12-27 (Post v1.1.0 Release)
+**Last Updated:** 2024-12-27 (Post v1.2.0 Release)
 **Maintainer:** Tony Moores, TJM Solutions
