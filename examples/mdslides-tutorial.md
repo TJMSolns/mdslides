@@ -232,23 +232,20 @@ Images are embedded using standard markdown:
 
 ---
 template: content
-notes: "Introduce speaker notes feature - parsing only in v1.0"
+notes: "Demonstrate speaker view - press 'S' to open it during presentation"
 ---
 
-## Speaker Notes
+## Speaker Notes & Speaker View
 
-Add presenter notes to any slide using frontmatter:
+**Add notes to slides:**
+- Simple: `notes: "Remember to emphasize this"`
+- Multi-line: `notes: ["Point 1", "Point 2", "Point 3"]`
 
-**Simple string notes:**
-- `notes: "Remember to pause after the key point"`
-
-**Multi-line array notes:**
-- Join bullet points with newlines
-- Example: `notes: ["Point 1", "Point 2", "Point 3"]`
-
-**In frontmatter:** Add between the `---` delimiters before slide content
-
-**Note:** Speaker view rendering coming in v1.1!
+**Speaker View (v1.1 - NEW!):**
+- Press **'S'** during presentation to open speaker view
+- See current slide notes, next slide preview, and timer
+- Navigate from either window - both stay in sync
+- Files: `index.html` (main) + `speaker.html` (speaker)
 
 ---
 template: content

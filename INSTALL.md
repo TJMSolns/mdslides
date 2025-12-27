@@ -277,7 +277,37 @@ Simply delete:
 - Explore the [Product Backlog](doc/internal/planning/product-backlog.md) for upcoming features
 - Check [doc/governance/](doc/governance/) for design decisions
 
-## What's New in v1.0
+## What's New
+
+### v1.1.0 (Latest)
+
+**US-034: Speaker Notes Rendering / Speaker View** 🆕
+- Press **'S'** during presentation to open speaker view in a new window
+- See your speaker notes, next slide preview, and elapsed time
+- Navigate from either window - both stay perfectly synchronized
+- Speaker view includes:
+  - Current slide notes (or "No notes for this slide")
+  - Next slide preview (heading/title)
+  - Elapsed time timer (MM:SS format, auto-starts on first navigation)
+- Output files:
+  - `my-preso/index.html` - Main presentation (for audience)
+  - `my-preso/speaker.html` - Speaker view (for presenter)
+  - `my-preso/sync.js` - Synchronization module
+- **Tip**: Open `speaker.html` on your laptop, `index.html` on the projector
+
+**Example workflow:**
+```bash
+# Generate presentation
+mdslides render my-talk --theme retisio
+
+# Open index.html in browser for audience (projector)
+open my-talk/index.html
+
+# Press 'S' to open speaker view on your laptop
+# Or manually open my-talk/speaker.html
+```
+
+### v1.0.0
 
 **US-019: Improved CLI UX** ⚠️ BREAKING CHANGE
 - Simple form: `mdslides render my-preso` (infers input/output)
@@ -287,7 +317,6 @@ Simply delete:
 **US-004: Speaker Notes Parsing**
 - Add notes to slides: `notes: "Remember to mention..."`
 - Multi-line support: `notes: ["Point 1", "Point 2"]`
-- Parsed but not rendered (rendering in v1.1)
 
 ## Getting Help
 
@@ -297,4 +326,4 @@ Simply delete:
 
 ---
 
-**MDSlides v1.0.0** - Installation Complete!
+**MDSlides v1.1.0** - Installation Complete!

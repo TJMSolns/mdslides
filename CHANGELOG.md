@@ -5,6 +5,60 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-12-27
+
+### Added
+
+#### US-034: Speaker Notes Rendering / Speaker View
+- **Speaker View window**: Press 'S' during presentation to open dedicated speaker view
+- **Dual-pane layout**: Current slide notes + next slide preview + elapsed timer
+- **Bidirectional sync**: Navigate from either window, both stay synchronized via localStorage
+- **Timer**: Auto-starts on first navigation, displays MM:SS format
+- **Graceful degradation**: Either window works independently if the other closes
+- **Keyboard shortcuts**: All navigation keys work in speaker view (←/→/Space/Home/End/Esc)
+- **Output files**:
+  - `speaker.html` - Speaker view interface with embedded slide data as JSON
+  - `sync.js` - Cross-window synchronization module
+- **Notes display**:
+  - Shows "No notes for this slide" when notes are missing
+  - Preserves newlines in multi-line notes
+  - HTML-escaped for security (prevents XSS)
+- **Preview**: Shows heading/title of next slide, or "End of presentation" on last slide
+
+### Changed
+
+#### Enhancements
+- Updated tutorial with speaker view documentation
+- CLI now outputs 3 files: `index.html`, `speaker.html`, `sync.js`
+- Enhanced success message shows both main presentation and speaker view paths
+
+### Technical
+
+#### New Components
+- `PresentationState.scala` - Domain model for presentation runtime state (17 tests)
+  - Current slide tracking, timer management, navigation helpers
+- `SpeakerViewRenderer.scala` - Speaker view HTML generation (14 tests)
+  - Embedded JSON slide data, HTML escaping, responsive layout
+- `sync.js` - JavaScript synchronization module (manual testing)
+  - localStorage-based events, fallback to postMessage, heartbeat detection
+
+#### Test Coverage
+- Added 31 automated tests (17 domain + 14 infrastructure)
+- Total test count: 292 tests (all passing)
+
+#### Implementation Approach
+- Followed Event Storming → Three Amigos → Example Mapping → TDD cycle
+- Pure functional domain model (no I/O in PresentationState)
+- Circe JSON encoding for automatic HTML escaping
+- Resource loading for sync.js via `scala.io.Source.fromResource`
+
+### Related Documentation
+- Event Storming: `doc/internal/planning/event-storming-US-034.md`
+- Three Amigos: `doc/internal/planning/three-amigos-US-034.md`
+- Example Mapping: `doc/internal/planning/example-mapping-US-034.md`
+
+---
+
 ## [1.0.0] - 2024-12-27
 
 ### Added

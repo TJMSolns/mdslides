@@ -296,26 +296,34 @@
 
 ---
 
-## v1.0 MVP Sprint (NEXT - Planning Required)
+## v1.0 MVP Sprint ✅ COMPLETED (2024-12-27)
 
-**Goal:** Complete minimum viable product with speaker notes support
-**Status:** 🟡 Awaiting prioritization and planning
-**Critical Gap Identified:** US-004 Speaker Notes (parsing only)
+**Goal:** Complete minimum viable product with speaker notes support and improved CLI
+**Status:** ✅ RELEASED as v1.0.0
+**Tag:** v1.0.0
+**Commit:** 97998c3
+
+**Implemented Features:**
+- US-019: Improved CLI UX (Breaking Change)
+- US-004: Speaker Notes Parsing
+
+**Test Coverage:** 261 tests passing (127 domain, 110 infrastructure, 24 CLI)
 
 **Related Documentation:**
-- [IMPLEMENTATION-STATUS.md](../../../IMPLEMENTATION-STATUS.md) - Comprehensive feature status
-- Original backlog: [archive/BACKLOG-v3.md](archive/BACKLOG-v3.md)
+- [CHANGELOG.md](../../../CHANGELOG.md) - v1.0.0 release notes
+- [INSTALL.md](../../../INSTALL.md) - Installation and usage guide
+- [examples/mdslides-tutorial.md](../../../examples/mdslides-tutorial.md) - Updated tutorial
 
 ---
 
-### High Priority Features (v1.0 MVP)
+### v1.0 Implemented Features
 
-#### US-019: Improved CLI UX [MUST] ⚠️ BREAKING CHANGE
+#### US-019: Improved CLI UX [MUST] ⚠️ BREAKING CHANGE ✅ COMPLETED
 **As a** presentation author
 **I want** a simpler CLI that infers output from input name
 **So that** I don't have to specify redundant paths and avoid directory pollution
 
-**Status:** ❌ NOT IMPLEMENTED (v1.0 requirement - pre-release breaking change)
+**Status:** ✅ IMPLEMENTED (v1.0.0)
 **Priority:** MUST (breaking change acceptable pre-v1.0, hard to change after)
 
 **Acceptance Criteria:**
@@ -581,6 +589,75 @@ To promote a backlog item to a sprint:
 
 ---
 
+## v1.1 Sprint ✅ COMPLETED (2024-12-27)
+
+**Goal:** Speaker notes rendering and enhanced markdown support
+**Status:** ✅ RELEASED as v1.1.0
+**Release Date:** 2024-12-27
+
+**Implemented Features:**
+
+### ✅ MUST HAVE - Completed
+- **US-034**: Speaker Notes Rendering / Speaker View
+  - Dual-pane layout (notes + preview + timer)
+  - Bidirectional keyboard synchronization via localStorage
+  - Presenter timer with MM:SS format (auto-start on first navigation)
+  - Progress indicators (slide counter)
+  - Output files: `speaker.html` + `sync.js`
+  - **Implementation:**
+    - PresentationState domain model (17 tests)
+    - SpeakerViewRenderer (14 tests)
+    - sync.js module (manual testing)
+  - **Depends on:** US-004 (completed in v1.0) ✅
+
+**Test Coverage:** 292 tests passing (144 domain, 124 infrastructure, 24 CLI)
+
+**Related Documentation:**
+- [CHANGELOG.md](../../../CHANGELOG.md) - v1.1.0 release notes
+- [INSTALL.md](../../../INSTALL.md) - Updated with speaker view guide
+- [examples/mdslides-tutorial.md](../../../examples/mdslides-tutorial.md) - Updated tutorial
+- Event Storming: `event-storming-US-034.md`
+- Three Amigos: `three-amigos-US-034.md`
+- Example Mapping: `example-mapping-US-034.md`
+
+---
+
+## v1.2 Sprint (NEXT - Planning Phase)
+
+**Goal:** Enhanced markdown support and accessibility
+**Status:** 🟡 Planning
+**Target Date:** TBD
+
+**Prioritized Features (MoSCoW):**
+
+### Should Have
+- **US-003.3**: Nested List Support
+  - Recursive list parsing in FlexmarkAdapter
+  - Multi-level bullet styling (3 levels max)
+  - Mixed nesting (ordered within unordered)
+- **Syntax Highlighting**: Code block colors
+  - Integration with highlight.js or prism.js
+  - Theme-based syntax colors
+  - Language auto-detection
+
+### Could Have
+- **US-014**: Accessibility Validation
+  - WCAG 2.1 AA compliance checking
+  - Contrast ratio validation
+  - Alt text validation for images
+  - Warning-based (non-blocking)
+- **Google Fonts Support** (US-020)
+  - Load web fonts from Google Fonts API
+  - Fallback to system fonts
+  - Theme configuration for font families
+
+### Won't Have (Deferred to v2.0+)
+- **US-022**: Mermaid Diagram Support → v2.0
+- **US-005-007**: Additional Templates → v2.0
+- **Configuration Management** → v2.0
+
+---
+
 **End of Backlog**
-**Last Updated:** 2024-12-26 (Post v0.4.0 List Rendering Fix)
+**Last Updated:** 2024-12-27 (Post v1.1.0 Release)
 **Maintainer:** Tony Moores, TJM Solutions

@@ -5,6 +5,7 @@ import cats.implicits.*
 import com.tjmsolutions.mdslides.domain.{SlideDeck, Theme}
 import com.tjmsolutions.mdslides.infrastructure.parser.{MarkdownParser, FlexmarkAdapter}
 import com.tjmsolutions.mdslides.infrastructure.renderer.HTMLRenderer
+import com.tjmsolutions.mdslides.infrastructure.rendering.SpeakerViewRenderer
 import com.tjmsolutions.mdslides.infrastructure.theme.{ThemeJsonAdapter, ThemeLoader}
 import com.tjmsolutions.mdslides.infrastructure.assets.{ImageAssetCopier, CopiedImage}
 
@@ -193,7 +194,20 @@ object Main extends IOApp:
       _ <- IO.println(s"Writing HTML to: $indexPath")
       _ <- IO.blocking(Files.writeString(indexPath, html, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
 
+      // Render and write speaker.html (US-034)
+      _ <- IO.println("Generating speaker view...")
+      speakerHtml = SpeakerViewRenderer.render(validatedDeck, cliArgs.themeName)
+      speakerPath = outputDir.resolve("speaker.html")
+      _ <- IO.blocking(Files.writeString(speakerPath, speakerHtml, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+
+      // Write sync.js (US-034)
+      syncJsContent = scala.io.Source.fromResource("sync.js").mkString
+      syncJsPath = outputDir.resolve("sync.js")
+      _ <- IO.blocking(Files.writeString(syncJsPath, syncJsContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+
       _ <- IO.println(s"✓ Successfully created presentation: $outputDir/")
+      _ <- IO.println(s"  - Main presentation: $outputDir/index.html")
+      _ <- IO.println(s"  - Speaker view: $outputDir/speaker.html (press 'S' to open)")
     } yield ExitCode.Success
 
   /**
