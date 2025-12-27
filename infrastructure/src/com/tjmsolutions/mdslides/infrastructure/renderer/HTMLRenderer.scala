@@ -53,6 +53,19 @@ object HTMLRenderer:
     "<!DOCTYPE html>\n" + document.render
 
   /**
+   * Render FormattedContent to HTML (for testing).
+   *
+   * Public method to test formatted content rendering in isolation.
+   * Used by HTMLRendererSpec tests.
+   *
+   * @param content The formatted content to render
+   * @return HTML string
+   */
+  def renderFormattedContent(content: FormattedContent): String =
+    val frag = renderFormattedContentWithParagraphs(content)
+    frag.render
+
+  /**
    * Resolve background image using fallback chain (US-011, PDR-011).
    *
    * Priority:
@@ -507,7 +520,14 @@ object HTMLRenderer:
   private def renderUnorderedList(list: com.tjmsolutions.mdslides.domain.UnorderedList, linkMap: Map[String, String]): Frag =
     ul(
       list.items.map { item =>
-        li(item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)))
+        li(
+          // Render text spans first
+          item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)),
+          // Then render nested unordered lists (US-003.3)
+          item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap)),
+          // Then render nested ordered lists (US-003.3)
+          item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
+        )
       }
     )
 
@@ -521,7 +541,14 @@ object HTMLRenderer:
   private def renderOrderedList(list: com.tjmsolutions.mdslides.domain.OrderedList, linkMap: Map[String, String]): Frag =
     ol(
       list.items.map { item =>
-        li(item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)))
+        li(
+          // Render text spans first
+          item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)),
+          // Then render nested unordered lists (US-003.3)
+          item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap)),
+          // Then render nested ordered lists (US-003.3)
+          item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
+        )
       }
     )
 

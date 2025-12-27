@@ -480,4 +480,267 @@ class HTMLRendererSpec extends munit.FunSuite:
     assert(html.contains("backgrounds/theme-default.png"))
   }
 
+  // Nested list rendering tests (US-003.3 - v1.2 TDD Phase 3)
+
+  test("render 2-level nested unordered list"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val nestedList = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Level 1 item A", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("Level 2 item A.1", false, false, false))),
+          ListItem(List(TextSpan("Level 2 item A.2", false, false, false)))
+        )))
+      ),
+      ListItem(List(TextSpan("Level 1 item B", false, false, false)))
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(nestedList), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should have nested <ul> structure
+    assert(html.contains("<ul>"))
+    assert(html.contains("<li>Level 1 item A"))
+    assert(html.contains("<ul>"))  // Nested ul
+    assert(html.contains("<li>Level 2 item A.1</li>"))
+    assert(html.contains("<li>Level 2 item A.2</li>"))
+    assert(html.contains("</ul>"))
+    assert(html.contains("</li>"))
+    assert(html.contains("<li>Level 1 item B</li>"))
+
+  test("render 2-level nested ordered list"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val nestedList = OrderedList(List(
+      ListItem(
+        List(TextSpan("First main point", false, false, false)),
+        nestedOrderedLists = List(OrderedList(List(
+          ListItem(List(TextSpan("First sub-point", false, false, false))),
+          ListItem(List(TextSpan("Second sub-point", false, false, false)))
+        )))
+      ),
+      ListItem(List(TextSpan("Second main point", false, false, false)))
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List.empty, List(nestedList)
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should have nested <ol> structure
+    assert(html.contains("<ol>"))
+    assert(html.contains("<li>First main point"))
+    assert(html.contains("<ol>"))  // Nested ol
+    assert(html.contains("<li>First sub-point</li>"))
+    assert(html.contains("<li>Second sub-point</li>"))
+    assert(html.contains("</ol>"))
+
+  test("render 3-level nested list"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val level3List = UnorderedList(List(
+      ListItem(List(TextSpan("Level 3", false, false, false)))
+    ))
+    val level2List = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Level 2", false, false, false)),
+        nestedUnorderedLists = List(level3List)
+      )
+    ))
+    val level1List = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Level 1", false, false, false)),
+        nestedUnorderedLists = List(level2List)
+      )
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(level1List), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should have 3 levels of nested <ul>
+    val ulCount = html.sliding(4).count(_ == "<ul>")
+    assert(ulCount == 3, s"Expected 3 <ul> tags, found $ulCount")
+    assert(html.contains("Level 1"))
+    assert(html.contains("Level 2"))
+    assert(html.contains("Level 3"))
+
+  test("render mixed nesting - ordered within unordered"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val mixedList = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Overview", false, false, false)),
+        nestedOrderedLists = List(OrderedList(List(
+          ListItem(List(TextSpan("Step one", false, false, false))),
+          ListItem(List(TextSpan("Step two", false, false, false)))
+        )))
+      ),
+      ListItem(List(TextSpan("Conclusion", false, false, false)))
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(mixedList), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should have <ul> containing <ol>
+    assert(html.contains("<ul>"))
+    assert(html.contains("<li>Overview"))
+    assert(html.contains("<ol>"))
+    assert(html.contains("<li>Step one</li>"))
+    assert(html.contains("</ol>"))
+    assert(html.contains("</ul>"))
+
+  test("render mixed nesting - unordered within ordered"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val mixedList = OrderedList(List(
+      ListItem(
+        List(TextSpan("Introduction", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("Point A", false, false, false))),
+          ListItem(List(TextSpan("Point B", false, false, false)))
+        )))
+      ),
+      ListItem(List(TextSpan("Body", false, false, false)))
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List.empty, List(mixedList)
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should have <ol> containing <ul>
+    assert(html.contains("<ol>"))
+    assert(html.contains("<li>Introduction"))
+    assert(html.contains("<ul>"))
+    assert(html.contains("<li>Point A</li>"))
+    assert(html.contains("</ul>"))
+    assert(html.contains("</ol>"))
+
+  test("render nested list with formatted text"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val nestedList = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Bold level 1", true, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("Italic level 2", false, true, false)))
+        )))
+      )
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(nestedList), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should preserve inline formatting in nested lists
+    assert(html.contains("<strong>Bold level 1</strong>"))
+    assert(html.contains("<em>Italic level 2</em>"))
+
+  test("render nested list preserves proper nesting structure"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val nestedList = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Parent", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("Child", false, false, false)))
+        )))
+      )
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(nestedList), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Verify proper HTML nesting: <li>Parent<ul><li>Child</li></ul></li>
+    val parentIdx = html.indexOf("Parent")
+    val nestedUlIdx = html.indexOf("<ul>", parentIdx)
+    val childIdx = html.indexOf("Child", nestedUlIdx)
+    val closingUlIdx = html.indexOf("</ul>", childIdx)
+    val closingLiIdx = html.indexOf("</li>", closingUlIdx)
+
+    assert(parentIdx < nestedUlIdx)
+    assert(nestedUlIdx < childIdx)
+    assert(childIdx < closingUlIdx)
+    assert(closingUlIdx < closingLiIdx)
+
+  test("render empty nested list gracefully"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val listWithEmptyNested = UnorderedList(List(
+      ListItem(
+        List(TextSpan("Item with content", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List.empty))  // Empty nested list
+      ),
+      ListItem(List(TextSpan("Item without nesting", false, false, false)))
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(listWithEmptyNested), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should handle empty nested list without error
+    assert(html.contains("Item with content"))
+    assert(html.contains("Item without nesting"))
+
+  test("render multiple nested lists in same content"):
+    import com.tjmsolutions.mdslides.domain._
+
+    val list1 = UnorderedList(List(
+      ListItem(
+        List(TextSpan("List 1 parent", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("List 1 child", false, false, false)))
+        )))
+      )
+    ))
+
+    val list2 = UnorderedList(List(
+      ListItem(
+        List(TextSpan("List 2 parent", false, false, false)),
+        nestedUnorderedLists = List(UnorderedList(List(
+          ListItem(List(TextSpan("List 2 child", false, false, false)))
+        )))
+      )
+    ))
+
+    val content = FormattedContent(
+      List.empty, List.empty, List.empty, List.empty,
+      List(list1, list2), List.empty
+    )
+
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Should render both lists with their nesting
+    assert(html.contains("List 1 parent"))
+    assert(html.contains("List 1 child"))
+    assert(html.contains("List 2 parent"))
+    assert(html.contains("List 2 child"))
+
 end HTMLRendererSpec
