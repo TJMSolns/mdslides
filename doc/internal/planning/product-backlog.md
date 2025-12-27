@@ -622,30 +622,41 @@ To promote a backlog item to a sprint:
 
 ---
 
-## v1.2 Sprint (NEXT - Planning Phase)
+## v1.2 Sprint ✅ COMPLETED (2024-12-27)
 
-**Goal:** Enhanced markdown support and accessibility
-**Status:** 🟡 Planning
-**Target Date:** TBD
+**Goal:** Enhanced markdown support with nested lists
+**Status:** ✅ RELEASED as v1.2.0
+**Release Date:** 2024-12-27
 
-**Prioritized Features (MoSCoW):**
+**Implemented Features:**
 
-### Must Have
+### ✅ MUST HAVE - Completed
 - **US-003.3**: Nested List Support
   - Recursive list parsing in FlexmarkAdapter
-  - Multi-level bullet styling (3 levels max)
-  - Mixed nesting (ordered within unordered)
-  - **Status:** Event Storming, Three Amigos, Example Mapping complete
+  - Multi-level bullet styling (disc → circle → square, 3 levels max)
+  - Ordered list numbering hierarchy (decimal → lower-alpha → lower-roman)
+  - Mixed nesting (ordered within unordered and vice versa)
+  - CSS styling with 2em indentation per level
+  - **Implementation:**
+    - Domain model enhancements (3 tests)
+    - Recursive parser logic (10 tests)
+    - HTML renderer with Scalatags fix (9 tests)
+  - **Bug Fix:** Fixed Scalatags fragment combining issue discovered during integration testing
 - **BUG FIX**: Retisio Theme Template References
-  - Remove references to non-existent templates (diagram, closing, section-title)
-  - OR add these templates to domain/renderer (deferred to v2.0)
-  - **Action:** Update theme.json to only include title/content templates
-- **US-XXX**: Comprehensive Tutorial
-  - Demonstrate all current features
-  - Include CLI usage examples
-  - Show all working template types
-  - Verify all examples render correctly
-  - **Purpose:** Marketing/documentation completeness
+  - Removed `futureTemplates` section from theme.json
+  - Cleaned up references to non-existent templates (deferred to v2.0)
+- **Tutorial Update**: Comprehensive Feature Demonstration
+  - Added nested list demonstration slide
+  - Updated tutorial to 17 slides total
+  - Documented visual hierarchy and nesting limits
+
+**Test Coverage:** 290 tests passing (150 domain, 140 infrastructure)
+
+**Related Documentation:**
+- [CHANGELOG.md](../../../CHANGELOG.md) - v1.2.0 release notes
+- Event Storming: `event-storming-US-003.3.md`
+- Three Amigos: `three-amigos-US-003.3.md`
+- Example Mapping: `example-mapping-US-003.3.md`
 
 ### Should Have
 - **Syntax Highlighting**: Code block colors
