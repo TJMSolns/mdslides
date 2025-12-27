@@ -112,6 +112,27 @@ MDSlides supports ordered and unordered lists:
 ---
 template: content
 notes:
+  - "Demonstrate nested list hierarchy with visual styling"
+  - "Mention 3-level maximum depth"
+---
+
+## Nested Lists (v1.2)
+
+**New in v1.2:** Lists support up to 3 levels of nesting with distinct visual hierarchy.
+
+**Unordered nested lists:**
+- Design Phase
+  - Create wireframes
+  - Review with stakeholders
+- Implementation
+  - Backend development
+  - Frontend development
+
+**Visual styling:** disc (•) → circle (◦) → square (▪)
+
+---
+template: content
+notes:
   - "Show examples of each theme"
   - "Emphasize template backgrounds feature"
 ---

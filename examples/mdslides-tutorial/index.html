@@ -159,6 +159,53 @@
       text-decoration: underline;
     }
 
+    /* Nested list support (US-003.3) */
+    .slide-body ul,
+    .slide-body ol {
+      margin: 0.5rem 0;
+      padding-left: 2em;
+    }
+
+    /* Unordered list bullet hierarchy */
+    .slide-body ul {
+      list-style-type: disc;  /* Level 1: disc (•) */
+    }
+
+    .slide-body ul ul {
+      list-style-type: circle;  /* Level 2: circle (◦) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ul ul ul {
+      list-style-type: square;  /* Level 3: square (▪) */
+    }
+
+    /* Ordered list numbering hierarchy */
+    .slide-body ol {
+      list-style-type: decimal;  /* Level 1: decimal (1, 2, 3...) */
+    }
+
+    .slide-body ol ol {
+      list-style-type: lower-alpha;  /* Level 2: lower-alpha (a, b, c...) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ol ol ol {
+      list-style-type: lower-roman;  /* Level 3: lower-roman (i, ii, iii...) */
+    }
+
+    /* Mixed nesting support */
+    .slide-body ul ol,
+    .slide-body ol ul {
+      margin-top: 0.5em;
+    }
+
+    /* List item spacing */
+    .slide-body li {
+      margin: 0.3em 0;
+      line-height: 1.6;
+    }
+
     .controls {
       position: fixed;
       bottom: 20px;
@@ -186,7 +233,7 @@ java -jar mdslides.jar slides.md output/
     html &lt;- renderHTML(deck, theme)
     _ &lt;- writeOutput(html)
   yield ()
-</code></pre></div></div></div><div class="slide" data-slide-index="6"><div class="content-slide"><h2 class="slide-heading"><p>Lists and Bullets</p></h2><div class="slide-body"><p>MDSlides supports ordered and unordered lists:</p><p><strong>Ordered Lists:</strong></p><p><strong>Unordered Lists:</strong></p><ul><li>Main concept</li><li>Supporting detail</li><li>Additional point</li></ul><ol><li>First step</li><li>Second step</li><li>Third step</li></ol></div></div></div><div class="slide" data-slide-index="7"><div class="content-slide"><h2 class="slide-heading"><p>Using Themes</p></h2><div class="slide-body"><p>MDSlides includes multiple themes:</p><p>Each theme provides unique styling and creates a self-contained directory.</p><pre><code class="language-bash"># Light theme (default)
+</code></pre></div></div></div><div class="slide" data-slide-index="6"><div class="content-slide"><h2 class="slide-heading"><p>Lists and Bullets</p></h2><div class="slide-body"><p>MDSlides supports ordered and unordered lists:</p><p><strong>Ordered Lists:</strong></p><p><strong>Unordered Lists:</strong></p><ul><li>Main concept</li><li>Supporting detail</li><li>Additional point</li></ul><ol><li>First step</li><li>Second step</li><li>Third step</li></ol></div></div></div><div class="slide" data-slide-index="7"><div class="content-slide"><h2 class="slide-heading"><p>Nested Lists (v1.2)</p></h2><div class="slide-body"><p><strong>New in v1.2:</strong> Lists support up to 3 levels of nesting with distinct visual hierarchy.</p><p><strong>Unordered nested lists:</strong></p><p><strong>Visual styling:</strong> disc (•) → circle (◦) → square (▪)</p><ul><li>Design Phase<ul><li>Create wireframes</li><li>Review with stakeholders</li></ul></li><li>Implementation<ul><li>Backend development</li><li>Frontend development</li></ul></li></ul></div></div></div><div class="slide" data-slide-index="8"><div class="content-slide"><h2 class="slide-heading"><p>Using Themes</p></h2><div class="slide-body"><p>MDSlides includes multiple themes:</p><p>Each theme provides unique styling and creates a self-contained directory.</p><pre><code class="language-bash"># Light theme (default)
 mdslides render my-preso
 
 # Dark theme
@@ -194,13 +241,13 @@ mdslides render my-preso --theme dark
 
 # Retisio theme (template backgrounds!)
 mdslides render my-preso --theme retisio
-</code></pre></div></div></div><div class="slide" data-slide-index="8"><div class="content-slide"><h2 class="slide-heading"><p>Template-Specific Backgrounds</p></h2><div class="slide-body"><p>The Retisio theme demonstrates template backgrounds:</p><p><strong>Each template gets its own visual treatment!</strong></p><p>This is powered by the new directory-based theme system.</p><ul><li><strong>Title slides:</strong> Dynamic title background</li><li><strong>Content slides:</strong> Clean content background</li></ul></div></div></div><div class="slide" data-slide-index="9"><div class="content-slide"><h2 class="slide-heading"><p>Directory-Based Themes</p></h2><div class="slide-body"><p>Themes are self-contained directories:</p><p><strong>Benefits:</strong> Portable, assets bundled, easy to share</p><pre><code>themes/
+</code></pre></div></div></div><div class="slide" data-slide-index="9"><div class="content-slide"><h2 class="slide-heading"><p>Template-Specific Backgrounds</p></h2><div class="slide-body"><p>The Retisio theme demonstrates template backgrounds:</p><p><strong>Each template gets its own visual treatment!</strong></p><p>This is powered by the new directory-based theme system.</p><ul><li><strong>Title slides:</strong> Dynamic title background</li><li><strong>Content slides:</strong> Clean content background</li></ul></div></div></div><div class="slide" data-slide-index="10"><div class="content-slide"><h2 class="slide-heading"><p>Directory-Based Themes</p></h2><div class="slide-body"><p>Themes are self-contained directories:</p><p><strong>Benefits:</strong> Portable, assets bundled, easy to share</p><pre><code>themes/
   retisio/
     theme.json
     backgrounds/
       title-page.png
       content-page.png
-</code></pre></div></div></div><div class="slide" data-slide-index="10"><div class="content-slide"><h2 class="slide-heading"><p>Creating Custom Themes</p></h2><div class="slide-body"><p>Build your own theme in 3 steps:</p><p><strong>1. Create directory:</strong> <code>mkdir mytheme/backgrounds</code></p><p><strong>2. Write theme.json</strong> with colors, fonts, backgrounds</p><p><strong>3. Add to themes directory</strong></p><p>Share your theme as a zip file!</p></div></div></div><div class="slide" data-slide-index="11"><div class="content-slide"><h2 class="slide-heading"><p>Command Line Interface</p></h2><div class="slide-body"><p>MDSlides provides a simple CLI for converting markdown to presentations:</p><p><strong>Available themes:</strong> light, dark, tjm-solutions, retisio</p><pre><code class="language-bash"># Basic usage (light theme by default)
+</code></pre></div></div></div><div class="slide" data-slide-index="11"><div class="content-slide"><h2 class="slide-heading"><p>Creating Custom Themes</p></h2><div class="slide-body"><p>Build your own theme in 3 steps:</p><p><strong>1. Create directory:</strong> <code>mkdir mytheme/backgrounds</code></p><p><strong>2. Write theme.json</strong> with colors, fonts, backgrounds</p><p><strong>3. Add to themes directory</strong></p><p>Share your theme as a zip file!</p></div></div></div><div class="slide" data-slide-index="12"><div class="content-slide"><h2 class="slide-heading"><p>Command Line Interface</p></h2><div class="slide-body"><p>MDSlides provides a simple CLI for converting markdown to presentations:</p><p><strong>Available themes:</strong> light, dark, tjm-solutions, retisio</p><pre><code class="language-bash"># Basic usage (light theme by default)
 mdslides render my-presentation
 
 # Select a theme
@@ -216,9 +263,9 @@ mdslides render -i slides.md -o output-dir --theme light
 # Get help and version info
 mdslides --version
 mdslides --help
-</code></pre></div></div></div><div class="slide" data-slide-index="12"><div class="content-slide"><h2 class="slide-heading"><p>Image Assets</p></h2><div class="slide-body"><p>Images are embedded using standard markdown:</p><p><strong>Automatic Handling:</strong></p><p><strong>Supports:</strong> PNG, JPG, SVG, and more</p><img class="content-image" src="images/architecture.svg" alt="MDSlides Architecture" /><ul><li>Local images copied to output directory</li><li>Remote URLs (https://) referenced directly</li><li>Relative paths preserved</li></ul></div></div></div><div class="slide" data-slide-index="13"><div class="content-slide"><h2 class="slide-heading"><p>Speaker Notes &amp; Speaker View</p></h2><div class="slide-body"><p><strong>Add notes to slides:</strong></p><p><strong>Speaker View (v1.1 - NEW!):</strong></p><ul><li>Simple: <code>notes: &quot;Remember to emphasize this&quot;</code></li><li>Multi-line: <code>notes: [&quot;Point 1&quot;, &quot;Point 2&quot;, &quot;Point 3&quot;]</code></li></ul><ul><li>Press <strong>'S'</strong> during presentation to open speaker view</li><li>See current slide notes, next slide preview, and timer</li><li>Navigate from either window - both stay in sync</li><li>Files: <code>index.html</code> (main) + <code>speaker.html</code> (speaker)</li></ul></div></div></div><div class="slide" data-slide-index="14"><div class="content-slide"><h2 class="slide-heading"><p>Best Practices</p></h2><div class="slide-body"><p>Follow these guidelines for effective presentations:</p><p><strong>Content:</strong></p><p><strong>Visuals:</strong></p><ul><li>One main idea per slide</li><li>Max 12 lines of body text</li><li>Keep headings under 80 characters</li></ul><ul><li>Use diagrams to clarify</li><li>Include alt text for images</li></ul></div></div></div><div class="slide" data-slide-index="15"><div class="content-slide"><h2 class="slide-heading"><p>Thank You!</p></h2><div class="slide-body"><p><strong>Questions?</strong></p><p>Visit: github.com/yourorg/mdslides</p><p>Docs: mdslides.dev/docs</p><p><strong>Happy Presenting!</strong></p></div></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 16</span></div><script>
+</code></pre></div></div></div><div class="slide" data-slide-index="13"><div class="content-slide"><h2 class="slide-heading"><p>Image Assets</p></h2><div class="slide-body"><p>Images are embedded using standard markdown:</p><p><strong>Automatic Handling:</strong></p><p><strong>Supports:</strong> PNG, JPG, SVG, and more</p><img class="content-image" src="images/architecture.svg" alt="MDSlides Architecture" /><ul><li>Local images copied to output directory</li><li>Remote URLs (https://) referenced directly</li><li>Relative paths preserved</li></ul></div></div></div><div class="slide" data-slide-index="14"><div class="content-slide"><h2 class="slide-heading"><p>Speaker Notes &amp; Speaker View</p></h2><div class="slide-body"><p><strong>Add notes to slides:</strong></p><p><strong>Speaker View (v1.1 - NEW!):</strong></p><ul><li>Simple: <code>notes: &quot;Remember to emphasize this&quot;</code></li><li>Multi-line: <code>notes: [&quot;Point 1&quot;, &quot;Point 2&quot;, &quot;Point 3&quot;]</code></li></ul><ul><li>Press <strong>'S'</strong> during presentation to open speaker view</li><li>See current slide notes, next slide preview, and timer</li><li>Navigate from either window - both stay in sync</li><li>Files: <code>index.html</code> (main) + <code>speaker.html</code> (speaker)</li></ul></div></div></div><div class="slide" data-slide-index="15"><div class="content-slide"><h2 class="slide-heading"><p>Best Practices</p></h2><div class="slide-body"><p>Follow these guidelines for effective presentations:</p><p><strong>Content:</strong></p><p><strong>Visuals:</strong></p><ul><li>One main idea per slide</li><li>Max 12 lines of body text</li><li>Keep headings under 80 characters</li></ul><ul><li>Use diagrams to clarify</li><li>Include alt text for images</li></ul></div></div></div><div class="slide" data-slide-index="16"><div class="content-slide"><h2 class="slide-heading"><p>Thank You!</p></h2><div class="slide-body"><p><strong>Questions?</strong></p><p>Visit: github.com/yourorg/mdslides</p><p>Docs: mdslides.dev/docs</p><p><strong>Happy Presenting!</strong></p></div></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 17</span></div><script>
     let currentSlide = 0;
-    const totalSlides = 16;
+    const totalSlides = 17;
 
     function showSlide(index) {
       const slides = document.querySelectorAll('.slide');
