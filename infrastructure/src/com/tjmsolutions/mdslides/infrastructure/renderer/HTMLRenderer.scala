@@ -277,6 +277,53 @@ object HTMLRenderer:
       text-decoration: underline;
     }
 
+    /* Nested list support (US-003.3) */
+    .slide-body ul,
+    .slide-body ol {
+      margin: ${theme.spacing.paragraphMargin};
+      padding-left: 2em;
+    }
+
+    /* Unordered list bullet hierarchy */
+    .slide-body ul {
+      list-style-type: disc;  /* Level 1: disc (•) */
+    }
+
+    .slide-body ul ul {
+      list-style-type: circle;  /* Level 2: circle (◦) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ul ul ul {
+      list-style-type: square;  /* Level 3: square (▪) */
+    }
+
+    /* Ordered list numbering hierarchy */
+    .slide-body ol {
+      list-style-type: decimal;  /* Level 1: decimal (1, 2, 3...) */
+    }
+
+    .slide-body ol ol {
+      list-style-type: lower-alpha;  /* Level 2: lower-alpha (a, b, c...) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ol ol ol {
+      list-style-type: lower-roman;  /* Level 3: lower-roman (i, ii, iii...) */
+    }
+
+    /* Mixed nesting support */
+    .slide-body ul ol,
+    .slide-body ol ul {
+      margin-top: 0.5em;
+    }
+
+    /* List item spacing */
+    .slide-body li {
+      margin: 0.3em 0;
+      line-height: ${theme.spacing.lineHeight};
+    }
+
     .controls {
       position: fixed;
       bottom: 20px;
@@ -520,14 +567,13 @@ object HTMLRenderer:
   private def renderUnorderedList(list: com.tjmsolutions.mdslides.domain.UnorderedList, linkMap: Map[String, String]): Frag =
     ul(
       list.items.map { item =>
-        li(
-          // Render text spans first
-          item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)),
-          // Then render nested unordered lists (US-003.3)
-          item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap)),
-          // Then render nested ordered lists (US-003.3)
-          item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
-        )
+        // Build the fragments for this list item (US-003.3)
+        val textFrags = item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap))
+        val nestedUnorderedFrags = item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap))
+        val nestedOrderedFrags = item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
+
+        // Concatenate all fragments and pass to li()
+        li((textFrags ++ nestedUnorderedFrags ++ nestedOrderedFrags): _*)
       }
     )
 
@@ -541,14 +587,13 @@ object HTMLRenderer:
   private def renderOrderedList(list: com.tjmsolutions.mdslides.domain.OrderedList, linkMap: Map[String, String]): Frag =
     ol(
       list.items.map { item =>
-        li(
-          // Render text spans first
-          item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap)),
-          // Then render nested unordered lists (US-003.3)
-          item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap)),
-          // Then render nested ordered lists (US-003.3)
-          item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
-        )
+        // Build the fragments for this list item (US-003.3)
+        val textFrags = item.textSpans.map(span => renderTextSpanWithLinks(span, linkMap))
+        val nestedUnorderedFrags = item.nestedUnorderedLists.map(nestedList => renderUnorderedList(nestedList, linkMap))
+        val nestedOrderedFrags = item.nestedOrderedLists.map(nestedList => renderOrderedList(nestedList, linkMap))
+
+        // Concatenate all fragments and pass to li()
+        li((textFrags ++ nestedUnorderedFrags ++ nestedOrderedFrags): _*)
       }
     )
 
