@@ -196,4 +196,197 @@ class FlexmarkAdapterSpec extends FunSuite:
     assert(!result.plainText.contains("code here"))
     assert(result.plainText.contains("Some text"))
 
+  // Nested list support tests (US-003.3 - v1.2 TDD Phase 2)
+
+  test("parse 2-level nested unordered list"):
+    val markdown = """
+      |- Level 1 item A
+      |  - Level 2 item A.1
+      |  - Level 2 item A.2
+      |- Level 1 item B
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.unorderedLists.length, 1)
+    val list = result.unorderedLists.head
+    assertEquals(list.items.length, 2)
+
+    // First item should have 2 nested items
+    val firstItem = list.items(0)
+    assertEquals(firstItem.textSpans.head.text.trim, "Level 1 item A")
+    assertEquals(firstItem.nestedUnorderedLists.length, 1)
+    assertEquals(firstItem.nestedUnorderedLists.head.items.length, 2)
+    assertEquals(firstItem.nestedUnorderedLists.head.items(0).plainText.trim, "Level 2 item A.1")
+    assertEquals(firstItem.nestedUnorderedLists.head.items(1).plainText.trim, "Level 2 item A.2")
+
+    // Second item should have no nesting
+    val secondItem = list.items(1)
+    assertEquals(secondItem.textSpans.head.text.trim, "Level 1 item B")
+    assertEquals(secondItem.nestedUnorderedLists.length, 0)
+
+  test("parse 2-level nested ordered list"):
+    val markdown = """
+      |1. First main point
+      |   1. First sub-point
+      |   2. Second sub-point
+      |2. Second main point
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.orderedLists.length, 1)
+    val list = result.orderedLists.head
+    assertEquals(list.items.length, 2)
+
+    // First item should have 2 nested items
+    val firstItem = list.items(0)
+    assertEquals(firstItem.textSpans.head.text.trim, "First main point")
+    assertEquals(firstItem.nestedOrderedLists.length, 1)
+    assertEquals(firstItem.nestedOrderedLists.head.items.length, 2)
+
+  test("parse 3-level nested list (maximum depth)"):
+    val markdown = """
+      |- Level 1
+      |  - Level 2
+      |    - Level 3
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.unorderedLists.length, 1)
+    val level1List = result.unorderedLists.head
+    assertEquals(level1List.items.length, 1)
+
+    val level1Item = level1List.items.head
+    assertEquals(level1Item.nestedUnorderedLists.length, 1)
+
+    val level2List = level1Item.nestedUnorderedLists.head
+    assertEquals(level2List.items.length, 1)
+
+    val level2Item = level2List.items.head
+    assertEquals(level2Item.nestedUnorderedLists.length, 1)
+
+    val level3List = level2Item.nestedUnorderedLists.head
+    assertEquals(level3List.items.length, 1)
+    assertEquals(level3List.items.head.plainText.trim, "Level 3")
+
+  test("parse mixed nesting - ordered within unordered"):
+    val markdown = """
+      |- Overview
+      |  1. Step one
+      |  2. Step two
+      |- Conclusion
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.unorderedLists.length, 1)
+    val list = result.unorderedLists.head
+    assertEquals(list.items.length, 2)
+
+    val firstItem = list.items(0)
+    assertEquals(firstItem.textSpans.head.text.trim, "Overview")
+    assertEquals(firstItem.nestedOrderedLists.length, 1)
+    assertEquals(firstItem.nestedOrderedLists.head.items.length, 2)
+
+  test("parse mixed nesting - unordered within ordered"):
+    val markdown = """
+      |1. Introduction
+      |   - Point A
+      |   - Point B
+      |2. Body
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.orderedLists.length, 1)
+    val list = result.orderedLists.head
+    assertEquals(list.items.length, 2)
+
+    val firstItem = list.items(0)
+    assertEquals(firstItem.textSpans.head.text.trim, "Introduction")
+    assertEquals(firstItem.nestedUnorderedLists.length, 1)
+    assertEquals(firstItem.nestedUnorderedLists.head.items.length, 2)
+
+  test("parse complex mixed 3-level nesting"):
+    val markdown = """
+      |1. Design Phase
+      |   - Create wireframes
+      |   - Review with stakeholders
+      |2. Implementation
+      |   1. Backend development
+      |      - API design
+      |      - Database schema
+      |   2. Frontend development
+      |3. Testing
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.orderedLists.length, 1)
+    val list = result.orderedLists.head
+    assertEquals(list.items.length, 3)
+
+    // Check "Implementation" item with deep nesting
+    val implItem = list.items(1)
+    assertEquals(implItem.textSpans.head.text.trim, "Implementation")
+    assertEquals(implItem.nestedOrderedLists.length, 1)
+
+    val backendItem = implItem.nestedOrderedLists.head.items(0)
+    assertEquals(backendItem.nestedUnorderedLists.length, 1)
+    assertEquals(backendItem.nestedUnorderedLists.head.items.length, 2)
+
+  test("parse nested list with formatted text"):
+    val markdown = """
+      |- **Bold level 1**
+      |  - *Italic level 2*
+      |    - `Code level 3`
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.unorderedLists.length, 1)
+    val level1Item = result.unorderedLists.head.items.head
+
+    // Level 1 should be bold
+    assert(level1Item.textSpans.exists(span => span.text.contains("Bold") && span.bold))
+
+    // Level 2 should be italic
+    val level2Item = level1Item.nestedUnorderedLists.head.items.head
+    assert(level2Item.textSpans.exists(span => span.text.contains("Italic") && span.italic))
+
+    // Level 3 should be code
+    val level3Item = level2Item.nestedUnorderedLists.head.items.head
+    assert(level3Item.textSpans.exists(span => span.text.contains("Code") && span.code))
+
+  test("parse list with empty nested list - graceful handling"):
+    val markdown = """
+      |- Item with content
+      |  -
+      |- Item without nesting
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    assertEquals(result.unorderedLists.length, 1)
+    // Should parse successfully without error
+
+  test("parse multiple top-level lists with nesting"):
+    val markdown = """
+      |- List 1 item 1
+      |  - Nested in list 1
+      |
+      |- List 2 item 1
+      |  - Nested in list 2
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Flexmark may merge these into one list or keep separate
+    // Just verify parsing succeeds
+    assert(result.unorderedLists.nonEmpty)
+
+  test("parse nested list preserves depth in maxNestingDepth"):
+    val markdown = """
+      |- Level 1
+      |  - Level 2
+      |    - Level 3
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Verify domain model calculation works with parsed data
+    assertEquals(result.maxNestingDepth, 3)
+
 end FlexmarkAdapterSpec

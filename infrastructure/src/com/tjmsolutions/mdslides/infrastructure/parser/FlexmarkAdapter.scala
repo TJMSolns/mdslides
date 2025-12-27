@@ -236,13 +236,17 @@ object FlexmarkAdapter:
    * Extract formatted content from a single list item.
    *
    * Recursively processes the list item's children to extract text spans
-   * with inline formatting (bold, italic, code).
+   * with inline formatting (bold, italic, code) and nested lists.
+   *
+   * US-003.3: Now extracts nested unordered and ordered lists.
    *
    * @param itemNode The list item node (BulletListItem or OrderedListItem)
-   * @return ListItem with formatted text spans
+   * @return ListItem with formatted text spans and nested lists
    */
   private def extractListItemContent(itemNode: Node): ListItem =
     val itemSpans = scala.collection.mutable.ListBuffer.empty[TextSpan]
+    val nestedUnorderedLists = scala.collection.mutable.ListBuffer.empty[UnorderedList]
+    val nestedOrderedLists = scala.collection.mutable.ListBuffer.empty[OrderedList]
     var currentBold = false
     var currentItalic = false
     var currentCode = false
@@ -282,13 +286,36 @@ object FlexmarkAdapter:
         case _: SoftLineBreak =>
           itemSpans += TextSpan(" ", bold = false, italic = false, code = false)
 
+        case _: Paragraph =>
+          // Paragraph wrapper - visit children to extract text
+          n.getChildren.asScala.foreach(visitItemNode)
+
+        case bulletList: BulletList =>
+          // Nested unordered list (US-003.3)
+          val items = extractListItems(bulletList)
+          if items.nonEmpty then
+            nestedUnorderedLists += UnorderedList(items)
+          // Don't visit children - we've extracted the list
+
+        case orderedList: com.vladsch.flexmark.ast.OrderedList =>
+          // Nested ordered list (US-003.3)
+          val items = extractListItems(orderedList)
+          if items.nonEmpty then
+            nestedOrderedLists += com.tjmsolutions.mdslides.domain.OrderedList(items)
+          // Don't visit children - we've extracted the list
+
+        case _: BulletListItem | _: OrderedListItem =>
+          // Nested list items are handled by extractListItems, skip here
+          ()
+
         case _ =>
           // Recursively visit children
           n.getChildren.asScala.foreach(visitItemNode)
 
-    visitItemNode(itemNode)
+    // Visit all children of the list item (Paragraph, nested lists, etc.)
+    itemNode.getChildren.asScala.foreach(visitItemNode)
 
     val mergedSpans = mergeConsecutiveSpans(itemSpans.toList)
-    ListItem(mergedSpans)
+    ListItem(mergedSpans, nestedUnorderedLists.toList, nestedOrderedLists.toList)
 
 end FlexmarkAdapter
