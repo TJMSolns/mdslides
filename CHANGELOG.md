@@ -5,6 +5,65 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-12-27
+
+### Added
+
+#### US-003.3: Nested List Support
+- **Nested lists**: Support up to 3 levels of nesting for both ordered and unordered lists
+- **Visual hierarchy**: Distinct bullet styles per level
+  - Level 1: disc (•)
+  - Level 2: circle (◦)
+  - Level 3: square (▪)
+- **Numbering hierarchy**: Ordered lists use different numbering schemes per level
+  - Level 1: decimal (1, 2, 3...)
+  - Level 2: lower-alpha (a, b, c...)
+  - Level 3: lower-roman (i, ii, iii...)
+- **Mixed nesting**: Ordered lists within unordered and vice versa
+- **CSS styling**: 2em indentation per nesting level with automatic hierarchy
+
+### Fixed
+
+- **Scalatags rendering bug**: Fixed fragment combining issue where nested lists concatenated text instead of preserving HTML structure
+  - Changed from `Seq(...).flatten` to `++` concatenation with varargs
+  - Nested `<ul>` and `<ol>` tags now render correctly
+- **Retisio theme**: Removed confusing `futureTemplates` section from theme.json
+  - Templates referenced (diagram, closing, section-title) are deferred to v2.0
+
+### Changed
+
+#### Documentation
+- Updated tutorial with nested list demonstration (17 slides total)
+- Added visual styling examples for nested list hierarchy
+
+### Technical
+
+#### New Components
+- Enhanced `ListItem` domain model with `nestedUnorderedLists` and `nestedOrderedLists`
+- Added `maxNestingDepth` methods to `FormattedContent`, `UnorderedList`, `OrderedList`, and `ListItem`
+- Recursive parser logic in `FlexmarkAdapter.extractListItemContent`
+  - Visits children of itemNode instead of itemNode itself
+  - Handles nested `BulletList` and `OrderedList` within list items
+  - Explicit `Paragraph` case for text extraction
+
+#### Test Coverage
+- Added 22 automated tests (3 domain + 10 parser + 9 renderer)
+- Total test count: 290 tests (all passing)
+  - 150 domain tests
+  - 140 infrastructure tests
+
+#### Implementation Approach
+- Followed Event Storming → Three Amigos → Example Mapping → TDD cycle
+- Fixed Scalatags bug discovered during integration testing
+- Verified actual HTML output matches expected structure
+
+### Related Documentation
+- Event Storming: `doc/internal/planning/event-storming-US-003.3.md`
+- Three Amigos: `doc/internal/planning/three-amigos-US-003.3.md`
+- Example Mapping: `doc/internal/planning/example-mapping-US-003.3.md`
+
+---
+
 ## [1.1.0] - 2024-12-27
 
 ### Added
