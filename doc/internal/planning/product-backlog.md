@@ -660,10 +660,53 @@ To promote a backlog item to a sprint:
 
 ---
 
+## v1.3.1 Sprint 🔴 IN PROGRESS (2025-12-27 to 2025-12-30)
+
+**Goal:** Critical bugfix hotfix for v1.3.0
+**Status:** 🔴 IN PROGRESS
+**Target Release:** 2025-12-30 (3 days)
+**Priority:** P0 - CRITICAL
+
+**Critical Bugs to Fix:**
+
+### ✅ MUST FIX - In Progress
+- **BUG-001**: List Rendering Order Incorrect
+  - **Severity**: P0 - CRITICAL
+  - **Impact**: All presentations with mixed ordered/unordered lists render incorrectly
+  - **Symptoms**: Unordered lists appear before ordered lists regardless of source order
+  - **Root Cause**: TBD (investigate FlexmarkAdapter or HTMLRenderer)
+  - **Fix**: Preserve source order when collecting/rendering lists
+  - **Test**: Add regression test for list ordering
+  - **Estimated Effort**: 1 day investigation + 1 day fix + testing
+
+- **BUG-002**: 'S' Key Does Not Open Speaker View
+  - **Severity**: P0 - CRITICAL
+  - **Impact**: Documented feature completely non-functional
+  - **Symptoms**: Pressing 'S' during presentation does nothing
+  - **Root Cause**: Navigation JS missing 'S' key handler
+  - **Fix**: Add keyboard handler: `if (e.key === 's' || e.key === 'S') window.open('speaker.html', ...)`
+  - **Test**: Verify 'S' key handler present in rendered HTML
+  - **Estimated Effort**: 0.5 day implementation + testing
+
+**Test Coverage:** 324+ tests (322 existing + 2 new regression tests)
+
+**Success Criteria:**
+- Both bugs verified fixed with integration/unit tests
+- No regressions in existing 322 tests
+- Manual testing confirms correct behavior
+- CHANGELOG updated with hotfix notes
+- Release within 3 days of bug discovery
+
+**Related Documentation:**
+- [KNOWN-ISSUES.md](KNOWN-ISSUES.md) - Detailed bug tracking
+- [ROADMAP.md](ROADMAP.md) - Release timeline impact
+
+---
+
 ## v1.3 Sprint ✅ COMPLETED (2025-12-27)
 
 **Goal:** Syntax highlighting for code blocks
-**Status:** ✅ RELEASED as v1.3.0
+**Status:** ✅ RELEASED as v1.3.0 (with known bugs)
 **Release Date:** 2025-12-27
 
 **Implemented Features:**
