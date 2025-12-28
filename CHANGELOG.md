@@ -5,6 +5,52 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-12-27
+
+### Fixed
+
+#### BUG-001: List Rendering Order Incorrect
+- **Critical bug fix**: Ordered and unordered lists now render in source markdown order
+- **Root cause**: `FormattedContent` hardcoded unordered lists before ordered lists
+- **Solution**: Added new `lists: List[ListElement]` field to preserve source order
+  - Created `ListElement` sealed trait with `OrderedListElement` and `UnorderedListElement` cases
+  - Modified `FlexmarkAdapter` to track lists in insertion order
+  - Updated `HTMLRenderer` to render from new `lists` field (falls back to old fields for backward compatibility)
+- **Regression test added**: Verifies ordered lists appear before unordered when that's the source order
+
+#### BUG-002: 'S' Key Does Not Open Speaker View
+- **Critical bug fix**: Pressing 'S' or 's' now opens speaker view as documented
+- **Root cause**: Missing keyboard handler in navigation JavaScript
+- **Solution**: Added `case 's':` and `case 'S':` handlers in navigation.js
+  - Opens speaker.html via `window.open('speaker.html', 'speaker-view', 'width=1024,height=768')`
+  - Prevents default browser behavior with `e.preventDefault()`
+- **Regression test added**: Verifies 'S' key handler presence in generated HTML
+
+### Technical
+
+#### Modified Components
+- `FormattedContent.scala`: Added `ListElement` sealed trait and `lists` field
+- `FlexmarkAdapter.scala`: Track lists in source order via new `lists` buffer
+- `HTMLRenderer.scala`: Render lists from `lists` field with backward compatibility
+- `HTMLRendererSpec.scala`: Added regression tests for both bugs
+
+#### Test Coverage
+- Added 2 regression tests (BUG-001, BUG-002)
+- Total test count: 324 tests (all passing)
+  - 158 domain tests
+  - 166 infrastructure tests
+
+#### Backward Compatibility
+- Old `unorderedLists` and `orderedLists` fields retained (deprecated)
+- Renderer falls back to old fields if `lists` field is empty
+- Existing tests continue to pass without modification
+
+### Related Governance
+- Bugs documented in: `doc/internal/planning/KNOWN-ISSUES.md`
+- Roadmap: `doc/internal/planning/ROADMAP.md` (v1.3.1 Sprint)
+
+---
+
 ## [1.3.0] - 2025-12-27
 
 ### Added

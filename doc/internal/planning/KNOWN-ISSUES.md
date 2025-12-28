@@ -9,10 +9,10 @@
 
 ### BUG-001: List Rendering Order Incorrect
 **Discovered**: 2025-12-27
-**Status**: 🔴 OPEN
+**Status**: ✅ FIXED (v1.3.1)
 **Priority**: P0 - CRITICAL
 **Affects**: v1.2.0, v1.3.0
-**Target Fix**: v1.3.1 (hotfix)
+**Fixed In**: v1.3.1 (2025-12-27)
 
 **Description**:
 When a slide contains both ordered and unordered lists, they render in the wrong order. Unordered lists appear first, followed by ordered lists, regardless of their order in the source Markdown.
@@ -52,16 +52,18 @@ Unordered Lists:
 ```
 
 **Root Cause**:
-Likely in `FlexmarkAdapter.parseInlineFormatting()` or `HTMLRenderer.renderFormattedContentWithParagraphs()`. Lists may be collected out of order or rendered in wrong sequence.
+`FormattedContent` domain model had separate `unorderedLists` and `orderedLists` fields which were always rendered in that fixed order (unordered first, ordered second) regardless of source markdown order.
 
-**Investigation Needed**:
-1. Check order of list extraction in FlexmarkAdapter
-2. Check order of list rendering in HTMLRenderer
-3. Verify FormattedContent preserves insertion order
-4. Add integration test to catch this regression
+**Fix Implemented**:
+1. Added new `ListElement` sealed trait with `OrderedListElement` and `UnorderedListElement` cases
+2. Added `lists: List[ListElement]` field to `FormattedContent` to preserve source order
+3. Modified `FlexmarkAdapter` to track lists in insertion order via new `lists` buffer
+4. Updated `HTMLRenderer` to render from `lists` field (with backward compatibility fallback)
+5. Deprecated old `unorderedLists` and `orderedLists` fields (retained for backward compatibility)
+6. Added regression test verifying source order preservation
 
-**Workaround**:
-None. Users must accept incorrect list ordering.
+**Verification**:
+Manual testing confirms ordered and unordered lists now render in correct source order.
 
 **Test Case**:
 ```scala
@@ -88,10 +90,10 @@ test("render ordered list before unordered list preserves order"):
 
 ### BUG-002: 'S' Key Does Not Open Speaker View
 **Discovered**: 2025-12-27
-**Status**: 🔴 OPEN
+**Status**: ✅ FIXED (v1.3.1)
 **Priority**: P0 - CRITICAL
 **Affects**: v1.0.0, v1.1.0, v1.2.0, v1.3.0
-**Target Fix**: v1.3.1 (hotfix)
+**Fixed In**: v1.3.1 (2025-12-27)
 
 **Description**:
 The documentation states that pressing 'S' during a presentation opens the speaker view, but this functionality is not implemented. The keyboard handler does not include a listener for the 'S' key.
@@ -106,27 +108,16 @@ The documentation states that pressing 'S' during a presentation opens the speak
 - No keyboard handler for 'S' key exists in navigation JavaScript
 
 **Root Cause**:
-The 'S' key handler was documented but never implemented in the navigation JavaScript. The speaker view functionality exists (speaker.html, sync.js), but the main presentation lacks the keyboard shortcut to open it.
+The 'S' key handler was documented but never implemented in the navigation JavaScript. The speaker view functionality exists (speaker.html, sync.js), but the main presentation lacked the keyboard shortcut to open it.
 
-**Investigation Needed**:
-1. Check navigationJS() function in HTMLRenderer.scala
-2. Add 'S' key handler to open speaker.html in new window
-3. Verify window.open() works with speaker.html path
-4. Test bidirectional sync after opening via 'S' key
+**Fix Implemented**:
+1. Added `case 's':` and `case 'S':` handlers to navigation JavaScript in `HTMLRenderer.navigationJS()`
+2. Handler calls `window.open('speaker.html', 'speaker-view', 'width=1024,height=768')`
+3. Prevents default browser behavior with `e.preventDefault()`
+4. Added regression test verifying handler presence in generated HTML
 
-**Workaround**:
-Manually navigate to `speaker.html` in browser to open speaker view.
-
-**Implementation**:
-```javascript
-// Add to navigation keyboard handler
-document.addEventListener('keydown', (e) => {
-  if (e.key === 's' || e.key === 'S') {
-    window.open('speaker.html', 'speaker-view', 'width=1024,height=768');
-  }
-  // ... existing handlers
-});
-```
+**Verification**:
+Manual testing confirms pressing 'S' or 's' now opens speaker view in new window.
 
 **Test Case**:
 ```scala

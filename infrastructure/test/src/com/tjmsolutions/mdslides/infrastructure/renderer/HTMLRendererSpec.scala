@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, FormattedContent, TextSpan, ListElement, UnorderedListElement, OrderedListElement}
 import cats.data.NonEmptyList
 
 /**
@@ -868,5 +868,60 @@ class HTMLRendererSpec extends munit.FunSuite:
 
     // Should render empty block with language class
     assert(html.contains("<code class=\"language-python\">"))
+
+  // ========================================
+  // BUG-002 Fix: 'S' Key Handler (v1.3.1)
+  // ========================================
+
+  test("navigation JavaScript includes S key handler for speaker view"):
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("title" -> "Test")
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+
+    val html = HTMLRenderer.renderDeck(deck)
+
+    // Should include both lowercase and uppercase S key handlers
+    assert(html.contains("case 's':") || html.contains("case \"s\":"))
+    assert(html.contains("case 'S':") || html.contains("case \"S\":"))
+    // Should open speaker.html in new window
+    assert(html.contains("window.open"))
+    assert(html.contains("speaker.html"))
+
+  test("mixed lists render in source order (BUG-001 regression test)"):
+    // Test via FlexmarkAdapter to ensure end-to-end source order preservation
+    import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
+
+    // Markdown with ordered list BEFORE unordered list
+    val markdown = """**Ordered Lists:**
+1. First
+2. Second
+
+**Unordered Lists:**
+- Item A
+- Item B
+"""
+
+    val content = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Create a slide and render it
+    val slide = Slide(
+      id = SlideId.unsafe(1),
+      templateName = "content",
+      slots = Map("heading" -> "Test", "body" -> markdown)
+    )
+    val deck = SlideDeck(NonEmptyList.one(slide))
+    val html = HTMLRenderer.renderDeck(deck)
+
+    // Find positions of <ol> and <ul> in rendered HTML
+    val olPos = html.indexOf("<ol>")
+    val ulPos = html.indexOf("<ul>")
+
+    // Ordered list should appear BEFORE unordered list (source order preserved)
+    assert(olPos >= 0, s"Expected <ol> tag in HTML, got: ${html.take(500)}")
+    assert(ulPos >= 0, s"Expected <ul> tag in HTML, got: ${html.take(500)}")
+    assert(olPos < ulPos, s"Expected <ol> (at $olPos) before <ul> (at $ulPos), but got reverse order")
 
 end HTMLRendererSpec

@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme, ListElement, UnorderedListElement, OrderedListElement}
 import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
 import scalatags.Text.all.*
 
@@ -509,14 +509,20 @@ object HTMLRenderer:
     // Render content images
     val imageFrags = content.contentImages.map(renderContentImage)
 
-    // Render unordered lists
-    val unorderedListFrags = content.unorderedLists.map(renderUnorderedList(_, linkMap))
-
-    // Render ordered lists
-    val orderedListFrags = content.orderedLists.map(renderOrderedList(_, linkMap))
+    // Render lists in source order (BUG-001 fix)
+    // Backward compatibility: use old fields if new lists field is empty
+    val listFrags = if content.lists.nonEmpty then
+      content.lists.map {
+        case UnorderedListElement(list) => renderUnorderedList(list, linkMap)
+        case OrderedListElement(list) => renderOrderedList(list, linkMap)
+      }
+    else
+      // Legacy: render unordered before ordered (preserves old test behavior)
+      content.unorderedLists.map(renderUnorderedList(_, linkMap)) ++
+      content.orderedLists.map(renderOrderedList(_, linkMap))
 
     // Combine paragraphs, code blocks, images, and lists
-    Seq(paragraphFrags, codeBlockFrags, imageFrags, unorderedListFrags, orderedListFrags)
+    Seq(paragraphFrags, codeBlockFrags, imageFrags, listFrags)
 
   /**
    * Render a TextSpan, converting to link if text matches a link.
@@ -697,6 +703,11 @@ object HTMLRenderer:
         case 'End':
           e.preventDefault();
           lastSlide();
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          window.open('speaker.html', 'speaker-view', 'width=1024,height=768');
           break;
       }
     });

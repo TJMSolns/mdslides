@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link, CodeBlock, ContentImage, UnorderedList, OrderedList, ListItem}
+import com.tjmsolutions.mdslides.domain.{FormattedContent, TextSpan, Link, CodeBlock, ContentImage, UnorderedList, OrderedList, ListItem, ListElement, UnorderedListElement, OrderedListElement}
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.ast.{Node, NodeVisitor, VisitHandler}
 import com.vladsch.flexmark.ast.*
@@ -63,6 +63,7 @@ object FlexmarkAdapter:
     val contentImages = scala.collection.mutable.ListBuffer.empty[ContentImage]
     val unorderedLists = scala.collection.mutable.ListBuffer.empty[UnorderedList]
     val orderedLists = scala.collection.mutable.ListBuffer.empty[OrderedList]
+    val lists = scala.collection.mutable.ListBuffer.empty[ListElement] // BUG-001 fix
 
     // Track current formatting state as we traverse
     var currentBold = false
@@ -161,14 +162,18 @@ object FlexmarkAdapter:
           // Unordered list: - Item one\n- Item two
           val items = extractListItems(bulletList)
           if items.nonEmpty then
-            unorderedLists += UnorderedList(items)
+            val list = UnorderedList(items)
+            unorderedLists += list
+            lists += UnorderedListElement(list) // BUG-001 fix: preserve order
           // Don't visit children - we've extracted the list
 
         case orderedList: com.vladsch.flexmark.ast.OrderedList =>
           // Ordered list: 1. Item one\n2. Item two
           val items = extractListItems(orderedList)
           if items.nonEmpty then
-            orderedLists += com.tjmsolutions.mdslides.domain.OrderedList(items)
+            val list = com.tjmsolutions.mdslides.domain.OrderedList(items)
+            orderedLists += list
+            lists += OrderedListElement(list) // BUG-001 fix: preserve order
           // Don't visit children - we've extracted the list
 
         case _: BulletListItem | _: OrderedListItem =>
@@ -190,7 +195,8 @@ object FlexmarkAdapter:
       codeBlocks.toList,
       contentImages.toList,
       unorderedLists.toList,
-      orderedLists.toList
+      orderedLists.toList,
+      lists.toList // BUG-001 fix: pass source-ordered lists
     )
 
   /**

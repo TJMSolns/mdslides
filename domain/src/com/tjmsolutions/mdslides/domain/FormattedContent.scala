@@ -1,6 +1,22 @@
 package com.tjmsolutions.mdslides.domain
 
 /**
+ * Sealed trait representing a list element (ordered or unordered).
+ * Used to preserve source order of mixed list types (BUG-001 fix).
+ */
+sealed trait ListElement
+
+/**
+ * Wrapper for an unordered list in source-ordered list sequence.
+ */
+case class UnorderedListElement(list: UnorderedList) extends ListElement
+
+/**
+ * Wrapper for an ordered list in source-ordered list sequence.
+ */
+case class OrderedListElement(list: OrderedList) extends ListElement
+
+/**
  * Formatted content represents parsed markdown with structure.
  *
  * Contains:
@@ -27,8 +43,9 @@ package com.tjmsolutions.mdslides.domain
  * @param links Hyperlinks embedded in content
  * @param codeBlocks Fenced code blocks with optional language hints
  * @param contentImages Content images with alt text (for accessibility)
- * @param unorderedLists Bullet point lists
- * @param orderedLists Numbered lists
+ * @param unorderedLists Bullet point lists (deprecated - use lists field)
+ * @param orderedLists Numbered lists (deprecated - use lists field)
+ * @param lists All lists in source order (BUG-001 fix - preserves mixed list ordering)
  */
 case class FormattedContent(
   textSpans: List[TextSpan],
@@ -36,7 +53,8 @@ case class FormattedContent(
   codeBlocks: List[CodeBlock] = List.empty,
   contentImages: List[ContentImage] = List.empty,
   unorderedLists: List[UnorderedList] = List.empty,
-  orderedLists: List[OrderedList] = List.empty
+  orderedLists: List[OrderedList] = List.empty,
+  lists: List[ListElement] = List.empty
 ):
   /**
    * Extract plain text (strip formatting).
