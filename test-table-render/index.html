@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>MDSlides Presentation</title><style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      overflow: hidden;
+    }
+
+    .slides {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+      background-color: #ffffff;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Vertical alignment overrides (v3.0.0) */
+    .slide.align-top {
+      justify-content: flex-start;
+    }
+
+    .slide.align-center {
+      justify-content: center;
+    }
+
+    .slide.align-bottom {
+      justify-content: flex-end;
+    }
+
+    /* Slide header/footer structure (v3.0.0) */
+    .slide-header {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: #333333;
+      background-color: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    .slide-content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: inherit;
+      align-items: inherit;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .slide-footer {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: #333333;
+      background-color: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    /* Multi-element footer positioning (v3.0.0) */
+    .slide-footer:has(.footer-left),
+    .slide-footer:has(.footer-center),
+    .slide-footer:has(.footer-right) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-left {
+      text-align: left;
+      flex: 1;
+    }
+
+    .footer-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .footer-right {
+      text-align: right;
+      flex: 1;
+    }
+
+    .title-slide {
+      text-align: center;
+      max-width: 800px;
+      justify-content: space-between;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .title-slide-header {
+      margin-bottom: auto;
+    }
+
+    .title-slide-footer {
+      margin-top: auto;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
+
+    .slide-subtitle {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .slide-author {
+      font-size: 24px;
+      color: #333333;
+      margin-top: 20px;
+    }
+
+    .content-slide {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .slide-heading {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+    }
+
+    .slide-body {
+      font-size: 24px;
+      color: #333333;
+      line-height: 1.6;
+    }
+
+    .slide-body p {
+      margin: 0.5rem 0;
+    }
+
+    /* Inline formatting (US-003) */
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background-color: #f4f4f4;
+      color: #333333;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    /* Code blocks (US-004) */
+    pre {
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      font-size: 18px;
+    }
+
+    pre code {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      font-family: Consolas, 'Courier New', monospace;
+      color: #333333;
+      font-size: inherit;
+    }
+
+    /* Syntax highlighting using theme colors */
+    .syntax-keyword { color: #569cd6; }
+    .syntax-string { color: #ce9178; }
+    .syntax-comment { color: #6a9955; }
+    .syntax-function { color: #dcdcaa; }
+    .syntax-number { color: #b5cea8; }
+    .syntax-operator { color: #d4d4d4; }
+
+    /* Content images (US-005) */
+    .content-image {
+      max-width: 100%;
+      height: auto;
+      margin: 0.5rem 0;
+      display: block;
+      border-radius: 5px;
+    }
+
+    a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #004C99;
+      text-decoration: underline;
+    }
+
+    /* Nested list support (US-003.3) */
+    .slide-body ul,
+    .slide-body ol {
+      margin: 0.5rem 0;
+      padding-left: 2em;
+    }
+
+    /* Unordered list bullet hierarchy */
+    .slide-body ul {
+      list-style-type: disc;  /* Level 1: disc (•) */
+    }
+
+    .slide-body ul ul {
+      list-style-type: circle;  /* Level 2: circle (◦) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ul ul ul {
+      list-style-type: square;  /* Level 3: square (▪) */
+    }
+
+    /* Ordered list numbering hierarchy */
+    .slide-body ol {
+      list-style-type: decimal;  /* Level 1: decimal (1, 2, 3...) */
+    }
+
+    .slide-body ol ol {
+      list-style-type: lower-alpha;  /* Level 2: lower-alpha (a, b, c...) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ol ol ol {
+      list-style-type: lower-roman;  /* Level 3: lower-roman (i, ii, iii...) */
+    }
+
+    /* Mixed nesting support */
+    .slide-body ul ol,
+    .slide-body ol ul {
+      margin-top: 0.5em;
+    }
+
+    /* List item spacing */
+    .slide-body li {
+      margin: 0.3em 0;
+      line-height: 1.6;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #666666;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: red;
+      font-size: 24px;
+      padding: 40px;
+    }
+
+    /* Header/Footer (v3.0.0) */
+    /* v2.0.0 Template Styles */
+
+    /* Diagram template (Scenarios 18-20) */
+    .diagram-slide {
+      max-width: 1000px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 1rem;
+      text-align: center;
+      color: #333333;
+      margin-top: 1em;
+      font-style: italic;
+    }
+
+    /* Mermaid diagram container styling */
+    .mermaid-diagram {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      max-height: 70vh;
+      overflow: visible;
+    }
+
+    .mermaid-diagram svg {
+      max-width: 100%;
+      max-height: 70vh;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Closing template (Scenarios 22-24) */
+    .closing-slide {
+      text-align: center;
+      max-width: 800px;
+    }
+
+    .closing-heading {
+      font-size: 3rem;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    /* Section title template (Scenarios 26-27) */
+    .section-title-slide {
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .section-title-heading {
+      font-size: 4rem;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: 1.5rem;
+      color: #333333;
+      margin-top: 1.5em;
+      font-weight: normal;
+    }
+
+    /* Section title two-column variant (v3.0.0) */
+    .section-title-two-column {
+      max-width: 1200px;
+      text-align: left;
+    }
+
+    .section-body {
+      font-size: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* Two-column template (v3.0.0) */
+    .two-column-slide {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .two-column-slide .slide-heading {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .two-column-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .column {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .column-left {
+      padding-right: 1rem;
+    }
+
+    .column-right {
+      padding-left: 1rem;
+    }
+    </style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" /><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/scala.min.js"></script></head><body><div class="slides"><div class="slide active align-center" data-slide-index="0"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Table Rendering Test</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="1"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Simple Table</p></h2><div class="slide-body" style="color: #333333"><table><thead><tr><th style="text-align: left">Header 1</th><th style="text-align: left">Header 2</th><th style="text-align: left">Header 3</th></tr></thead><tbody><tr><td style="text-align: left">Cell 1</td><td style="text-align: left">Cell 2</td><td style="text-align: left">Cell 3</td></tr><tr><td style="text-align: left">Cell 4</td><td style="text-align: left">Cell 5</td><td style="text-align: left">Cell 6</td></tr></tbody></table></div></div></div></div><div class="slide align-center" data-slide-index="2"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Aligned Table</p></h2><div class="slide-body" style="color: #333333"><table><thead><tr><th style="text-align: left">Left</th><th style="text-align: center">Center</th><th style="text-align: right">Right</th></tr></thead><tbody><tr><td style="text-align: left">L1</td><td style="text-align: center">C1</td><td style="text-align: right">R1</td></tr><tr><td style="text-align: left">L2</td><td style="text-align: center">C2</td><td style="text-align: right">R2</td></tr></tbody></table></div></div></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 3</span></div><script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      currentSlide = index;
+
+      const counter = document.getElementById('slide-counter');
+      counter.textContent = (index + 1) + ' / ' + totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    function firstSlide() {
+      currentSlide = 0;
+      showSlide(currentSlide);
+    }
+
+    function lastSlide() {
+      currentSlide = totalSlides - 1;
+      showSlide(currentSlide);
+    }
+
+    // Auto-scale code blocks that exceed 20 lines (PDR-006)
+    function scaleCodeBlocks() {
+      document.querySelectorAll('pre code').forEach(codeBlock => {
+        const lines = codeBlock.textContent.split('\n').length;
+        if (lines > 20) {
+          // Calculate scale factor: 20 lines = 1.0, 40 lines = 0.7, 60+ lines = 0.5
+          const scaleFactor = Math.max(0.5, 1.0 - ((lines - 20) * 0.015));
+          codeBlock.parentElement.style.fontSize = (18 * scaleFactor) + 'px';
+        }
+      });
+    }
+
+    // Auto-scale body content that exceeds viewport height (PDR-001, PDR-006)
+    function scaleBodyContent() {
+      document.querySelectorAll('.slide').forEach(slide => {
+        const slideBody = slide.querySelector('.slide-body');
+        if (!slideBody) return;
+
+        // Use actual rendered height instead of line count
+        // PDR-006: Max body height is 70vh (leaving room for header/footer/padding)
+        const maxHeight = window.innerHeight * 0.70;
+        const actualHeight = slideBody.scrollHeight;
+
+        if (actualHeight > maxHeight) {
+          // PDR-006 scaling formula: fontSize = max(10px, currentFontSize * (maxHeight / actualHeight))
+          const scaleFactor = maxHeight / actualHeight;
+          const currentFontSize = parseFloat(window.getComputedStyle(slideBody).fontSize) || 24;
+          const minFontSize = 10; // Readability floor
+          const scaledFontSize = Math.max(minFontSize, currentFontSize * scaleFactor);
+
+          slideBody.style.fontSize = scaledFontSize + 'px';
+
+          // Also scale code blocks proportionally
+          slideBody.querySelectorAll('pre code').forEach(code => {
+            const codeFontSize = parseFloat(window.getComputedStyle(code).fontSize) || 18;
+            code.parentElement.style.fontSize = Math.max(10, codeFontSize * scaleFactor) + 'px';
+          });
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          firstSlide();
+          break;
+        case 'End':
+          e.preventDefault();
+          lastSlide();
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          // Open speaker view with current slide index
+          window.open(`speaker.html?slide=${currentSlide}`, 'speaker-view', 'width=1024,height=768');
+          break;
+      }
+    });
+
+    // Run auto-scaling on page load (PDR-001, PDR-006)
+    window.addEventListener('DOMContentLoaded', () => {
+      scaleCodeBlocks();
+      scaleBodyContent();
+    });
+  </script><script>document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });</script><script src="presentation-timer.js"></script><script src="navigation-history.js"></script><script src="goto-function.js"></script><script src="history-logging.js"></script><script src="header-footer.js"></script><script src="break-mode.js"></script></body></html>

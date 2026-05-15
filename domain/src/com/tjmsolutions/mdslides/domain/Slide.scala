@@ -153,14 +153,14 @@ object Slide:
   ): List[ValidationError] =
     val errors = List.newBuilder[ValidationError]
 
-    // Check max lines
+    // Check max lines (PDR-001: warnings not errors)
     constraints.maxLines.foreach { maxLines =>
       val lines = SlotContent.fromPlainText(content).lineCount
       if lines > maxLines then
-        errors += ValidationError.ContentError(
+        errors += ValidationError.DensityWarning(
           slideId,
           slotName,
-          s"Content exceeds max $maxLines lines (has $lines lines)"
+          s"Content exceeds recommended line limit (actual: $lines, guidance: reduce to $maxLines lines for readability)"
         )
     }
 
@@ -175,17 +175,60 @@ object Slide:
         )
     }
 
-    // Check max words
+    // Check max words (PDR-001: warnings not errors)
     constraints.maxWords.foreach { maxWords =>
       val words = SlotContent.fromPlainText(content).wordCount
       if words > maxWords then
-        errors += ValidationError.ContentError(
+        errors += ValidationError.DensityWarning(
           slideId,
           slotName,
-          s"Content exceeds max $maxWords words (has $words words)"
+          s"Content exceeds recommended word limit (actual: $words, guidance: reduce to $maxWords words for readability)"
         )
     }
 
     errors.result()
+
+  /**
+   * Validate template-specific content requirements (v2.0.0).
+   *
+   * Template-specific validation that requires examining parsed content.
+   * This is called AFTER parsing in the infrastructure layer.
+   *
+   * Template-specific rules:
+   * - Diagram template MUST contain at least one Mermaid diagram (Scenario 17)
+   * - Other templates have no diagram requirements
+   *
+   * @param slide The slide to validate
+   * @param parsedSlots Map of slot name to parsed FormattedContent
+   * @return List of validation errors
+   *
+   * Related: v2.0.0 Additional Templates, Example Mapping Scenario 17
+   */
+  def validateTemplateSpecificContent(
+    slide: Slide,
+    parsedSlots: Map[String, FormattedContent]
+  ): List[ValidationError] =
+    slide.templateName match
+      case "diagram" =>
+        // Diagram template requires at least one Mermaid diagram
+        val hasMermaidDiagram = parsedSlots.values.exists { formattedContent =>
+          formattedContent.content.exists {
+            case DiagramElement(_) => true
+            case _ => false
+          }
+        }
+
+        if !hasMermaidDiagram then
+          List(ValidationError.ContentError(
+            slide.id,
+            "content",
+            "Diagram template requires at least one Mermaid diagram. Add a ```mermaid code fence to your slide content."
+          ))
+        else
+          Nil
+
+      case _ =>
+        // Other templates have no diagram requirements
+        Nil
 
 end Slide

@@ -1,0 +1,635 @@
+---
+template: title
+---
+
+# MDSlides Tutorial
+## Complete Guide to v2.0.0 Features
+
+**Master Markdown-to-Presentation Conversion**
+
+---
+template: section-title
+---
+
+## Part 1: Getting Started
+
+Introduction to MDSlides
+
+---
+template: content
+---
+
+## What is MDSlides?
+
+MDSlides converts Markdown files into beautiful HTML presentations.
+
+**Key Features:**
+- Write slides in plain Markdown
+- Multiple built-in themes
+- Mermaid diagram support
+- Configuration management
+- Accessibility validation
+- Template-based layouts
+
+---
+template: content
+---
+
+## Installation & Basic Usage
+
+Install MDSlides and create your first presentation:
+
+```bash
+# Download the latest release
+wget mdslides.jar
+
+# Render a presentation (simple form)
+java -jar mdslides.jar render my-slides
+
+# Explicit input/output
+java -jar mdslides.jar render -i slides.md -o output/
+
+# With theme selection
+java -jar mdslides.jar render my-slides --theme retisio
+```
+
+**Requirements:** Java 11 or higher
+
+---
+template: section-title
+---
+
+## Part 2: Configuration
+
+Project and global settings
+
+---
+template: content
+---
+
+## Configuration Management (v2.0.0)
+
+MDSlides supports 4-layer configuration precedence:
+
+**1. CLI Arguments** (highest priority)
+```bash
+mdslides render deck --theme dark --no-copy-images
+```
+
+**2. Project Config** (`.mdslides/config.json` in project)
+**3. Global Config** (`~/.mdslides/config.json` in home)
+**4. Defaults** (lowest priority)
+
+Configuration merges across all layers!
+
+---
+template: content
+---
+
+## Project Configuration
+
+Create `.mdslides/config.json` in your project:
+
+```json
+{
+  "theme": "retisio",
+  "copyImages": true,
+  "skipAccessibility": false,
+  "outputDir": "dist/"
+}
+```
+
+**Benefits:**
+- Team-wide settings
+- Version controlled
+- Per-project themes
+
+---
+template: content
+---
+
+## Global Configuration
+
+Create `~/.mdslides/config.json` for user-wide settings:
+
+```json
+{
+  "defaults": {
+    "theme": "dark",
+    "copyImages": true,
+    "skipAccessibility": false
+  },
+  "paths": {
+    "themesDir": "/path/to/custom/themes"
+  },
+  "author": {
+    "name": "Your Name",
+    "email": "you@example.com"
+  }
+}
+```
+
+---
+template: section-title
+---
+
+## Part 3: Templates
+
+Five powerful slide templates
+
+---
+template: content
+---
+
+## Available Templates (v2.0.0)
+
+MDSlides provides 5 slide templates:
+
+**title**, **content**, **diagram** (NEW), **section-title** (NEW), **closing** (NEW)
+
+Each has specific styling and constraints for optimal presentation!
+
+---
+template: diagram
+caption: Example flowchart showing MDSlides processing pipeline
+---
+
+## Diagram Template Example
+
+```mermaid
+graph TD
+    A[Markdown File] --> B[Parser]
+    B --> C[Validator]
+    C --> D[Renderer]
+    D --> E[HTML Output]
+    D --> F[Speaker View]
+```
+
+---
+template: closing
+---
+
+## Closing Template Demo
+
+This is a closing template slide!
+
+**Features:**
+- 3rem heading (larger than content)
+- Optional body text
+- Centered layout
+- Perfect for "Thank You" slides
+
+---
+template: section-title
+---
+
+## Part 4: Mermaid Diagrams
+
+Visual diagrams from text
+
+---
+template: content
+---
+
+## Mermaid Diagram Support (v2.0.0)
+
+Create diagrams using Mermaid.js syntax with \`\`\`mermaid code fences.
+
+**Supported Diagram Types:**
+- Flowcharts, Sequence, Class, State
+- Gantt, Pie, ER, Journey
+
+Example: `graph TD` or `graph LR` for flowcharts
+
+---
+template: diagram
+caption: Sequence diagram showing client-server interaction
+---
+
+## Sequence Diagram Example
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant D as Database
+
+    C->>S: HTTP Request
+    S->>D: Query Data
+    D-->>S: Results
+    S-->>C: HTTP Response
+```
+
+---
+template: diagram
+caption: Class hierarchy for the MDSlides domain model
+---
+
+## Class Diagram Example
+
+```mermaid
+classDiagram
+    SlideDeck --> Slide
+    Slide --> SlideId
+    Slide --> Template
+    Template --> SlotDefinition
+
+    class Slide {
+        +id: SlideId
+        +templateName: String
+        +slots: Map
+    }
+```
+
+---
+template: section-title
+---
+
+## Part 5: Text & Formatting
+
+Markdown formatting features
+
+---
+template: content
+---
+
+## Text Formatting
+
+MDSlides supports standard Markdown formatting:
+
+**Bold text** using `**bold**`
+
+*Italic text* using `*italic*`
+
+`Inline code` using backticks
+
+**Links:** [MDSlides Docs](https://github.com/tjm/mdslides)
+
+---
+template: content
+---
+
+## Code Blocks with Syntax Highlighting
+
+Display code with automatic syntax highlighting:
+
+```scala
+def renderSlides(input: Path): IO[Unit] =
+  for
+    deck <- parseMarkdown(input)
+    validated <- validateDeck(deck)
+    html <- renderHTML(validated, theme)
+    _ <- writeOutput(html)
+  yield ()
+```
+
+**Supports 100+ languages** via highlight.js (v1.3.0)
+
+---
+template: content
+notes:
+  - "Demonstrate nested list hierarchy with visual styling"
+  - "Mention 3-level maximum depth"
+---
+
+## Lists & Nested Lists
+
+**Ordered Lists:**
+1. First step
+2. Second step
+3. Third step
+
+**Nested Lists (v1.2):**
+- Design Phase
+  - Create wireframes
+  - Review with stakeholders
+- Implementation
+  - Backend development
+  - Frontend development
+
+**Visual styling:** disc (•) → circle (◦) → square (▪)
+
+---
+template: section-title
+---
+
+## Part 6: Themes
+
+Built-in and custom themes
+
+---
+template: content
+notes:
+  - "Show examples of each theme"
+  - "Emphasize template backgrounds feature"
+---
+
+## Using Built-in Themes
+
+MDSlides includes multiple themes:
+
+```bash
+# Light theme (default)
+mdslides render my-preso
+
+# Dark theme
+mdslides render my-preso --theme dark
+
+# Corporate theme
+mdslides render my-preso --theme tjm-solutions
+
+# Retisio theme (template backgrounds!)
+mdslides render my-preso --theme retisio
+```
+
+Each theme provides unique colors, fonts, and backgrounds.
+
+---
+template: content
+---
+
+## Directory-Based Themes
+
+Themes are self-contained directories:
+
+```
+themes/
+  retisio/
+    theme.json
+    backgrounds/
+      title-page.png
+      content-page.png
+```
+
+**Benefits:**
+- Portable and shareable
+- Assets bundled with theme
+- Template-specific backgrounds
+- Easy customization
+
+---
+template: content
+---
+
+## Creating Custom Themes
+
+Build your own theme in 3 steps:
+
+**1. Create directory structure:**
+```bash
+mkdir -p mytheme/backgrounds
+```
+
+**2. Write theme.json** with colors, fonts, backgrounds
+
+**3. Reference in global config:**
+```json
+{
+  "paths": {
+    "themesDir": "/path/to/themes"
+  }
+}
+```
+
+Share your theme as a zip file!
+
+---
+template: section-title
+---
+
+## Part 7: Images & Assets
+
+Image handling and asset copying
+
+---
+template: content
+---
+
+## Image Assets
+
+Images are embedded using standard markdown syntax.
+
+**Automatic Handling:**
+- Local images → copied to `output/images/`
+- Remote URLs → referenced directly
+- Theme backgrounds → `output/backgrounds/`
+
+**Supports:** PNG, JPG, SVG, GIF, WebP
+
+---
+template: content
+---
+
+## Image Asset Copying
+
+Control image copying behavior:
+
+```bash
+# Enable image copying (default)
+mdslides render deck --copy-images
+
+# Disable image copying
+mdslides render deck --no-copy-images
+```
+
+**Configuration:**
+```json
+{
+  "copyImages": true
+}
+```
+
+Images are copied with original directory structure preserved.
+
+---
+template: section-title
+---
+
+## Part 8: Speaker Features
+
+Notes and speaker view
+
+---
+template: content
+notes: "Demonstrate speaker view - press 'S' to open it during presentation"
+---
+
+## Speaker Notes & Speaker View
+
+**Add notes to slides:**
+
+Simple:
+```yaml
+notes: "Remember to emphasize this"
+```
+
+Multi-line:
+```yaml
+notes:
+  - "Point 1"
+  - "Point 2"
+  - "Point 3"
+```
+
+**Speaker View (v1.1):** Press **'S'** to open speaker view with notes, next slide preview, and timer!
+
+---
+template: content
+---
+
+## Speaker View Features
+
+**Speaker view includes:**
+- Current slide notes
+- Next slide preview
+- Presentation timer
+- Current/total slide count
+- Synchronized navigation
+
+**Files generated:**
+- `index.html` - Main presentation
+- `speaker.html` - Speaker view
+- `sync.js` - Synchronization script
+
+Both windows stay in sync automatically!
+
+---
+template: section-title
+---
+
+## Part 9: Accessibility
+
+WCAG 2.1 AA compliance
+
+---
+template: content
+---
+
+## Accessibility Validation (v2.0.0)
+
+MDSlides automatically validates presentations:
+
+**Checks performed:**
+- **Contrast Ratios** - Text vs background (WCAG 2.1 AA)
+- **Alt Text** - All images have descriptions
+- **Keyboard Navigation** - Arrow keys, Home, End, Esc work
+
+**Pass/warning modes:**
+- Pass: All checks successful
+- Warning: Non-blocking issues found (presentation still generated)
+
+---
+template: content
+---
+
+## Accessibility Configuration
+
+Control accessibility validation:
+
+```bash
+# Enable validation (default)
+mdslides render deck
+
+# Skip validation
+mdslides render deck --skip-accessibility
+
+# Generate JSON report
+mdslides render deck --accessibility-report report.json
+```
+
+**Configuration:**
+```json
+{
+  "skipAccessibility": false,
+  "accessibilityReportPath": "reports/a11y.json"
+}
+```
+
+---
+template: section-title
+---
+
+## Part 10: Best Practices
+
+Guidelines for effective presentations
+
+---
+template: content
+notes:
+  - "Emphasize keeping slides simple"
+  - "Reference accessibility guidelines"
+---
+
+## Content Best Practices
+
+Follow these guidelines for effective presentations:
+
+**Content Constraints:**
+- One main idea per slide
+- Max 12 lines of body text
+- Keep headings under 80 characters
+- Max 150 words per slide
+
+**Visuals:**
+- Use diagrams to clarify concepts
+- Include alt text for all images
+- Choose high-contrast themes
+
+---
+template: content
+---
+
+## Technical Best Practices
+
+**File Organization:**
+```
+my-presentation/
+  slides.md
+  images/
+    diagram1.png
+    diagram2.svg
+  .mdslides/
+    config.json
+```
+
+**Version Control:**
+- Commit `.mdslides/config.json`
+- Commit source markdown files
+- Ignore `output/` directories
+
+---
+template: content
+---
+
+## Template Selection Guide
+
+Choose the right template for each slide:
+
+**title** - Opening slide, section covers
+**content** - Default for most slides
+**diagram** - When diagrams are the main focus
+**section-title** - Major section transitions
+**closing** - Thank you, contact info, Q&A
+
+Use frontmatter to specify:
+```yaml
+---
+template: diagram
+caption: System architecture overview
+---
+```
+
+---
+template: closing
+---
+
+## Thank You!
+
+**Questions?**
+
+**Resources:**
+- GitHub: github.com/tjm/mdslides
+- Docs: Included in repository
+- Examples: See `examples/` directory
+
+**Happy Presenting with MDSlides v2.0.0!**

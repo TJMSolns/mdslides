@@ -17,49 +17,66 @@ object PathResolver:
   /**
    * Find input markdown file from deck name.
    *
-   * Resolution order:
-   * 1. Try `deckName.md` (preferred)
-   * 2. Try `deckName.markdown` (fallback)
-   * 3. Error if neither exists
+   * Standard CLI resolution order (best practice):
+   * 1. Try path as-is (allows any extension or no extension)
+   * 2. If not found, try adding `.md`
+   * 3. If not found, try adding `.markdown`
+   * 4. Error if none found
    *
-   * @param deckName Deck name stem (without extension)
+   * @param deckName Deck name (with or without extension)
    * @param baseDir Directory to search in (defaults to current directory)
    * @return Right(Path) if found, Left(error message) if not found
    */
   def findInputFile(deckName: String, baseDir: Option[Path] = None): Either[String, Path] =
     val searchDir = baseDir.getOrElse(Paths.get("."))
+
+    // 1. Try the path exactly as given (standard CLI behavior)
+    val directPath = searchDir.resolve(deckName)
+    if Files.exists(directPath) && Files.isRegularFile(directPath) then
+      return Right(directPath)
+
+    // 2. Try adding .md extension
     val mdPath = searchDir.resolve(s"$deckName.md")
+    if Files.exists(mdPath) && Files.isRegularFile(mdPath) then
+      return Right(mdPath)
+
+    // 3. Try adding .markdown extension
     val markdownPath = searchDir.resolve(s"$deckName.markdown")
+    if Files.exists(markdownPath) && Files.isRegularFile(markdownPath) then
+      return Right(markdownPath)
 
-    // Prefer .md over .markdown
-    if Files.exists(mdPath) then
-      Right(mdPath)
-    else if Files.exists(markdownPath) then
-      Right(markdownPath)
+    // 4. Not found - build helpful error message
+    val availableFiles = listMarkdownFiles(searchDir)
+    val availableList = if availableFiles.nonEmpty then
+      "\n\nFound in current directory:\n" + availableFiles.map(f => s"  - $f").mkString("\n")
     else
-      // Neither exists - build helpful error message
-      val availableFiles = listMarkdownFiles(searchDir)
-      val availableList = if availableFiles.nonEmpty then
-        "\n\nFound in current directory:\n" + availableFiles.map(f => s"  - $f").mkString("\n")
-      else
-        ""
+      ""
 
-      Left(s"✗ Input file not found: $deckName.md or $deckName.markdown$availableList")
+    Left(s"✗ Input file not found: $deckName (tried as-is, .md, .markdown)$availableList")
 
   /**
    * Determine output directory path from deck name.
    *
-   * Simple transformation: deckName → Path(deckName)
+   * Strips file extensions (.md, .markdown) to get clean directory name.
+   * Standard CLI behavior: file.md → file/
    *
    * Examples:
-   * - "my-preso" → Path("my-preso")
-   * - "talks/presentation" → Path("talks/presentation")
+   * - "my-preso.md" → Path("my-preso")
+   * - "talks/presentation.markdown" → Path("talks/presentation")
+   * - "deck" → Path("deck")
    *
-   * @param deckName Deck name (may include path separators)
-   * @return Output directory path
+   * @param deckName Deck name (may include path separators and file extensions)
+   * @return Output directory path (without file extension)
    */
   def determineOutputDir(deckName: String): Path =
-    Paths.get(deckName)
+    val withoutExtension =
+      if deckName.endsWith(".md") then
+        deckName.stripSuffix(".md")
+      else if deckName.endsWith(".markdown") then
+        deckName.stripSuffix(".markdown")
+      else
+        deckName
+    Paths.get(withoutExtension)
 
   /**
    * Ensure output directory exists (create if missing).

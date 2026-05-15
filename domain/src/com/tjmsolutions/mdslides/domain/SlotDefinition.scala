@@ -93,4 +93,38 @@ object SlotDefinition:
       )
     )
 
+  /**
+   * Caption slot definition (diagram template, v2.0.0).
+   *
+   * Constraints:
+   * - Optional
+   * - Max 1 line
+   * - Max 100 chars
+   */
+  val caption: SlotDefinition =
+    SlotDefinition(
+      name = "caption",
+      required = false,
+      constraints = SlotConstraints(
+        maxLines = Some(1),
+        maxChars = Some(100)
+      )
+    )
+
+  /**
+   * Body (optional) slot definition for templates where body is optional (v2.0.0).
+   *
+   * Used by: closing, section-title templates
+   */
+  val bodyOptional: SlotDefinition =
+    SlotDefinition(
+      name = "body",
+      required = false,
+      constraints = SlotConstraints(
+        maxLines = Some(12),
+        maxWords = Some(150),
+        allowedContentTypes = Set(ContentType.Text, ContentType.List)
+      )
+    )
+
 end SlotDefinition

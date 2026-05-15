@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speaker View - MDSlides</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .speaker-view {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      height: 100vh;
+    }
+
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+
+    .slide-counter {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .timer {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #4ade80;
+    }
+
+    .notes-panel {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .notes-panel h2 {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      color: #a3a3a3;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .notes-area {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .notes-area.empty {
+      color: #737373;
+      font-style: italic;
+    }
+
+    .preview-panel {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .preview-panel h2 {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      color: #a3a3a3;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-area {
+      font-size: 1.5rem;
+      line-height: 1.5;
+      color: #d4d4d4;
+    }
+
+    .preview-area.end {
+      color: #737373;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="speaker-view">
+    <div class="header">
+      <div id="slide-counter" class="slide-counter">Slide 1 / 87</div>
+      <div id="timer" class="timer">00:00</div>
+    </div>
+
+    <div class="notes-panel">
+      <h2>Speaker Notes</h2>
+      <div id="notes-area" class="notes-area">
+        <!-- Notes will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <h2>Next Slide</h2>
+      <div id="preview-area" class="preview-area">
+        <!-- Preview will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded slide data -->
+  <script id="slide-data" type="application/json">
+{
+  "totalSlides" : 87,
+  "slides" : [
+    {
+      "notes" : null,
+      "title" : "MDSlides Tutorial",
+      "heading" : ""
+    },
+    {
+      "notes" : "Press 'S' to open speaker view. These notes are only visible in speaker mode and help you prepare your presentation. This tutorial is a comprehensive reference for all MDSlides capabilities.",
+      "title" : "",
+      "heading" : "About This Tutorial"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 1: Configuration"
+    },
+    {
+      "notes" : "Configuration allows teams to standardize presentation styles across projects. Project config is committed to git, while global config is personal preferences. This layered approach gives maximum flexibility while maintaining team consistency.",
+      "title" : "",
+      "heading" : "Configuration Precedence"
+    },
+    {
+      "notes" : "Header and footer configuration is new in v3.0.0. These templates support placeholders for dynamic content like slide numbers and timer values.",
+      "title" : "",
+      "heading" : "Project Configuration"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Global Configuration"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 2: Templates"
+    },
+    {
+      "notes" : null,
+      "title" : "Template: Title",
+      "heading" : ""
+    },
+    {
+      "notes" : "Content template is your workhorse - use it for most slides. Supports all markdown formatting including bold, italic, code, and links.",
+      "title" : "",
+      "heading" : "Template: Content"
+    },
+    {
+      "notes" : "v1.2.0 added nested list support with distinct visual hierarchy. v1.3.1 fixed a critical bug where ordered and unordered lists were not rendering in source order.",
+      "title" : "",
+      "heading" : "Nested Lists"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 3: Advanced Features"
+    },
+    {
+      "notes" : null,
+      "title" : "Two-Column Layout: Before & After Comparison",
+      "heading" : ""
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 4: Mermaid Diagrams"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Flowchart / Graph"
+    },
+    {
+      "notes" : "Sequence diagrams are excellent for showing API interactions and system communication patterns. The alt/else blocks show conditional logic clearly.",
+      "title" : "",
+      "heading" : "Sequence Diagram"
+    },
+    {
+      "notes" : "Class and state diagrams are naturally narrow, making them perfect candidates for two-column pairing. This maximizes screen real estate and allows side-by-side comparison of related concepts.",
+      "title" : "Diagram Pairing: Class & State Diagrams",
+      "heading" : ""
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Gantt Chart"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Pie Chart"
+    },
+    {
+      "notes" : "Flow diagrams and ER diagrams complement each other well - flow shows runtime behavior while ER shows data structure. Pairing them helps audience understand both dimensions of the system.",
+      "title" : "System Architecture: Flow & Data Model",
+      "heading" : ""
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "User Journey Diagram"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 5: Code Blocks"
+    },
+    {
+      "notes" : "v1.3.0 added automatic syntax highlighting via CDN. Theme-aware: light themes use GitHub style, dark theme uses Monokai Sublime. 190+ languages supported including Scala, Java, Python, JavaScript, TypeScript, SQL, and more.",
+      "title" : "",
+      "heading" : "Code: Scala"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Code: JavaScript"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Code: Python"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 6: Images & Assets"
+    },
+    {
+      "notes" : "Local images are copied to maintain portability. Base64 data URIs are embedded inline and don't require copying. Both approaches support alt text for accessibility compliance.",
+      "title" : "",
+      "heading" : "Image Support"
+    },
+    {
+      "notes" : "Local images are copied to output directory with directory structure preserved. Remote URLs are referenced directly. Alt text is mandatory for WCAG compliance.",
+      "title" : "",
+      "heading" : "Image Examples"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 7: Themes"
+    },
+    {
+      "notes" : "v0.4.0 introduced directory-based theme system with template-specific backgrounds. Each theme can define different backgrounds for different templates.",
+      "title" : "",
+      "heading" : "Available Themes"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 8: Tables & Data Display"
+    },
+    {
+      "notes" : "v0.3.0 added full markdown table support with Flexmark parser. Tables are automatically converted to semantic HTML with proper thead/tbody structure and alignment styles.",
+      "title" : "",
+      "heading" : "Table Support"
+    },
+    {
+      "notes" : "Tables render with proper semantic HTML. Bold text, links, and inline code are supported within cells. The CSS includes alternating row colors for readability and hover effects for interactivity.",
+      "title" : "",
+      "heading" : "Example: Team Roles"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Example: Technology Stack"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 9: Accessibility"
+    },
+    {
+      "notes" : "Accessibility isn't optional - it's required by law in many jurisdictions. MDSlides helps you meet WCAG standards automatically.",
+      "title" : "",
+      "heading" : "Accessibility Features"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Accessibility Report"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 9: CLI Usage & Mill Commands"
+    },
+    {
+      "notes" : "Mill is the primary execution method. All dependencies are managed by the build system, so you don't need to worry about classpath or Java versions. The `cli.run` target handles compilation and execution automatically.",
+      "title" : "",
+      "heading" : "Mill Usage (Recommended)"
+    },
+    {
+      "notes" : "Mill passes all arguments directly to the Java CLI application, so the syntax is identical whether you use Mill or direct command line. This consistency makes it easy to switch between methods.",
+      "title" : "",
+      "heading" : "CLI Options with Mill"
+    },
+    {
+      "notes" : "File resolution intelligently handles both simple and explicit forms. You can omit the `.md` extension and the tool will find it. Output directories are created if they don't exist.",
+      "title" : "",
+      "heading" : "File Resolution"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "CLI vs Mill Comparison"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 10: Speaker Notes"
+    },
+    {
+      "notes" : "v1.0.0 added notes parsing. v1.1.0 added full speaker view rendering with timer and bidirectional sync. v1.3.1 fixed bug where 'S' key handler was missing.",
+      "title" : "",
+      "heading" : "Speaker Notes"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 11: Timer & Playback (v3.0.0)"
+    },
+    {
+      "notes" : "The timer is essential for staying on schedule. It automatically pauses during breaks so your break time doesn't count against presentation time. Perfect for timed talks and conference presentations.",
+      "title" : "",
+      "heading" : "Presentation Timer"
+    },
+    {
+      "notes" : "Break mode is perfect for Q&A sessions, restroom breaks, or technical difficulties. The screen goes to a neutral state instead of showing slide content. The timer pauses so breaks don't count against your presentation time.",
+      "title" : "",
+      "heading" : "Break Mode"
+    },
+    {
+      "notes" : "Navigation history enables a more natural presentation flow. You can jump around slides, then use P to go back through your path. The N key acts as both 'redo' and 'next slide' depending on context.",
+      "title" : "",
+      "heading" : "Navigation History"
+    },
+    {
+      "notes" : "Goto function is essential for presentations where audience members ask about specific slides. The 1-indexed numbering matches what users see in the slide counter. Invalid inputs are rejected with clear error messages.",
+      "title" : "",
+      "heading" : "Goto Function"
+    },
+    {
+      "notes" : "Headers and footers update dynamically as you navigate and as time elapses. Perfect for conferences where you need to show slide numbers and timing. Placeholders are resolved at runtime.",
+      "title" : "",
+      "heading" : "Header & Footer"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Per-Slide Header Example"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Per-Slide Footer: 2 Elements"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Per-Slide Footer: 3 Elements"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 14: Complete Workflow"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Step 1: Create Your Markdown"
+    },
+    {
+      "notes" : null,
+      "title" : "My Amazing Talk",
+      "heading" : ""
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Key Points"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Demo"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Step 2: Configure (Optional)"
+    },
+    {
+      "notes" : "The basic form is all you need for most presentations. Mill handles all the heavy lifting automatically.",
+      "title" : "",
+      "heading" : "Step 3a: Basic Build & Run"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Step 3b: Advanced Build Options"
+    },
+    {
+      "notes" : "Speaker view is essential - it shows you current and next slide while the audience sees the full presentation. Position windows before starting.",
+      "title" : "",
+      "heading" : "Step 4a: Open & Setup"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Step 4b: Navigation Shortcuts"
+    },
+    {
+      "notes" : "Review your session logs after presentations to improve your delivery. See which slides took longer, identify pacing issues, and track your progress over time.",
+      "title" : "",
+      "heading" : "Step 5: Analytics (Optional)"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Best Practices: Before Presenting"
+    },
+    {
+      "notes" : "Review your session logs after presentations to improve your delivery. See which slides took longer, identify pacing issues, and track your progress over time.",
+      "title" : "",
+      "heading" : "Best Practices: During & After"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 15: Advanced Topics"
+    },
+    {
+      "notes" : "Custom themes allow you to match your organization's brand. Colors control slide backgrounds, text, code blocks, and links. Fonts control heading and body text rendering.",
+      "title" : "",
+      "heading" : "Custom Themes"
+    },
+    {
+      "notes" : "Both Maven and Gradle can execute Mill tasks. This allows presentations to be generated as part of your standard build process.",
+      "title" : "",
+      "heading" : "Build Integration: Maven & Gradle"
+    },
+    {
+      "notes" : "Automate presentation generation in CI/CD pipelines so presentations are always up-to-date with your documentation. Perfect for living documentation.",
+      "title" : "",
+      "heading" : "CI/CD Integration: GitHub Actions"
+    },
+    {
+      "notes" : "Automate repetitive tasks with shell scripts. Perfect for documentation sites that contain multiple presentations.",
+      "title" : "",
+      "heading" : "Automation: Batch Processing"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Performance Optimization"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 16: Troubleshooting"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Vertical Align: Top"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Vertical Align: Center"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Vertical Align: Bottom"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 12: History Logging (v3.0.0)"
+    },
+    {
+      "notes" : "History logging enables post-presentation analysis. See how much time you spent on each slide, how often you went back, when you took breaks. Great for improving your delivery over time.",
+      "title" : "",
+      "heading" : "History Logging"
+    },
+    {
+      "notes" : "The report command analyzes your session log and provides actionable insights. See which slides took longest, identify pacing issues, track your presentation habits over time.",
+      "title" : "",
+      "heading" : "Analytics Report"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 13: Keyboard Shortcuts"
+    },
+    {
+      "notes" : "Arrow keys and space are the most common navigation. P/N keys provide browser-like history navigation - perfect for non-linear presentations.",
+      "title" : "",
+      "heading" : "Navigation Shortcuts"
+    },
+    {
+      "notes" : "These shortcuts enable professional presentation delivery. Practice using them before your talk. The speaker view opens in a new window automatically - position it on your laptop screen while projecting the main view.",
+      "title" : "",
+      "heading" : "Presentation Shortcuts"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Part 16: Troubleshooting"
+    },
+    {
+      "notes" : "Most issues are file-related. Use proper paths, ensure files exist, and check permissions. Accessibility failures usually need theme adjustments for contrast ratios.",
+      "title" : "",
+      "heading" : "Common Issues"
+    },
+    {
+      "notes" : "These common errors and solutions help debug presentation generation. Most issues are content-related rather than tool bugs.",
+      "title" : "",
+      "heading" : "Error Messages"
+    },
+    {
+      "notes" : "Use these techniques when something isn't working. Verbose logging shows every step. Browser DevTools (F12) reveal JavaScript issues.",
+      "title" : "",
+      "heading" : "Debugging Tips"
+    },
+    {
+      "notes" : null,
+      "title" : "",
+      "heading" : "Thank You!"
+    },
+    {
+      "notes" : "Thank you for exploring this comprehensive tutorial. MDSlides is built on solid engineering principles with 322 passing tests. It's designed for professionals who demand quality. Feedback and contributions are always welcome. The community makes this tool better every day.",
+      "title" : "",
+      "heading" : "Questions & Feedback"
+    }
+  ]
+}
+  </script>
+
+  <!-- Sync module for cross-window communication -->
+  <script src="sync.js"></script>
+
+  <!-- Speaker view controller -->
+  <script>
+    // Parse embedded slide data
+    const slideDataElement = document.getElementById('slide-data');
+    const slideData = JSON.parse(slideDataElement.textContent);
+
+    // Initialize slide index from URL parameter or default to 0
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentSlideIndex = parseInt(urlParams.get('slide') || '0', 10);
+    let timerStartTime = null;
+    let timerInterval = null;
+
+    // Update display
+    function updateDisplay() {
+      const slide = slideData.slides[currentSlideIndex];
+
+      // Update slide counter
+      document.getElementById('slide-counter').textContent =
+        `Slide ${currentSlideIndex + 1} / ${slideData.totalSlides}`;
+
+      // Update notes
+      const notesArea = document.getElementById('notes-area');
+      if (slide.notes === null || slide.notes === undefined) {
+        notesArea.textContent = 'No notes for this slide';
+        notesArea.className = 'notes-area empty';
+      } else if (slide.notes === '') {
+        notesArea.textContent = '';
+        notesArea.className = 'notes-area';
+      } else {
+        notesArea.textContent = slide.notes;
+        notesArea.className = 'notes-area';
+      }
+
+      // Update preview
+      const previewArea = document.getElementById('preview-area');
+      if (currentSlideIndex < slideData.totalSlides - 1) {
+        const nextSlide = slideData.slides[currentSlideIndex + 1];
+        const nextHeading = nextSlide.heading || nextSlide.title || 'Next Slide';
+        previewArea.textContent = `Next: ${nextHeading}`;
+        previewArea.className = 'preview-area';
+      } else {
+        previewArea.textContent = 'End of presentation';
+        previewArea.className = 'preview-area end';
+      }
+    }
+
+    // Start timer
+    function startTimer() {
+      if (timerStartTime === null) {
+        timerStartTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Immediate update
+      }
+    }
+
+    // Update timer display
+    function updateTimer() {
+      if (timerStartTime === null) return;
+
+      const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+
+      const formattedTime =
+        String(minutes).padStart(2, '0') + ':' +
+        String(seconds).padStart(2, '0');
+
+      document.getElementById('timer').textContent = formattedTime;
+    }
+
+    // Navigate to slide
+    function goToSlide(index) {
+      if (index >= 0 && index < slideData.totalSlides) {
+        if (timerStartTime === null) {
+          startTimer();
+        }
+        currentSlideIndex = index;
+        updateDisplay();
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+          e.preventDefault();
+          goToSlide(currentSlideIndex + 1);
+          MDSlidesSync.sendSlideChange(currentSlideIndex + 1);
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          goToSlide(currentSlideIndex - 1);
+          MDSlidesSync.sendSlideChange(currentSlideIndex - 1);
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          MDSlidesSync.sendSlideChange(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(slideData.totalSlides - 1);
+          MDSlidesSync.sendSlideChange(slideData.totalSlides - 1);
+          break;
+        case 'Escape':
+          window.close();
+          break;
+      }
+    });
+
+    // Initialize display
+    updateDisplay();
+
+    // Listen for sync events from main window
+    MDSlidesSync.receiveSlideChange((slideIndex) => {
+      goToSlide(slideIndex);
+    });
+  </script>
+</body>
+</html>

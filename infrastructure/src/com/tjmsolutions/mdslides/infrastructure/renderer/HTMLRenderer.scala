@@ -1,8 +1,9 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme, ListElement, UnorderedListElement, OrderedListElement}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme, ListElement, UnorderedListElement, OrderedListElement, UnorderedListElementDeprecated, OrderedListElementDeprecated, ContentElement, ParagraphElement, CodeBlockElement, ImageElement, DiagramElement, MermaidDiagram, TemplateConfiguration, TemplateColors, TableElement, Table}
 import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
 import scalatags.Text.all.*
+import java.nio.file.Paths
 
 /**
  * HTML renderer for slides using Scalatags.
@@ -45,15 +46,42 @@ object HTMLRenderer:
    *
    * @param deck The slide deck to render
    * @param theme The theme to apply (default: Theme.light)
+   * @param preRenderedDiagrams Map of diagram source -> pre-rendered SVG (for offline support)
+   * @param headerTemplate Optional header template (v3.0.0)
+   * @param footerTemplate Optional footer template (v3.0.0)
+   * @param breakScreen Optional break screen image path (v3.0.0)
    * @return Complete HTML document as string
    */
-  def renderDeck(deck: SlideDeck, theme: Theme = Theme.light): String =
+  def renderDeck(
+    deck: SlideDeck,
+    theme: Theme = Theme.light,
+    preRenderedDiagrams: Map[String, String] = Map.empty,
+    headerTemplate: Option[String] = None,
+    footerTemplate: Option[String] = None,
+    breakScreen: Option[String] = None,
+    liveReload: Boolean = false
+  ): String =
     val slideHtml = deck.toList.zipWithIndex.map { case (slide, index) =>
-      renderSlide(slide, index, deck.slideCount, theme)
+      renderSlide(slide, index, deck.slideCount, theme, preRenderedDiagrams, headerTemplate, footerTemplate)
     }
 
     val hljsTheme = highlightJsTheme(theme)
     val hljsCssUrl = s"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/$hljsTheme.min.css"
+
+    val googleFontLinks: Modifier =
+      if theme.fonts.googleFonts.isEmpty then frag()
+      else
+        val families = theme.fonts.googleFonts.mkString("&family=")
+        val sheetUrl = s"https://fonts.googleapis.com/css2?family=$families&display=swap"
+        frag(
+          link(rel := "preconnect", href := "https://fonts.googleapis.com"),
+          link(rel := "preconnect", href := "https://fonts.gstatic.com", attr("crossorigin") := ""),
+          link(rel := "stylesheet", href := sheetUrl)
+        )
+
+    val liveReloadMeta: Modifier =
+      if liveReload then meta(attr("http-equiv") := "refresh", content := "2")
+      else frag()
 
     val document = html(
       head(
@@ -63,16 +91,34 @@ object HTMLRenderer:
         tag("style")(raw(generateCSS(theme))),
         // Syntax highlighting (v1.3)
         link(rel := "stylesheet", href := hljsCssUrl),
-        tag("script")(src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js")
+        tag("script")(src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"),
+        // Load Scala language pack (not in common bundle)
+        tag("script")(src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/scala.min.js"),
+        // Google Fonts (US-017) — injected only when theme.fonts.googleFonts is non-empty
+        googleFontLinks,
+        // Live reload (US-018) — meta-refresh injected in watch mode
+        liveReloadMeta
       ),
       body(
-        div(cls := "slides")(slideHtml),
+        // Slides container with optional break-screen attribute (v3.0.0)
+        breakScreen match {
+          case Some(path) => div(cls := "slides", attr("data-break-screen") := path)(slideHtml)
+          case None => div(cls := "slides")(slideHtml)
+        },
         div(cls := "controls")(
           span(cls := "slide-counter", id := "slide-counter")("1 / " + deck.slideCount)
         ),
         tag("script")(raw(navigationJS(deck.slideCount))),
         // Initialize syntax highlighting (v1.3)
-        tag("script")(raw("document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });"))
+        tag("script")(raw("document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });")),
+        // Note: Mermaid diagrams are server-side pre-rendered, no client-side init needed
+        // v3.0.0 feature scripts
+        tag("script")(src := "presentation-timer.js"),
+        tag("script")(src := "navigation-history.js"),
+        tag("script")(src := "goto-function.js"),
+        tag("script")(src := "history-logging.js"),
+        tag("script")(src := "header-footer.js"),
+        tag("script")(src := "break-mode.js")
       )
     )
 
@@ -166,6 +212,7 @@ object HTMLRenderer:
       display: none;
       width: 100%;
       height: 100%;
+      overflow: hidden;
       padding: ${theme.spacing.slideMargin};
       background-color: ${theme.background.color};
       justify-content: center;
@@ -175,6 +222,93 @@ object HTMLRenderer:
 
     .slide.active {
       display: flex;
+    }
+
+    /* Vertical alignment overrides (v3.0.0) */
+    .slide.align-top {
+      justify-content: flex-start;
+    }
+
+    .slide.align-center {
+      justify-content: center;
+    }
+
+    .slide.align-bottom {
+      justify-content: flex-end;
+    }
+
+    /* Slide header/footer structure (v3.0.0) */
+    .slide-header {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: ${theme.colors.text};
+      background-color: ${theme.background.color};
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    .slide-content-wrapper {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: inherit;
+      align-items: inherit;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .slide-footer {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: ${theme.colors.text};
+      background-color: ${theme.background.color};
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    /* Multi-element footer positioning (v3.0.0) */
+    .slide-footer:has(.footer-left),
+    .slide-footer:has(.footer-center),
+    .slide-footer:has(.footer-right) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-left {
+      text-align: left;
+      flex: 1;
+    }
+
+    .footer-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .footer-right {
+      text-align: right;
+      flex: 1;
+    }
+
+    /* Presentation timer overlay — injected by presentation-timer.js into body.firstChild */
+    .presentation-timer {
+      position: fixed;
+      top: 0.4rem;
+      left: 0.5rem;
+      z-index: 999;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: rgba(100, 100, 100, 0.75);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .presentation-timer.timer-paused {
+      opacity: 0.4;
     }
 
     .title-slide {
@@ -231,6 +365,7 @@ object HTMLRenderer:
       font-size: 24px;
       color: ${theme.colors.text};
       line-height: ${theme.spacing.lineHeight};
+      overflow-y: auto;
     }
 
     .slide-body p {
@@ -350,6 +485,41 @@ object HTMLRenderer:
       line-height: ${theme.spacing.lineHeight};
     }
 
+    /* Table styling */
+    .slide-body table {
+      width: auto;
+      max-width: 90%;
+      border-collapse: collapse;
+      margin: ${theme.spacing.paragraphMargin};
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 18px;
+      line-height: ${theme.spacing.lineHeight};
+      border: 2px solid #333;
+    }
+
+    .slide-body table th {
+      background-color: ${theme.colors.codeBackground};
+      color: ${theme.colors.codeText};
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #333;
+    }
+
+    .slide-body table td {
+      padding: 10px 16px;
+      border: 1px solid #333;
+    }
+
+    .slide-body table tbody tr:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .slide-body table tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
     .controls {
       position: fixed;
       bottom: 20px;
@@ -366,41 +536,285 @@ object HTMLRenderer:
       font-size: 24px;
       padding: 40px;
     }
+
+    /* Header/Footer (v3.0.0) */
+    /* v2.0.0 Template Styles */
+
+    /* Diagram template (Scenarios 18-20) */
+    .diagram-slide {
+      max-width: 1000px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 1rem;
+      text-align: center;
+      color: ${theme.colors.text};
+      margin-top: 1em;
+      font-style: italic;
+    }
+
+    /* Mermaid diagram container styling */
+    .mermaid-diagram {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      max-height: 70vh;
+      overflow: visible;
+    }
+
+    .mermaid-diagram svg {
+      max-width: 100%;
+      max-height: 70vh;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Closing template (Scenarios 22-24) */
+    .closing-slide {
+      text-align: center;
+      max-width: 800px;
+    }
+
+    .closing-heading {
+      font-size: 3rem;
+      font-family: ${theme.fonts.heading};
+      color: ${theme.colors.heading};
+      margin: ${theme.spacing.headingMargin};
+      text-align: center;
+    }
+
+    /* Section title template (Scenarios 26-27) */
+    .section-title-slide {
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .section-title-heading {
+      font-size: 4rem;
+      font-family: ${theme.fonts.heading};
+      color: ${theme.colors.heading};
+      margin: ${theme.spacing.headingMargin};
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: 1.5rem;
+      color: ${theme.colors.text};
+      margin-top: 1.5em;
+      font-weight: normal;
+    }
+
+    /* Section title two-column variant (v3.0.0) */
+    .section-title-two-column {
+      max-width: 1200px;
+      text-align: left;
+    }
+
+    .section-body {
+      font-size: 1.5rem;
+      line-height: ${theme.spacing.lineHeight};
+    }
+
+    /* Two-column template (v3.0.0) */
+    .two-column-slide {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .two-column-slide .slide-heading {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .two-column-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .column {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .column-left {
+      padding-right: 1rem;
+    }
+
+    .column-right {
+      padding-left: 1rem;
+    }
     """
 
   /**
-   * Render a single slide.
+   * Resolve colors for a slide using template configuration.
+   *
+   * Merges template color overrides with theme defaults.
+   *
+   * @param theme The theme (for default colors)
+   * @param templateConfig Optional template configuration
+   * @return Map of element -> color
+   */
+  private def resolveColors(theme: Theme, templateConfig: Option[TemplateConfiguration]): Map[String, String] =
+    val themeDefaults = Map(
+      "heading" -> theme.colors.heading,
+      "subtitle" -> theme.colors.text,
+      "body" -> theme.colors.text,
+      "author" -> theme.colors.text
+    )
+
+    templateConfig.flatMap(_.colors) match
+      case Some(templateColors) => templateColors.mergeWithDefaults(themeDefaults)
+      case None => themeDefaults
+
+  /**
+   * Resolve vertical alignment for a slide using configuration hierarchy.
+   *
+   * Hierarchy: Slide frontmatter > Theme template config > Default (center)
+   *
+   * @param slide The slide
+   * @param templateConfig Optional template configuration from theme
+   * @return Alignment string: "top", "center", or "bottom"
+   */
+  private def resolveVerticalAlignment(slide: Slide, templateConfig: Option[TemplateConfiguration]): String =
+    // 1. Check slide frontmatter (highest priority)
+    slide.getSlot("vertical-align") match
+      case Some(align) => align.toLowerCase
+      case None =>
+        // 2. Check theme template config
+        templateConfig.flatMap(_.verticalAlign) match
+          case Some(align) => align.toString.toLowerCase
+          case None => "center"  // 3. Default
+
+  /**
+   * Resolve header template for a slide using configuration hierarchy.
+   *
+   * Hierarchy: Slide frontmatter > Theme template config > Global config > None
+   *
+   * @param slide The slide
+   * @param templateConfig Optional template configuration from theme
+   * @param globalHeaderTemplate Global header template
+   * @return Optional header template string
+   */
+  private def resolveHeaderTemplate(
+    slide: Slide,
+    templateConfig: Option[TemplateConfiguration],
+    globalHeaderTemplate: Option[String]
+  ): Option[String] =
+    slide.getSlot("header")
+      .orElse(templateConfig.flatMap(_.header))
+      .orElse(globalHeaderTemplate)
+
+  /**
+   * Resolve footer template for a slide using configuration hierarchy.
+   *
+   * Hierarchy: Slide frontmatter > Theme template config > Global config > None
+   *
+   * @param slide The slide
+   * @param templateConfig Optional template configuration from theme
+   * @param globalFooterTemplate Global footer template
+   * @return Optional footer template string
+   */
+  private def resolveFooterTemplate(
+    slide: Slide,
+    templateConfig: Option[TemplateConfiguration],
+    globalFooterTemplate: Option[String]
+  ): Option[String] =
+    slide.getSlot("footer")
+      .orElse(templateConfig.flatMap(_.footer))
+      .orElse(globalFooterTemplate)
+
+  /**
+   * Render a single slide with optional header/footer.
    *
    * @param slide The slide to render
    * @param index The slide index (0-based)
    * @param totalSlides Total number of slides in deck
    * @param theme The theme (for background resolution)
+   * @param preRenderedDiagrams Map of diagram source -> pre-rendered SVG
+   * @param globalHeaderTemplate Global header template (from config/theme)
+   * @param globalFooterTemplate Global footer template (from config/theme)
    * @return HTML div element for the slide
    */
-  private def renderSlide(slide: Slide, index: Int, totalSlides: Int, theme: Theme): Frag =
-    val slideClass = if index == 0 then "slide active" else "slide"
+  private def renderSlide(
+    slide: Slide,
+    index: Int,
+    totalSlides: Int,
+    theme: Theme,
+    preRenderedDiagrams: Map[String, String],
+    globalHeaderTemplate: Option[String],
+    globalFooterTemplate: Option[String]
+  ): Frag =
+    // Resolve template configuration (hierarchy: slide frontmatter > theme template config > defaults)
+    val templateConfig = theme.templateConfig.get(slide.templateName)
+
+    // Build slide classes: active state + vertical alignment (v3.0.0)
+    val baseClass = if index == 0 then "slide active" else "slide"
+    val alignClass = resolveVerticalAlignment(slide, templateConfig) match
+      case "top" => " align-top"
+      case "bottom" => " align-bottom"
+      case _ => " align-center"  // default or "center"
+    val slideClass = baseClass + alignClass
 
     // Resolve background using fallback chain (US-011)
     val backgroundModifiers = resolveBackgroundImage(slide, theme) match
       case Some(bgPath) =>
-        Seq(attr("style") := s"background-image: url('$bgPath'); background-size: cover; background-position: center;")
+        // Only rewrite content images (per-slide frontmatter); theme backgrounds are already at correct paths
+        val finalBg = if slide.backgroundImage.isDefined then rewriteImageUrl(bgPath) else bgPath
+        // User-supplied images use cover (fill + crop); theme template backgrounds use 100% 100% (exact fill, no crop)
+        val bgSize = if slide.backgroundImage.isDefined then "cover" else "100% 100%"
+        Seq(attr("style") := s"background-image: url('$finalBg'); background-size: $bgSize; background-position: center; background-repeat: no-repeat;")
       case None =>
         Seq()  // No inline background, use CSS default
 
+    // Determine header/footer for this slide using configuration hierarchy
+    val headerTemplate = resolveHeaderTemplate(slide, templateConfig, globalHeaderTemplate)
+    val footerTemplate = resolveFooterTemplate(slide, templateConfig, globalFooterTemplate)
+
+    // Resolve colors for this slide (merge template config with theme defaults)
+    val colors = resolveColors(theme, templateConfig)
+
     div(cls := slideClass, attr("data-slide-index") := index.toString, backgroundModifiers)(
-      renderSlideContent(slide)
+      // Render header if template exists
+      headerTemplate.map(template =>
+        div(cls := "slide-header", attr("data-template") := template)(raw(template))
+      ),
+      // Render slide content
+      div(cls := "slide-content-wrapper")(
+        renderSlideContent(slide, preRenderedDiagrams, colors, templateConfig)
+      ),
+      // Render footer if template exists
+      footerTemplate.map(template =>
+        div(cls := "slide-footer", attr("data-template") := template)(raw(template))
+      )
     )
 
   /**
    * Render slide content based on template type.
    *
    * @param slide The slide to render
+   * @param preRenderedDiagrams Map of diagram source -> pre-rendered SVG
+   * @param colors Resolved colors for this slide
+   * @param templateConfig Optional template configuration from theme
    * @return HTML content for the slide
    */
-  private def renderSlideContent(slide: Slide): Frag =
+  private def renderSlideContent(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String], templateConfig: Option[TemplateConfiguration]): Frag =
     slide.templateName match
-      case "title" => renderTitleSlide(slide)
-      case "content" => renderContentSlide(slide)
+      case "title" => renderTitleSlide(slide, preRenderedDiagrams, colors)
+      case "content" => renderContentSlide(slide, preRenderedDiagrams, colors)
+      case "diagram" => renderDiagramSlide(slide, preRenderedDiagrams, colors)
+      case "closing" => renderClosingSlide(slide, preRenderedDiagrams, colors)
+      case "section-title" => renderSectionTitleSlide(slide, preRenderedDiagrams, colors, templateConfig)
+      case "two-column" => renderTwoColumnSlide(slide, preRenderedDiagrams, colors)
       case _ => div(cls := "error")("Unknown template: " + slide.templateName)
 
   /**
@@ -409,21 +823,21 @@ object HTMLRenderer:
    * Title/subtitle are top-justified, author is bottom-justified.
    * This matches standard presentation design patterns.
    */
-  private def renderTitleSlide(slide: Slide): Frag =
+  private def renderTitleSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
     div(cls := "title-slide")(
       // Header section (top-justified)
       div(cls := "title-slide-header")(
         slide.getSlot("title").map(title =>
-          h1(cls := "slide-title")(renderFormattedText(title))
+          h1(cls := "slide-title", style := s"color: ${colors("heading")}")(renderFormattedText(title, preRenderedDiagrams))
         ),
         slide.getSlot("subtitle").map(subtitle =>
-          h2(cls := "slide-subtitle")(renderFormattedText(subtitle))
+          h2(cls := "slide-subtitle", style := s"color: ${colors("subtitle")}")(renderFormattedText(subtitle, preRenderedDiagrams))
         )
       ),
       // Footer section (bottom-justified)
       slide.getSlot("author").map(author =>
         div(cls := "title-slide-footer")(
-          p(cls := "slide-author")(renderFormattedText(author))
+          p(cls := "slide-author", style := s"color: ${colors("author")}")(renderFormattedText(author, preRenderedDiagrams))
         )
       )
     )
@@ -431,14 +845,143 @@ object HTMLRenderer:
   /**
    * Render a content slide.
    */
-  private def renderContentSlide(slide: Slide): Frag =
+  private def renderContentSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
     div(cls := "content-slide")(
       slide.getSlot("heading").map(heading =>
-        h2(cls := "slide-heading")(renderFormattedText(heading))
+        h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
       ),
       slide.getSlot("body").map(body =>
-        div(cls := "slide-body")(
-          renderFormattedText(body)
+        div(cls := "slide-body", style := s"color: ${colors("body")}")(
+          renderFormattedText(body, preRenderedDiagrams)
+        )
+      )
+    )
+
+  /**
+   * Render a diagram slide (v2.0.0).
+   *
+   * Diagram template optimized for Mermaid diagrams.
+   * Layout: heading, diagram content, optional caption.
+   *
+   * Related: Example Mapping Scenarios 18-20
+   */
+  private def renderDiagramSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
+    div(cls := "diagram-slide")(
+      slide.getSlot("heading").map(heading =>
+        h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
+      ),
+      // Body contains Mermaid diagram(s)
+      slide.getSlot("body").map(body =>
+        div(cls := "slide-body", style := s"color: ${colors("body")}")(
+          renderFormattedText(body, preRenderedDiagrams)
+        )
+      ),
+      // Optional caption below diagram (Scenario 18)
+      slide.getSlot("caption").map(caption =>
+        p(cls := "diagram-caption")(renderFormattedText(caption, preRenderedDiagrams))
+      )
+    )
+
+  /**
+   * Render a closing slide (v2.0.0).
+   *
+   * Closing template for thank you slides and contact information.
+   * Layout: large centered heading, optional body with contact info.
+   *
+   * Related: Example Mapping Scenarios 22-24
+   */
+  private def renderClosingSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
+    div(cls := "closing-slide")(
+      slide.getSlot("heading").map(heading =>
+        h1(cls := "closing-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
+      ),
+      slide.getSlot("body").map(body =>
+        div(cls := "slide-body", style := s"color: ${colors("body")}")(
+          renderFormattedText(body, preRenderedDiagrams)
+        )
+      )
+    )
+
+  /**
+   * Render a section title slide (v2.0.0).
+   *
+   * Section title template for dividing long presentations.
+   * Layout: very large heading, optional subtitle (body).
+   * Supports two-column layout via template configuration (v3.0.0).
+   *
+   * Related: Example Mapping Scenarios 26-27
+   */
+  private def renderSectionTitleSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String], templateConfig: Option[TemplateConfiguration]): Frag =
+    import com.tjmsolutions.mdslides.domain.TemplateLayout
+
+    // Check if template config specifies two-column layout
+    val isTwoColumn = templateConfig.flatMap(_.layout).contains(TemplateLayout.TwoColumn)
+
+    if isTwoColumn then
+      // Two-column layout: heading in left column, body in right column
+      val columnConfig = templateConfig.flatMap(_.columnConfig)
+      val leftWidth = columnConfig.flatMap(_.leftColumn.width).getOrElse("40%")
+      val rightWidth = columnConfig.flatMap(_.rightColumn.width).getOrElse("60%")
+
+      // Resolve column-specific colors
+      val leftColors = columnConfig.flatMap(_.leftColumn.colors).map(_.mergeWithDefaults(Map("heading" -> colors("heading")))).getOrElse(colors)
+      val rightColors = columnConfig.flatMap(_.rightColumn.colors).map(_.mergeWithDefaults(Map("body" -> colors("body")))).getOrElse(colors)
+
+      div(cls := "section-title-slide section-title-two-column", attr("role") := "region", attr("aria-label") := "Section title slide")(
+        div(cls := "two-column-container", style := s"grid-template-columns: $leftWidth $rightWidth")(
+          tag("section")(cls := "column column-left", attr("aria-label") := "Section heading", style := s"color: ${leftColors("heading")}")(
+            slide.getSlot("heading").map(heading =>
+              h1(cls := "section-title-heading", style := s"color: ${leftColors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
+            ).getOrElse(div())
+          ),
+          tag("section")(cls := "column column-right", attr("aria-label") := "Section description", style := s"color: ${rightColors("body")}")(
+            slide.getSlot("body").map(body =>
+              div(cls := "section-body")(renderFormattedText(body, preRenderedDiagrams))
+            ).getOrElse(div())
+          )
+        )
+      )
+    else
+      // Standard centered layout
+      div(cls := "section-title-slide")(
+        slide.getSlot("heading").map(heading =>
+          h1(cls := "section-title-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
+        ),
+        slide.getSlot("body").map(body =>
+          p(cls := "section-subtitle", style := s"color: ${colors("body")}")(renderFormattedText(body, preRenderedDiagrams))
+        )
+      )
+
+  /**
+   * Render a two-column slide (v3.0.0).
+   *
+   * Renders left and right columns side-by-side using CSS Grid.
+   * Each column supports full markdown formatting.
+   * Optional title rendered above columns if present in frontmatter.
+   *
+   * @param slide The slide with leftColumn and rightColumn slots, optional title
+   * @param preRenderedDiagrams Map of pre-rendered diagrams
+   * @param colors Resolved colors for this slide
+   * @return HTML div with two-column layout
+   */
+  private def renderTwoColumnSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
+    // AC-12 (Two-Column Layout): ARIA attributes for accessibility
+    div(cls := "two-column-slide", attr("role") := "region", attr("aria-label") := "Two-column slide")(
+      // Render title if present in frontmatter
+      slide.getSlot("title").map(title =>
+        h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(title, preRenderedDiagrams))
+      ),
+      // Two-column container
+      div(cls := "two-column-container")(
+        tag("section")(cls := "column column-left", attr("aria-label") := "Left column", style := s"color: ${colors("body")}")(
+          slide.getSlot("leftColumn").map(leftContent =>
+            renderFormattedText(leftContent, preRenderedDiagrams)
+          ).getOrElse(div(cls := "error")("Missing left column"))
+        ),
+        tag("section")(cls := "column column-right", attr("aria-label") := "Right column", style := s"color: ${colors("body")}")(
+          slide.getSlot("rightColumn").map(rightContent =>
+            renderFormattedText(rightContent, preRenderedDiagrams)
+          ).getOrElse(div(cls := "error")("Missing right column"))
         )
       )
     )
@@ -451,9 +994,9 @@ object HTMLRenderer:
    * @param text Plain text or markdown text
    * @return HTML fragments with formatting
    */
-  private def renderFormattedText(text: String): Frag =
+  private def renderFormattedText(text: String, preRenderedDiagrams: Map[String, String] = Map.empty): Frag =
     val formatted = FlexmarkAdapter.parseInlineFormatting(text)
-    renderFormattedContentWithParagraphs(formatted)
+    renderFormattedContentWithParagraphs(formatted, preRenderedDiagrams)
 
   /**
    * Render FormattedContent to HTML with paragraph structure, code blocks, and images.
@@ -464,7 +1007,10 @@ object HTMLRenderer:
    * @param content Formatted content from domain
    * @return HTML fragments
    */
-  private def renderFormattedContentWithParagraphs(content: FormattedContent): Frag =
+  private def renderFormattedContentWithParagraphs(
+    content: FormattedContent,
+    preRenderedDiagrams: Map[String, String] = Map.empty
+  ): Frag =
     // Build a map of link text → URL for easy lookup
     val linkMap = content.links.map(link => link.text -> link.url).toMap
 
@@ -495,34 +1041,48 @@ object HTMLRenderer:
     if currentParagraph.nonEmpty then
       paragraphs += currentParagraph.toList
 
-    // Render paragraphs
-    val paragraphFrags = if paragraphs.isEmpty then
-      Seq.empty[Frag]
-    else
-      paragraphs.toList.map { paraSpans =>
-        p(paraSpans.map(span => renderTextSpanWithLinks(span, linkMap)))
-      }
-
-    // Render code blocks
-    val codeBlockFrags = content.codeBlocks.map(renderCodeBlock)
-
-    // Render content images
-    val imageFrags = content.contentImages.map(renderContentImage)
-
-    // Render lists in source order (BUG-001 fix)
-    // Backward compatibility: use old fields if new lists field is empty
-    val listFrags = if content.lists.nonEmpty then
-      content.lists.map {
-        case UnorderedListElement(list) => renderUnorderedList(list, linkMap)
-        case OrderedListElement(list) => renderOrderedList(list, linkMap)
+    // BUG-001 REAL FIX: Render from content field which preserves ALL source order
+    if content.content.nonEmpty then
+      // Use new content field - renders everything in source order
+      content.content.map {
+        case ParagraphElement(spans) =>
+          p(spans.map(span => renderTextSpanWithLinks(span, linkMap)))
+        case UnorderedListElement(list) =>
+          renderUnorderedList(list, linkMap)
+        case OrderedListElement(list) =>
+          renderOrderedList(list, linkMap)
+        case CodeBlockElement(block) =>
+          renderCodeBlock(block)
+        case ImageElement(image) =>
+          renderContentImage(image)
+        case DiagramElement(diagram) =>
+          renderMermaidDiagram(diagram, preRenderedDiagrams)
+        case TableElement(table) =>
+          renderTable(table, linkMap)
       }
     else
-      // Legacy: render unordered before ordered (preserves old test behavior)
-      content.unorderedLists.map(renderUnorderedList(_, linkMap)) ++
-      content.orderedLists.map(renderOrderedList(_, linkMap))
+      // DEPRECATED: Backward compatibility - old field-by-field rendering
+      // This path renders in WRONG order (all text, then code, then images, then lists)
+      val paragraphFrags = if paragraphs.isEmpty then
+        Seq.empty[Frag]
+      else
+        paragraphs.toList.map { paraSpans =>
+          p(paraSpans.map(span => renderTextSpanWithLinks(span, linkMap)))
+        }
 
-    // Combine paragraphs, code blocks, images, and lists
-    Seq(paragraphFrags, codeBlockFrags, imageFrags, listFrags)
+      val codeBlockFrags = content.codeBlocks.map(renderCodeBlock)
+      val imageFrags = content.contentImages.map(renderContentImage)
+
+      val listFrags = if content.lists.nonEmpty then
+        content.lists.map {
+          case UnorderedListElementDeprecated(list) => renderUnorderedList(list, linkMap)
+          case OrderedListElementDeprecated(list) => renderOrderedList(list, linkMap)
+        }
+      else
+        content.unorderedLists.map(renderUnorderedList(_, linkMap)) ++
+        content.orderedLists.map(renderOrderedList(_, linkMap))
+
+      Seq(paragraphFrags, codeBlockFrags, imageFrags, listFrags)
 
   /**
    * Render a TextSpan, converting to link if text matches a link.
@@ -575,6 +1135,24 @@ object HTMLRenderer:
     tag("pre")(codeTag)
 
   /**
+   * Rewrite image URL for HTML output.
+   *
+   * Local images are copied to images/ subdirectory, so we need to rewrite the path.
+   * Remote URLs and data URIs are used as-is.
+   *
+   * @param url Original image URL from markdown
+   * @return Rewritten URL for HTML
+   */
+  private def rewriteImageUrl(url: String): String =
+    if url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:") then
+      // Remote URL or data URI - use as-is
+      url
+    else
+      // Local file - extract filename and point to images/ subdirectory
+      val filename = Paths.get(url).getFileName.toString
+      s"images/$filename"
+
+  /**
    * Render content image to HTML (US-005).
    *
    * Creates <img> tag with alt text for accessibility (PDR-005, PDR-008).
@@ -585,9 +1163,43 @@ object HTMLRenderer:
   private def renderContentImage(image: ContentImage): Frag =
     img(
       cls := "content-image",
-      src := image.url,
+      src := rewriteImageUrl(image.url),
       alt := image.altText
     )
+
+  /**
+   * Render Mermaid diagram to HTML (v2.0.0, US-022).
+   *
+   * Server-side pre-rendering for offline support.
+   * Uses pre-rendered SVG if available, otherwise shows fallback.
+   *
+   * @param diagram Mermaid diagram from domain
+   * @param preRenderedDiagrams Map of diagram source -> pre-rendered SVG
+   * @return HTML <div> element with inline SVG or fallback
+   */
+  private def renderMermaidDiagram(
+    diagram: MermaidDiagram,
+    preRenderedDiagrams: Map[String, String] = Map.empty
+  ): Frag =
+    preRenderedDiagrams.get(diagram.source) match
+      case Some(svg) =>
+        // Use pre-rendered SVG (offline support)
+        div(
+          cls := "mermaid-diagram",
+          diagram.altText.map(alt => attr("aria-label") := alt),
+          attr("data-diagram-type") := diagram.diagramType,
+          raw(svg)
+        )
+      case None =>
+        // Fallback: show diagram source with warning
+        div(
+          cls := "mermaid-fallback",
+          diagram.altText.map(alt => attr("aria-label") := alt),
+          raw(s"""<pre style="background: #f5f5f5; padding: 1em; border-radius: 4px; overflow: auto;"><code>${diagram.source}</code></pre>
+                 |<p style="color: #d32f2f; font-size: 0.9em; margin-top: 0.5em;">
+                 |  ⚠ Diagram not rendered. Install mermaid-cli: npm install -g @mermaid-js/mermaid-cli
+                 |</p>""".stripMargin)
+        )
 
   /**
    * Render an unordered list (bullet points).
@@ -629,6 +1241,42 @@ object HTMLRenderer:
       }
     )
 
+  private def renderTable(tbl: Table, linkMap: Map[String, String]): Frag =
+    val headerCells = tbl.headers.zipWithIndex.map { case (header, idx) =>
+      val alignment = if tbl.alignment.nonEmpty && idx < tbl.alignment.length then
+        tbl.alignment(idx) match {
+          case "left" => style := "text-align: left"
+          case "center" => style := "text-align: center"
+          case "right" => style := "text-align: right"
+          case _ => style := "text-align: left"
+        }
+      else
+        style := "text-align: left"
+      th(alignment)(header)
+    }
+
+    val headerRow = tr(headerCells: _*)
+    val bodyRows = tbl.rows.map { row =>
+      val cells = row.zipWithIndex.map { case (cell, idx) =>
+        val alignment = if tbl.alignment.nonEmpty && idx < tbl.alignment.length then
+          tbl.alignment(idx) match {
+            case "left" => style := "text-align: left"
+            case "center" => style := "text-align: center"
+            case "right" => style := "text-align: right"
+            case _ => style := "text-align: left"
+          }
+        else
+          style := "text-align: left"
+        td(alignment)(cell)
+      }
+      tr(cells: _*)
+    }
+
+    tag("table")(
+      thead(headerRow),
+      tbody(bodyRows: _*)
+    )
+
   /**
    * Navigation JavaScript with code block auto-scaling.
    *
@@ -644,6 +1292,8 @@ object HTMLRenderer:
       slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === index);
       });
+
+      currentSlide = index;
 
       const counter = document.getElementById('slide-counter');
       counter.textContent = (index + 1) + ' / ' + totalSlides;
@@ -685,6 +1335,35 @@ object HTMLRenderer:
       });
     }
 
+    // Auto-scale body content that exceeds viewport height (PDR-001, PDR-006)
+    function scaleBodyContent() {
+      document.querySelectorAll('.slide').forEach(slide => {
+        const slideBody = slide.querySelector('.slide-body');
+        if (!slideBody) return;
+
+        // Use actual rendered height instead of line count
+        // PDR-006: Max body height is 70vh (leaving room for header/footer/padding)
+        const maxHeight = window.innerHeight * 0.70;
+        const actualHeight = slideBody.scrollHeight;
+
+        if (actualHeight > maxHeight) {
+          // PDR-006 scaling formula: fontSize = max(10px, currentFontSize * (maxHeight / actualHeight))
+          const scaleFactor = maxHeight / actualHeight;
+          const currentFontSize = parseFloat(window.getComputedStyle(slideBody).fontSize) || 24;
+          const minFontSize = 10; // Readability floor
+          const scaledFontSize = Math.max(minFontSize, currentFontSize * scaleFactor);
+
+          slideBody.style.fontSize = scaledFontSize + 'px';
+
+          // Also scale code blocks proportionally
+          slideBody.querySelectorAll('pre code').forEach(code => {
+            const codeFontSize = parseFloat(window.getComputedStyle(code).fontSize) || 18;
+            code.parentElement.style.fontSize = Math.max(10, codeFontSize * scaleFactor) + 'px';
+          });
+        }
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       switch(e.key) {
         case 'ArrowRight':
@@ -707,13 +1386,71 @@ object HTMLRenderer:
         case 's':
         case 'S':
           e.preventDefault();
-          window.open('speaker.html', 'speaker-view', 'width=1024,height=768');
+          // Open speaker view with current slide index
+          window.open(`speaker.html?slide=$${currentSlide}`, 'speaker-view', 'width=1024,height=768');
+          break;
+        case 't':
+        case 'T':
+          e.preventDefault();
+          if (timerManager) timerManager.togglePause();
+          break;
+        case 'r':
+        case 'R':
+          e.preventDefault();
+          if (timerManager) timerManager.reset();
           break;
       }
     });
 
-    // Run auto-scaling on page load
-    window.addEventListener('DOMContentLoaded', scaleCodeBlocks);
+    // Run auto-scaling on page load (PDR-001, PDR-006)
+    window.addEventListener('DOMContentLoaded', () => {
+      scaleCodeBlocks();
+      scaleBodyContent();
+    });
+  """
+
+  /**
+   * Generate Mermaid initialization JavaScript (v2.0.0).
+   *
+   * Initializes Mermaid.js with theme-aware configuration.
+   * Implements scenarios 9-10 (theme-aware rendering) and 11-12 (graceful degradation).
+   *
+   * @param theme Current presentation theme
+   * @return JavaScript code for Mermaid initialization
+   */
+  private def mermaidInitJS(theme: Theme): String =
+    val mermaidTheme = theme.name match
+      case "dark" => "dark"
+      case "corporate" => "dark"
+      case _ => "default"
+
+    s"""
+    // Initialize and run mermaid (v10.9.x)
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        theme: '$mermaidTheme',
+        securityLevel: 'loose',
+        startOnLoad: false
+      });
+
+      // Manually run mermaid since DOM is already loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        mermaid.run();
+      });
+    } else {
+      // Graceful degradation: CDN failed to load (scenarios 11-12)
+      document.addEventListener('DOMContentLoaded', () => {
+        console.warn('Mermaid.js CDN unavailable. Diagrams will not render.');
+        document.querySelectorAll('.mermaid').forEach(diagram => {
+          const source = diagram.textContent;
+          diagram.innerHTML = '<pre style="background: #f5f5f5; padding: 1em; border-radius: 4px; overflow: auto;"><code>' +
+            source + '</code></pre>' +
+            '<p style="color: #d32f2f; font-size: 0.9em; margin-top: 0.5em;">' +
+            '⚠ Diagram rendering unavailable. Mermaid.js CDN failed to load. Check internet connection or install locally.' +
+            '</p>';
+        });
+      });
+    }
   """
 
 end HTMLRenderer

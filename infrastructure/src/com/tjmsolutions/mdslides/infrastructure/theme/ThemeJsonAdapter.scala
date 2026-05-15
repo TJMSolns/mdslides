@@ -84,9 +84,15 @@ object ThemeJsonAdapter:
   given Decoder[ColorScheme] = deriveDecoder[ColorScheme]
 
   /**
-   * Decoder for FontScheme - all fields required.
+   * Decoder for FontScheme — body/heading/code required; googleFonts optional (default Nil).
    */
-  given Decoder[FontScheme] = deriveDecoder[FontScheme]
+  given Decoder[FontScheme] = (c: HCursor) =>
+    for
+      body        <- c.downField("body").as[String]
+      heading     <- c.downField("heading").as[String]
+      code        <- c.downField("code").as[String]
+      googleFonts <- c.downField("googleFonts").as[Option[List[String]]].map(_.getOrElse(Nil))
+    yield FontScheme(body, heading, code, googleFonts)
 
   /**
    * Decoder for Spacing - all fields required.
@@ -104,9 +110,66 @@ object ThemeJsonAdapter:
   given Decoder[SlideCounter] = deriveDecoder[SlideCounter]
 
   /**
+   * Decoder for VerticalAlignment - parses string to enum.
+   */
+  given Decoder[VerticalAlignment] = Decoder.decodeString.emap { str =>
+    VerticalAlignment.fromString(str)
+  }
+
+  /**
+   * Decoder for TemplateLayout - parses string to enum.
+   */
+  given Decoder[TemplateLayout] = Decoder.decodeString.emap { str =>
+    TemplateLayout.fromString(str)
+  }
+
+  /**
+   * Decoder for TemplateColors - optional color fields.
+   */
+  given Decoder[TemplateColors] = (c: HCursor) =>
+    for
+      heading <- c.downField("heading").as[Option[String]]
+      subtitle <- c.downField("subtitle").as[Option[String]]
+      body <- c.downField("body").as[Option[String]]
+      author <- c.downField("author").as[Option[String]]
+    yield TemplateColors(heading, subtitle, body, author)
+
+  /**
+   * Decoder for ColumnSpec - optional width and colors.
+   */
+  given Decoder[ColumnSpec] = (c: HCursor) =>
+    for
+      width <- c.downField("width").as[Option[String]]
+      colors <- c.downField("colors").as[Option[TemplateColors]]
+    yield ColumnSpec(width, colors)
+
+  /**
+   * Decoder for ColumnConfiguration - left and right column specs.
+   */
+  given Decoder[ColumnConfiguration] = (c: HCursor) =>
+    for
+      leftColumn <- c.downField("leftColumn").as[ColumnSpec]
+      rightColumn <- c.downField("rightColumn").as[ColumnSpec]
+    yield ColumnConfiguration(leftColumn, rightColumn)
+
+  /**
+   * Decoder for TemplateConfiguration - all fields optional except templateName.
+   */
+  given Decoder[TemplateConfiguration] = (c: HCursor) =>
+    for
+      templateName <- c.downField("templateName").as[Option[String]].map(_.getOrElse(""))
+      verticalAlign <- c.downField("verticalAlign").as[Option[VerticalAlignment]]
+      layout <- c.downField("layout").as[Option[TemplateLayout]]
+      colors <- c.downField("colors").as[Option[TemplateColors]]
+      columnConfig <- c.downField("columnConfig").as[Option[ColumnConfiguration]]
+      header <- c.downField("header").as[Option[String]]
+      footer <- c.downField("footer").as[Option[String]]
+    yield TemplateConfiguration(templateName, verticalAlign, layout, colors, columnConfig, header, footer)
+
+  /**
    * Decoder for Theme - top-level aggregate.
    *
-   * Handles optional templateBackgrounds field (US-012).
+   * Handles optional templateBackgrounds field (US-012) and templateConfig.
    */
   given Decoder[Theme] = (c: HCursor) =>
     for
@@ -119,6 +182,12 @@ object ThemeJsonAdapter:
       syntax <- c.downField("syntax").as[SyntaxColors]
       slideCounter <- c.downField("slideCounter").as[SlideCounter]
       templateBackgrounds <- c.downField("templateBackgrounds").as[Option[Map[String, String]]].map(_.getOrElse(Map.empty))
-    yield Theme(name, version, background, colors, fonts, spacing, syntax, slideCounter, templateBackgrounds)
+      templateConfig <- c.downField("templateConfig").as[Option[Map[String, TemplateConfiguration]]].map { optMap =>
+        optMap.getOrElse(Map.empty).map { case (templateName, config) =>
+          // Set templateName from map key if not already set
+          (templateName, if config.templateName.isEmpty then config.copy(templateName = templateName) else config)
+        }
+      }
+    yield Theme(name, version, background, colors, fonts, spacing, syntax, slideCounter, templateBackgrounds, templateConfig)
 
 end ThemeJsonAdapter

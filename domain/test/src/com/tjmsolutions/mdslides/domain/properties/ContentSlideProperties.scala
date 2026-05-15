@@ -124,7 +124,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one StructureError
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
+            case ValidationError.StructureError(_, msg, _) =>
               msg.contains("heading") && msg.contains("missing")
             case _ => false
           }
@@ -146,7 +146,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one StructureError
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
+            case ValidationError.StructureError(_, msg, _) =>
               msg.contains("body") && msg.contains("missing")
             case _ => false
           }
@@ -168,7 +168,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one ContentError about lines
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg) =>
+            case ValidationError.ContentError(_, slotName, msg, _) =>
               slotName == "body" && msg.contains("exceeds max 12 lines")
             case _ => false
           }
@@ -190,7 +190,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one ContentError about words
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg) =>
+            case ValidationError.ContentError(_, slotName, msg, _) =>
               slotName == "body" && msg.contains("exceeds max 150 words")
             case _ => false
           }

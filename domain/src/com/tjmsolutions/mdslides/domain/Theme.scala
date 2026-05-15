@@ -12,6 +12,7 @@ package com.tjmsolutions.mdslides.domain
  * - Background opacity must be 0.0 - 1.0
  * - Colors must meet WCAG AA contrast requirements (validated in infrastructure)
  * - templateBackgrounds is a map from template name to background image path
+ * - templateConfig is a map from template name to TemplateConfiguration
  *
  * Related Governance:
  * - US-008: Theme System
@@ -31,7 +32,8 @@ case class Theme(
   spacing: Spacing,
   syntax: SyntaxColors,
   slideCounter: SlideCounter,
-  templateBackgrounds: Map[String, String] = Map.empty
+  templateBackgrounds: Map[String, String] = Map.empty,
+  templateConfig: Map[String, TemplateConfiguration] = Map.empty
 )
 
 /**
@@ -76,7 +78,8 @@ case class ColorScheme(
 case class FontScheme(
   body: String,
   heading: String,
-  code: String
+  code: String,
+  googleFonts: List[String] = Nil
 )
 
 /**
@@ -131,9 +134,9 @@ object Theme:
     colors = ColorScheme(
       text = "#333333",
       heading = "#2c3e50",
-      accent = "#3498db",
-      link = "#3498db",
-      linkHover = "#2980b9",
+      accent = "#0066CC",  // Changed from #3498db - WCAG AA compliant (4.54:1 contrast)
+      link = "#0066CC",    // Changed from #3498db - WCAG AA compliant (4.54:1 contrast)
+      linkHover = "#004C99",  // Changed from #2980b9 - darker for hover
       codeBackground = "#f4f4f4",
       codeText = "#333333"
     ),
@@ -218,7 +221,7 @@ object Theme:
     version = "1.0.0",
     background = Background(
       color = "#f8f9fa",
-      image = Some("./themes/corporate/logo-watermark.png"),
+      image = None,  // No background image (logo-watermark.png doesn't exist)
       opacity = 0.05,
       position = Some("bottom right"),
       size = Some("200px auto")

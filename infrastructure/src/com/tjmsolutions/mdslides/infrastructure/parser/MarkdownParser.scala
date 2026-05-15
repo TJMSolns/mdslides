@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Template}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits.*
 
@@ -72,6 +72,23 @@ object MarkdownParser:
           case Some(nel) => Right(SlideDeck(nel))
 
   /**
+   * Compute the source line number (1-based) of each slide's opening --- delimiter.
+   *
+   * Returns Map[slideIndex (1-based), lineNumber (1-based)].
+   * Slides are delimited by pairs of --- lines: the odd-indexed --- lines open slides.
+   * Example: slide 1 opens at separator[0], slide 2 at separator[2], etc.
+   */
+  def slideLineNumbers(markdown: String): Map[Int, Int] =
+    val lines = markdown.split("\n", -1)
+    val separatorLines = lines.zipWithIndex.collect {
+      case (l, idx) if l.trim == "---" => idx + 1  // 1-based line number
+    }.toList
+    // Even-indexed separators (0, 2, 4...) open slides 1, 2, 3...
+    separatorLines.zipWithIndex.collect {
+      case (lineNum, idx) if idx % 2 == 0 => (idx / 2 + 1) -> lineNum
+    }.toMap
+
+  /**
    * Split markdown into raw slide chunks.
    *
    * Each slide has format:
@@ -110,14 +127,33 @@ object MarkdownParser:
     // Get background image from frontmatter (optional, US-011)
     val backgroundImage = frontmatter.get("background")
 
-    // Get speaker notes from frontmatter (optional, US-004)
-    val notes = frontmatter.get("notes")
+    // Get speaker notes from frontmatter OR HTML comments (optional, US-004)
+    val (contentWithoutNotes, extractedNotes) = extractSpeakerNotes(content)
+    val notes = frontmatter.get("notes").orElse(extractedNotes)
 
-    // Parse content based on template
-    val slots = templateName match
-      case "title" => parseTitleSlide(content)
-      case "content" => parseContentSlide(content)
+    // Validate template exists (v2.0.0: supports diagram, closing, section-title)
+    Template.fromName(templateName) match
+      case Left(error) => return Left(s"Slide $slideNumber: $error")
+      case Right(_) => () // Template is valid
+
+    // Parse content based on template (use contentWithoutNotes to exclude speaker notes from slots)
+    val baseSlots = templateName match
+      case "title" => parseTitleSlide(contentWithoutNotes)
+      case "content" => parseContentSlide(contentWithoutNotes)
+      case "diagram" => parseContentSlide(contentWithoutNotes) // Same parsing as content
+      case "closing" => parseContentSlide(contentWithoutNotes) // Same parsing as content
+      case "section-title" => parseContentSlide(contentWithoutNotes) // Same parsing as content
+      case "two-column" => parseTwoColumnSlide(contentWithoutNotes, slideNumber) match
+        case Left(error) => return Left(s"Slide $slideNumber: $error")
+        case Right(twoColumnSlots) => twoColumnSlots
       case _ => return Left(s"Slide $slideNumber: Unknown template '$templateName'")
+
+    // Add optional frontmatter fields to slots (v3.0.0)
+    var slots = baseSlots
+    frontmatter.get("title").foreach(v => slots = slots + ("title" -> v))
+    frontmatter.get("vertical-align").foreach(v => slots = slots + ("vertical-align" -> v))
+    frontmatter.get("header").foreach(v => slots = slots + ("header" -> v))
+    frontmatter.get("footer").foreach(v => slots = slots + ("footer" -> v))
 
     // Create slide ID
     SlideId(slideNumber) match
@@ -224,6 +260,33 @@ object MarkdownParser:
     result.result()
 
   /**
+   * Extract speaker notes from HTML comments.
+   *
+   * Searches for HTML comments in the format:
+   * <!-- Speaker notes: content here -->
+   *
+   * Returns content with speaker note comments removed, and the extracted notes.
+   *
+   * @param content Markdown content that may contain speaker note comments
+   * @return (content without speaker note comments, extracted speaker notes)
+   */
+  private def extractSpeakerNotes(content: String): (String, Option[String]) =
+    // Pattern: <!-- Speaker notes: ... -->
+    val speakerNotePattern = """<!--\s*Speaker notes?:\s*(.+?)\s*-->""".r
+
+    val notes = scala.collection.mutable.ListBuffer.empty[String]
+    var contentWithoutNotes = content
+
+    speakerNotePattern.findAllMatchIn(content).foreach { m =>
+      notes += m.group(1).trim
+      // Remove the comment from content
+      contentWithoutNotes = contentWithoutNotes.replace(m.matched, "")
+    }
+
+    val extractedNotes = if notes.nonEmpty then Some(notes.mkString("\n\n")) else None
+    (contentWithoutNotes, extractedNotes)
+
+  /**
    * Parse title slide content.
    *
    * Expected format:
@@ -279,5 +342,34 @@ object MarkdownParser:
         slots += ("body" -> bodyLines.mkString("\n"))
 
     slots.result()
+
+  /**
+   * Parse two-column slide content.
+   *
+   * Expected format:
+   * ```
+   * ## Heading (optional)
+   * Left column content
+   *
+   * ---column---
+   *
+   * Right column content
+   * ```
+   *
+   * @param content Slide content with ---column--- delimiter
+   * @param slideNumber Slide number for error messages
+   * @return Either error or slots map
+   */
+  private def parseTwoColumnSlide(content: String, slideNumber: Int): Either[String, Map[String, String]] =
+    import com.tjmsolutions.mdslides.domain.TwoColumnSlide
+
+    // Split content by ---column--- delimiter
+    TwoColumnSlide.parseColumns(content) match
+      case Left(error) => Left(error.toString)
+      case Right((leftColumn, rightColumn)) =>
+        Right(Map(
+          "leftColumn" -> leftColumn,
+          "rightColumn" -> rightColumn
+        ))
 
 end MarkdownParser

@@ -128,9 +128,15 @@ object ThemeLoader:
     themeDirectory: Path,
     parentThemeDir: Path
   ): IO[Unit] =
-    IO {
+    IO.blocking {
+      if !Files.exists(themeDirectory) then ()
+      else if !Files.isDirectory(themeDirectory) then ()
+      else
+        val themeJsonPath = themeDirectory.resolve("theme.json")
+        if !Files.exists(themeJsonPath) then ()
+    }.flatMap { _ =>
       if !Files.exists(themeDirectory) then
-        throw ThemeNotFoundException(
+        IO.raiseError(ThemeNotFoundException(
           s"Theme '$themeName' not found in ${parentThemeDir}\n" +
           s"\n" +
           s"Searched for: ${themeDirectory}\n" +
@@ -140,20 +146,21 @@ object ThemeLoader:
           s"\n" +
           s"\n" +
           s"Use 'mdslides config set theme-dir /path' to change theme directory."
-        )
-
-      if !Files.isDirectory(themeDirectory) then
-        throw ThemeNotFoundException(
+        ))
+      else if !Files.isDirectory(themeDirectory) then
+        IO.raiseError(ThemeNotFoundException(
           s"Theme '$themeName' is not a directory: ${themeDirectory}\n" +
           s"Themes must be directories containing theme.json"
-        )
-
-      val themeJsonPath = themeDirectory.resolve("theme.json")
-      if !Files.exists(themeJsonPath) then
-        throw ThemeNotFoundException(
-          s"Theme '$themeName' found but theme.json is missing\n" +
-          s"Expected file: ${themeJsonPath}"
-        )
+        ))
+      else
+        val themeJsonPath = themeDirectory.resolve("theme.json")
+        if !Files.exists(themeJsonPath) then
+          IO.raiseError(ThemeNotFoundException(
+            s"Theme '$themeName' found but theme.json is missing\n" +
+            s"Expected file: ${themeJsonPath}"
+          ))
+        else
+          IO.unit
     }
 
   /**

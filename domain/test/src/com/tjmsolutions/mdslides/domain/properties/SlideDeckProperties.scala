@@ -69,7 +69,7 @@ class SlideDeckProperties extends munit.ScalaCheckSuite:
       SlideDeck.validated(deck.slides) match
         case Left(errors) =>
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
+            case ValidationError.StructureError(_, msg, _) =>
               msg.contains("maximum 200 allowed")
             case _ => false
           }
@@ -90,7 +90,7 @@ class SlideDeckProperties extends munit.ScalaCheckSuite:
       SlideDeck.validated(deck.slides) match
         case Left(errors) =>
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
+            case ValidationError.StructureError(_, msg, _) =>
               msg.contains("Duplicate slide IDs")
             case _ => false
           }

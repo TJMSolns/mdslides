@@ -172,7 +172,9 @@ object SpeakerViewRenderer:
        |    const slideDataElement = document.getElementById('slide-data');
        |    const slideData = JSON.parse(slideDataElement.textContent);
        |
-       |    let currentSlideIndex = 0;
+       |    // Initialize slide index from URL parameter or default to 0
+       |    const urlParams = new URLSearchParams(window.location.search);
+       |    let currentSlideIndex = parseInt(urlParams.get('slide') || '0', 10);
        |    let timerStartTime = null;
        |    let timerInterval = null;
        |
@@ -252,22 +254,22 @@ object SpeakerViewRenderer:
        |        case ' ':
        |          e.preventDefault();
        |          goToSlide(currentSlideIndex + 1);
-       |          // TODO: Sync to main window
+       |          MDSlidesSync.sendSlideChange(currentSlideIndex + 1);
        |          break;
        |        case 'ArrowLeft':
        |          e.preventDefault();
        |          goToSlide(currentSlideIndex - 1);
-       |          // TODO: Sync to main window
+       |          MDSlidesSync.sendSlideChange(currentSlideIndex - 1);
        |          break;
        |        case 'Home':
        |          e.preventDefault();
        |          goToSlide(0);
-       |          // TODO: Sync to main window
+       |          MDSlidesSync.sendSlideChange(0);
        |          break;
        |        case 'End':
        |          e.preventDefault();
        |          goToSlide(slideData.totalSlides - 1);
-       |          // TODO: Sync to main window
+       |          MDSlidesSync.sendSlideChange(slideData.totalSlides - 1);
        |          break;
        |        case 'Escape':
        |          window.close();
@@ -278,8 +280,10 @@ object SpeakerViewRenderer:
        |    // Initialize display
        |    updateDisplay();
        |
-       |    // TODO: Listen for sync events from main window
-       |    // window.addEventListener('storage', (e) => { ... });
+       |    // Listen for sync events from main window
+       |    MDSlidesSync.receiveSlideChange((slideIndex) => {
+       |      goToSlide(slideIndex);
+       |    });
        |  </script>
        |</body>
        |</html>""".stripMargin

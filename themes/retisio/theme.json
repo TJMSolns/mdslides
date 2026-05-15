@@ -6,7 +6,44 @@
   },
   "templateBackgrounds": {
     "content": "backgrounds/retisio-content-page.png",
+    "diagram": "backgrounds/retisio-diagram-page.png",
+    "closing": "backgrounds/retisio-end-page.png",
+    "section-title": "backgrounds/retisio-section-title-page.png",
     "title": "backgrounds/retisio-title-page.png"
+  },
+  "templateConfig": {
+    "title": {
+      "verticalAlign": "bottom",
+      "colors": {
+        "heading": "#FFFFFF",
+        "subtitle": "#CCCCCC",
+        "author": "#FFFFFF"
+      }
+    },
+    "section-title": {
+      "layout": "two-column",
+      "columnConfig": {
+        "leftColumn": {
+          "width": "50%",
+          "colors": {
+            "heading": "#FFFFFF"
+          }
+        },
+        "rightColumn": {
+          "width": "50%"
+        }
+      }
+    },
+    "diagram": {
+      "colors": {
+        "heading": "#FFFFFF"
+      }
+    },
+    "closing": {
+      "colors": {
+        "heading": "#FFFFFF"
+      }
+    }
   },
   "colors": {
     "text": "#002C74",

@@ -890,7 +890,8 @@ class HTMLRendererSpec extends munit.FunSuite:
     assert(html.contains("window.open"))
     assert(html.contains("speaker.html"))
 
-  test("mixed lists render in source order (BUG-001 regression test)"):
+  // Example Mapping US-003.3 Scenario 8: Mixed ordered → unordered (SIBLING LISTS)
+  test("render mixed ordered then unordered lists preserves source order"):
     // Test via FlexmarkAdapter to ensure end-to-end source order preservation
     import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
 
@@ -905,23 +906,43 @@ class HTMLRendererSpec extends munit.FunSuite:
 """
 
     val content = FlexmarkAdapter.parseInlineFormatting(markdown)
-
-    // Create a slide and render it
-    val slide = Slide(
-      id = SlideId.unsafe(1),
-      templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> markdown)
-    )
-    val deck = SlideDeck(NonEmptyList.one(slide))
-    val html = HTMLRenderer.renderDeck(deck)
+    val html = HTMLRenderer.renderFormattedContent(content)
 
     // Find positions of <ol> and <ul> in rendered HTML
     val olPos = html.indexOf("<ol>")
     val ulPos = html.indexOf("<ul>")
 
     // Ordered list should appear BEFORE unordered list (source order preserved)
-    assert(olPos >= 0, s"Expected <ol> tag in HTML, got: ${html.take(500)}")
-    assert(ulPos >= 0, s"Expected <ul> tag in HTML, got: ${html.take(500)}")
-    assert(olPos < ulPos, s"Expected <ol> (at $olPos) before <ul> (at $ulPos), but got reverse order")
+    assert(olPos >= 0, s"Expected <ol> tag in HTML")
+    assert(ulPos >= 0, s"Expected <ul> tag in HTML")
+    assert(olPos < ulPos, s"Expected <ol> (at $olPos) before <ul> (at $ulPos)")
+
+  // Example Mapping US-003.3 Scenario 9: Mixed unordered → ordered (SIBLING LISTS)
+  test("render mixed unordered then ordered lists preserves source order"):
+    // Test via FlexmarkAdapter to ensure end-to-end source order preservation
+    import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
+
+    // Markdown with unordered list BEFORE ordered list
+    val markdown = """**Unordered Lists:**
+- Apple
+- Banana
+
+**Ordered Lists:**
+1. First step
+2. Second step
+3. Third step
+"""
+
+    val content = FlexmarkAdapter.parseInlineFormatting(markdown)
+    val html = HTMLRenderer.renderFormattedContent(content)
+
+    // Find positions of <ul> and <ol> in rendered HTML
+    val ulPos = html.indexOf("<ul>")
+    val olPos = html.indexOf("<ol>")
+
+    // Unordered list should appear BEFORE ordered list (source order preserved)
+    assert(ulPos >= 0, s"Expected <ul> tag in HTML")
+    assert(olPos >= 0, s"Expected <ol> tag in HTML")
+    assert(ulPos < olPos, s"Expected <ul> (at $ulPos) before <ol> (at $olPos)")
 
 end HTMLRendererSpec

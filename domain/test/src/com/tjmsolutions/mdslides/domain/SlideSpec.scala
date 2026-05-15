@@ -157,7 +157,7 @@ class SlideSpec extends munit.FunSuite:
       case Left(errors) =>
         val errorMessages = errors.toList.map(_.displayMessage)
         assert(errorMessages.exists(_.contains("Structure Error")))
-        assert(errorMessages.exists(_.contains("Template 'super-fancy-template' not found")))
+        assert(errorMessages.exists(_.contains("Unknown template 'super-fancy-template'")))
 
       case Right(_) =>
         fail("Expected validation to fail with StructureError for non-existent template")

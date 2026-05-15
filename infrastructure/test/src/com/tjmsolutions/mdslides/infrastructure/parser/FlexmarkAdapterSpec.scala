@@ -389,4 +389,69 @@ class FlexmarkAdapterSpec extends FunSuite:
     // Verify domain model calculation works with parsed data
     assertEquals(result.maxNestingDepth, 3)
 
+  // Example Mapping US-003.3 Scenario 8: Mixed ordered → unordered (SIBLING LISTS)
+  test("parse mixed ordered then unordered lists preserves source order"):
+    val markdown = """
+      |**Ordered Lists:**
+      |1. First ordered item
+      |2. Second ordered item
+      |
+      |**Unordered Lists:**
+      |- First unordered item
+      |- Second unordered item
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Verify we have both list types
+    assertEquals(result.orderedLists.length, 1, "Should have 1 ordered list")
+    assertEquals(result.unorderedLists.length, 1, "Should have 1 unordered list")
+
+    // CRITICAL: Verify new lists field preserves source order
+    assertEquals(result.lists.length, 2, "Should have 2 lists in order-preserving field")
+
+    result.lists(0) match
+      case com.tjmsolutions.mdslides.domain.OrderedListElementDeprecated(list) =>
+        assertEquals(list.items.length, 2)
+        assert(list.items(0).plainText.contains("First ordered"))
+      case _ => fail("First list should be OrderedListElementDeprecated")
+
+    result.lists(1) match
+      case com.tjmsolutions.mdslides.domain.UnorderedListElementDeprecated(list) =>
+        assertEquals(list.items.length, 2)
+        assert(list.items(0).plainText.contains("First unordered"))
+      case _ => fail("Second list should be UnorderedListElementDeprecated")
+
+  // Example Mapping US-003.3 Scenario 9: Mixed unordered → ordered (SIBLING LISTS)
+  test("parse mixed unordered then ordered lists preserves source order"):
+    val markdown = """
+      |**Unordered Lists:**
+      |- Apple
+      |- Banana
+      |
+      |**Ordered Lists:**
+      |1. First step
+      |2. Second step
+      |3. Third step
+      |""".stripMargin
+    val result = FlexmarkAdapter.parseInlineFormatting(markdown)
+
+    // Verify we have both list types
+    assertEquals(result.unorderedLists.length, 1, "Should have 1 unordered list")
+    assertEquals(result.orderedLists.length, 1, "Should have 1 ordered list")
+
+    // CRITICAL: Verify new lists field preserves source order
+    assertEquals(result.lists.length, 2, "Should have 2 lists in order-preserving field")
+
+    result.lists(0) match
+      case com.tjmsolutions.mdslides.domain.UnorderedListElementDeprecated(list) =>
+        assertEquals(list.items.length, 2)
+        assert(list.items(0).plainText.contains("Apple"))
+      case _ => fail("First list should be UnorderedListElementDeprecated")
+
+    result.lists(1) match
+      case com.tjmsolutions.mdslides.domain.OrderedListElementDeprecated(list) =>
+        assertEquals(list.items.length, 3)
+        assert(list.items(0).plainText.contains("First step"))
+      case _ => fail("Second list should be OrderedListElementDeprecated")
+
 end FlexmarkAdapterSpec

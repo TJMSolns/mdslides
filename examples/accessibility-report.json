@@ -1,0 +1,46 @@
+{
+  "timestamp" : "2025-12-28T03:13:19.426324091Z",
+  "deck" : "mdslides-tutorial.md",
+  "theme" : "light",
+  "wcag_level" : "AA",
+  "checks" : {
+    "contrast" : {
+      "accent_background" : {
+        "ratio" : 5.566637067604819,
+        "passes" : true
+      },
+      "heading_background" : {
+        "ratio" : 10.983368598577295,
+        "passes" : true
+      },
+      "text_background" : {
+        "ratio" : 12.63465434445799,
+        "passes" : true
+      },
+      "link_background" : {
+        "ratio" : 5.566637067604819,
+        "passes" : true
+      }
+    },
+    "alt_text" : {
+      "images_checked" : 1,
+      "images_missing_alt" : 0
+    },
+    "keyboard" : {
+      "handlers_found" : [
+        "Space",
+        "S",
+        "s",
+        "ArrowLeft",
+        "End",
+        "Home",
+        "ArrowRight"
+      ],
+      "handlers_missing" : [
+      ]
+    }
+  },
+  "warnings" : [
+  ],
+  "passes" : true
+}

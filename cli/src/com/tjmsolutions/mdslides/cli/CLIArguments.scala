@@ -22,13 +22,21 @@ import java.nio.file.Path
  * @param outputDir Explicit output directory (explicit form only)
  * @param themeName Theme to apply (default: "light")
  * @param copyImages Whether to copy image assets (default: true)
+ * @param skipAccessibility Skip WCAG 2.1 AA accessibility validation (default: false)
+ * @param accessibilityReportPath Optional path to write JSON accessibility report
+ * @param breakScreen Optional path to break screen image (v3.0.0)
+ * @param watch Live-reload mode: re-render on file change + meta-refresh in browser (US-018)
  */
 case class CLIArguments(
   deckName: Option[String],
   inputFile: Option[Path],
   outputDir: Option[Path],
   themeName: String = "light",
-  copyImages: Boolean = true
+  copyImages: Boolean = true,
+  skipAccessibility: Boolean = false,
+  accessibilityReportPath: Option[Path] = None,
+  breakScreen: Option[String] = None,
+  watch: Boolean = false
 )
 
 object CLIArguments:
@@ -55,6 +63,10 @@ object CLIArguments:
     var outputDir: Option[Path] = None
     var themeName: String = "light"
     var copyImages: Boolean = true
+    var skipAccessibility: Boolean = false
+    var accessibilityReportPath: Option[Path] = None
+    var breakScreen: Option[String] = None
+    var watch: Boolean = false
 
     var i = 0
     while i < renderArgs.length do
@@ -81,6 +93,26 @@ object CLIArguments:
           copyImages = false
           i += 1
 
+        case "--skip-accessibility" =>
+          skipAccessibility = true
+          i += 1
+
+        case "--accessibility-report" =>
+          if i + 1 >= renderArgs.length then
+            return Left("Missing value for --accessibility-report")
+          accessibilityReportPath = Some(Path.of(renderArgs(i + 1)))
+          i += 2
+
+        case "--break-screen" =>
+          if i + 1 >= renderArgs.length then
+            return Left("Missing value for --break-screen")
+          breakScreen = Some(renderArgs(i + 1))
+          i += 2
+
+        case "--watch" | "-w" =>
+          watch = true
+          i += 1
+
         case arg if !arg.startsWith("-") =>
           // Positional argument (deck name in simple form)
           deckName = Some(arg)
@@ -105,11 +137,11 @@ object CLIArguments:
 
       case (Some(_), None, None) =>
         // Simple form: OK
-        Right(CLIArguments(deckName, None, None, themeName, copyImages))
+        Right(CLIArguments(deckName, None, None, themeName, copyImages, skipAccessibility, accessibilityReportPath, breakScreen, watch))
 
       case (None, Some(_), Some(_)) =>
         // Explicit form: OK
-        Right(CLIArguments(None, inputFile, outputDir, themeName, copyImages))
+        Right(CLIArguments(None, inputFile, outputDir, themeName, copyImages, skipAccessibility, accessibilityReportPath, breakScreen, watch))
 
       case _ =>
         Left("Invalid argument combination")

@@ -110,7 +110,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one StructureError
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
+            case ValidationError.StructureError(_, msg, _) =>
               msg.contains("title") && msg.contains("missing")
             case _ => false
           }
@@ -132,7 +132,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
         case Left(errors) =>
           // Should have at least one ContentError about lines
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg) =>
+            case ValidationError.ContentError(_, slotName, msg, _) =>
               slotName == "title" && msg.contains("exceeds max 2 lines")
             case _ => false
           }
@@ -204,8 +204,8 @@ class SlideProperties extends munit.ScalaCheckSuite:
       Slide.validated(id, invalidTemplateName, slots) match
         case Left(errors) =>
           errors.toList.exists {
-            case ValidationError.StructureError(_, msg) =>
-              msg.contains("Template") && msg.contains("not found")
+            case ValidationError.StructureError(_, msg, _) =>
+              msg.contains("Unknown template")
             case _ => false
           }
 

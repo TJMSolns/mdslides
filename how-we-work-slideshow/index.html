@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>MDSlides Presentation</title><style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      overflow: hidden;
+    }
+
+    .slides {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+      background-color: #ffffff;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Vertical alignment overrides (v3.0.0) */
+    .slide.align-top {
+      justify-content: flex-start;
+    }
+
+    .slide.align-center {
+      justify-content: center;
+    }
+
+    .slide.align-bottom {
+      justify-content: flex-end;
+    }
+
+    /* Slide header/footer structure (v3.0.0) */
+    .slide-header {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: #333333;
+      background-color: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    .slide-content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: inherit;
+      align-items: inherit;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .slide-footer {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: #333333;
+      background-color: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    /* Multi-element footer positioning (v3.0.0) */
+    .slide-footer:has(.footer-left),
+    .slide-footer:has(.footer-center),
+    .slide-footer:has(.footer-right) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-left {
+      text-align: left;
+      flex: 1;
+    }
+
+    .footer-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .footer-right {
+      text-align: right;
+      flex: 1;
+    }
+
+    .title-slide {
+      text-align: center;
+      max-width: 800px;
+      justify-content: space-between;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .title-slide-header {
+      margin-bottom: auto;
+    }
+
+    .title-slide-footer {
+      margin-top: auto;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
+
+    .slide-subtitle {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .slide-author {
+      font-size: 24px;
+      color: #333333;
+      margin-top: 20px;
+    }
+
+    .content-slide {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .slide-heading {
+      font-size: 36px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+    }
+
+    .slide-body {
+      font-size: 24px;
+      color: #333333;
+      line-height: 1.6;
+    }
+
+    .slide-body p {
+      margin: 0.5rem 0;
+    }
+
+    /* Inline formatting (US-003) */
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background-color: #f4f4f4;
+      color: #333333;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    /* Code blocks (US-004) */
+    pre {
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      font-size: 18px;
+    }
+
+    pre code {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      font-family: Consolas, 'Courier New', monospace;
+      color: #333333;
+      font-size: inherit;
+    }
+
+    /* Syntax highlighting using theme colors */
+    .syntax-keyword { color: #569cd6; }
+    .syntax-string { color: #ce9178; }
+    .syntax-comment { color: #6a9955; }
+    .syntax-function { color: #dcdcaa; }
+    .syntax-number { color: #b5cea8; }
+    .syntax-operator { color: #d4d4d4; }
+
+    /* Content images (US-005) */
+    .content-image {
+      max-width: 100%;
+      height: auto;
+      margin: 0.5rem 0;
+      display: block;
+      border-radius: 5px;
+    }
+
+    a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #004C99;
+      text-decoration: underline;
+    }
+
+    /* Nested list support (US-003.3) */
+    .slide-body ul,
+    .slide-body ol {
+      margin: 0.5rem 0;
+      padding-left: 2em;
+    }
+
+    /* Unordered list bullet hierarchy */
+    .slide-body ul {
+      list-style-type: disc;  /* Level 1: disc (•) */
+    }
+
+    .slide-body ul ul {
+      list-style-type: circle;  /* Level 2: circle (◦) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ul ul ul {
+      list-style-type: square;  /* Level 3: square (▪) */
+    }
+
+    /* Ordered list numbering hierarchy */
+    .slide-body ol {
+      list-style-type: decimal;  /* Level 1: decimal (1, 2, 3...) */
+    }
+
+    .slide-body ol ol {
+      list-style-type: lower-alpha;  /* Level 2: lower-alpha (a, b, c...) */
+      margin-top: 0.5em;
+    }
+
+    .slide-body ol ol ol {
+      list-style-type: lower-roman;  /* Level 3: lower-roman (i, ii, iii...) */
+    }
+
+    /* Mixed nesting support */
+    .slide-body ul ol,
+    .slide-body ol ul {
+      margin-top: 0.5em;
+    }
+
+    /* List item spacing */
+    .slide-body li {
+      margin: 0.3em 0;
+      line-height: 1.6;
+    }
+
+    /* Table styling */
+    .slide-body table {
+      width: auto;
+      max-width: 90%;
+      border-collapse: collapse;
+      margin: 0.5rem 0;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 18px;
+      line-height: 1.6;
+      border: 2px solid #333;
+    }
+
+    .slide-body table th {
+      background-color: #f4f4f4;
+      color: #333333;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #333;
+    }
+
+    .slide-body table td {
+      padding: 10px 16px;
+      border: 1px solid #333;
+    }
+
+    .slide-body table tbody tr:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .slide-body table tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #666666;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: red;
+      font-size: 24px;
+      padding: 40px;
+    }
+
+    /* Header/Footer (v3.0.0) */
+    /* v2.0.0 Template Styles */
+
+    /* Diagram template (Scenarios 18-20) */
+    .diagram-slide {
+      max-width: 1000px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .diagram-caption {
+      font-size: 1rem;
+      text-align: center;
+      color: #333333;
+      margin-top: 1em;
+      font-style: italic;
+    }
+
+    /* Mermaid diagram container styling */
+    .mermaid-diagram {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      max-height: 70vh;
+      overflow: visible;
+    }
+
+    .mermaid-diagram svg {
+      max-width: 100%;
+      max-height: 70vh;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Closing template (Scenarios 22-24) */
+    .closing-slide {
+      text-align: center;
+      max-width: 800px;
+    }
+
+    .closing-heading {
+      font-size: 3rem;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    /* Section title template (Scenarios 26-27) */
+    .section-title-slide {
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .section-title-heading {
+      font-size: 4rem;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #2c3e50;
+      margin: 1rem 0;
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: 1.5rem;
+      color: #333333;
+      margin-top: 1.5em;
+      font-weight: normal;
+    }
+
+    /* Section title two-column variant (v3.0.0) */
+    .section-title-two-column {
+      max-width: 1200px;
+      text-align: left;
+    }
+
+    .section-body {
+      font-size: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* Two-column template (v3.0.0) */
+    .two-column-slide {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .two-column-slide .slide-heading {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .two-column-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .column {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .column-left {
+      padding-right: 1rem;
+    }
+
+    .column-right {
+      padding-left: 1rem;
+    }
+    </style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" /><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/scala.min.js"></script></head><body><div class="slides"><div class="slide active align-center" data-slide-index="0"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>How We Work</p></h1><h2 class="slide-subtitle" style="color: #333333"><p>Team Playbook</p></h2></div><div class="title-slide-footer"><p class="slide-author" style="color: #333333"><p>Ceremony-Based SDLC for Enterprise Java Microservices</p></p></div></div></div></div><div class="slide align-center" data-slide-index="1"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Philosophy</p></h2><div class="slide-body" style="color: #333333"><p>We build systems by blending three disciplines.
+</p><p>Key approach:
+</p><ul><li>Domain-Driven Design (DDD): Model the business domain accurately</li><li>Behavior-Driven Development (BDD): Specify behavior with examples</li><li>Test-Driven Development (TDD): Implement with test-first discipline</li></ul><p>Core principle: Documentation is code. Everything is Git-tracked, version-controlled, and executable.</p></div></div></div></div><div class="slide align-center" data-slide-index="2"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Team Roles &amp; Responsibilities</p></h2><div class="slide-body" style="color: #333333"><p>Four roles collaborate throughout all ceremonies. Leadership means facilitation, not exclusivity.
+</p><table><thead><tr><th style="text-align: left">Role</th><th style="text-align: left">Responsibility</th></tr></thead><tbody><tr><td style="text-align: left">Program Manager</td><td style="text-align: left">Coordination, dependencies, risk management</td></tr><tr><td style="text-align: left">Product Owner</td><td style="text-align: left">Business value, requirements, acceptance criteria</td></tr><tr><td style="text-align: left">Architect</td><td style="text-align: left">Domain modeling, bounded contexts, technical strategy</td></tr><tr><td style="text-align: left">Bench Developer</td><td style="text-align: left">Implementation, testing, refactoring, code quality</td></tr></tbody></table></div></div></div></div><div class="slide align-center" data-slide-index="3"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Sprint Lifecycle Overview</p></h2><div class="slide-body" style="color: #333333"><p>Each sprint includes four distinct ceremony phases.
+</p><ul><li><strong>Pre-Sprint:</strong> Backlog Refinement (PO curates and sequences stories)</li><li><strong>Sprint Start:</strong> Sprint Planning (PM scopes goals, clarifies DoD)</li><li><strong>During:</strong> Execute ceremonies per phase (DDD/BDD/TDD)</li><li><strong>Post-Sprint:</strong> Sprint Retrospective (PM facilitates, max 3 action items)</li></ul><div class="mermaid-diagram" data-diagram-type="flowchart"><svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 786.953px; background-color: transparent;" viewBox="0 0 786.953125 94" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#my-svg .cluster-label text{fill:#333;}#my-svg .cluster-label span{color:#333;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#333;color:#333;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#my-svg .arrowheadPath{fill:#333333;}#my-svg .edgePath .path{stroke:#333333;stroke-width:2.0px;}#my-svg .flowchart-link{stroke:#333333;fill:none;}#my-svg .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#my-svg .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#my-svg .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#my-svg .cluster text{fill:#333;}#my-svg .cluster span{color:#333;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#my-svg .icon-shape rect,#my-svg .image-shape rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M149.828,47L153.995,47C158.161,47,166.495,47,174.161,47C181.828,47,188.828,47,192.328,47L195.828,47" id="L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTQ5LjgyODEyNSwieSI6NDd9LHsieCI6MTc0LjgyODEyNSwieSI6NDd9LHsieCI6MTk5LjgyODEyNSwieSI6NDd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M326.047,47L330.214,47C334.38,47,342.714,47,350.38,47C358.047,47,365.047,47,368.547,47L372.047,47" id="L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MzI2LjA0Njg3NSwieSI6NDd9LHsieCI6MzUxLjA0Njg3NSwieSI6NDd9LHsieCI6Mzc2LjA0Njg3NSwieSI6NDd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M546.719,47L550.885,47C555.052,47,563.385,47,571.052,47C578.719,47,585.719,47,589.219,47L592.719,47" id="L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NTQ2LjcxODc1LCJ5Ijo0N30seyJ4Ijo1NzEuNzE4NzUsInkiOjQ3fSx7IngiOjU5Ni43MTg3NSwieSI6NDd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="flowchart-A-0" transform="translate(78.9140625, 47)"><rect class="basic label-container" style="" x="-70.9140625" y="-39" width="141.828125" height="78"/><g class="label" style="" transform="translate(-40.9140625, -24)"><rect/><foreignObject width="81.828125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>📋 Backlog<br />Refinement</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-B-1" transform="translate(262.9375, 47)"><rect class="basic label-container" style="" x="-63.109375" y="-39" width="126.21875" height="78"/><g class="label" style="" transform="translate(-33.109375, -24)"><rect/><foreignObject width="66.21875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🚀 Sprint<br />Planning</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-C-3" transform="translate(461.3828125, 47)"><rect class="basic label-container" style="" x="-85.3359375" y="-39" width="170.671875" height="78"/><g class="label" style="" transform="translate(-55.3359375, -24)"><rect/><foreignObject width="110.671875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🔄 Ceremonies<br />DDD/BDD/TDD</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-D-5" transform="translate(687.8359375, 47)"><rect class="basic label-container" style="" x="-91.1171875" y="-27" width="182.234375" height="54"/><g class="label" style="" transform="translate(-61.1171875, -12)"><rect/><foreignObject width="122.234375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🔍 Retrospective</p></span></div></foreignObject></g></g></g></g></g></svg></div></div></div></div></div><div class="slide align-center" data-slide-index="4"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Phase 0: Bootstrap &amp; Initiation</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="5"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 0.1: Project Bootstrap</p></h2><div class="slide-body" style="color: #333333"><p>Automated project setup using Mill tasks.
+</p><p><strong>What happens:</strong>
+</p><ul><li>New repository created with Mill bootstrap tasks</li><li>~130+ ceremony framework files copied automatically</li><li>Project stubs generated (CHARTER, ARCHITECTURE, README, build.sc)</li><li>GitHub configured with branch protection rules</li></ul><p><strong>Prerequisites:</strong>
+</p><ul><li>GitHub Token</li><li>Mill 0.11.6+</li><li>Git configured</li><li>Target organization exists</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="6"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Bootstrap Modes</p></h2><div class="slide-body" style="color: #333333"><p>Three deployment models supported.
+</p><p><strong>Training Repository Mode:</strong>
+</p><ul><li><code>mill bootstrap.bootstrapExecute --name my-service</code></li><li>Uses shared Mill tasks from parent repo</li></ul><p><strong>Standalone with GitHub:</strong>
+</p><ul><li><code>mill bootstrap.bootstrapExecute --name order-mgmt --create-repo --org RETISIO</code></li><li>Copies all Mill tasks for complete autonomy</li></ul><p><strong>Link Existing Repo:</strong>
+</p><ul><li><code>mill bootstrap.bootstrapExecute --name order-mgmt --repo https://github.com/RETISIO/order-mgmt</code></li></ul></div></div></div></div><div class="slide align-center" data-slide-index="7"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 0.0: Program Initiation</p></h2><div class="slide-body" style="color: #333333"><p>Define project scope and strategy.
+</p><p><strong>Artifacts created:</strong>
+</p><ul><li><strong>CHARTER.md:</strong> Complete project definition with problem, solution, scope, goals</li><li><strong>PROJECT-CANVAS.md:</strong> Quick reference for daily decisions</li></ul><p><strong>Participants:</strong>
+</p><ul><li>Program Manager, Product Owner, Architect, domain experts</li></ul><p><strong>Outcome:</strong>
+</p><ul><li>Stakeholder alignment and scope boundaries established</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="8"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Phase 1: Discovery (DDD-Led)</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="9"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.1: Event Storming Session</p></h2><div class="slide-body" style="color: #333333"><p>Map domain events and command flows.
+</p><p><strong>Led by:</strong> Architect (with PO domain expertise, Dev feasibility, PM dependencies)
+</p><p><strong>When:</strong> Once per bounded context, quarterly refinement
+</p><p><strong>Process:</strong>
+</p><ol><li>Identify domain events: TenantProvisioned, OrderPlaced</li><li>Discover commands: ProvisionTenant, PlaceOrder</li><li>Group events into temporal flows</li><li>Identify aggregates handling commands</li><li>Surface questions and hotspots</li><li>Identify bounded context boundaries</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="10"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.2: Ubiquitous Language Workshop</p></h2><div class="slide-body" style="color: #333333"><p>Formalize shared vocabulary.
+</p><p><strong>Led by:</strong> Architect + Product Owner (co-led)
+</p><p><strong>When:</strong> Bi-weekly during active development, monthly during maintenance
+</p><p><strong>Process:</strong>
+</p><ol><li>Extract terms from event storming session</li><li>Define each term with examples</li><li>Resolve cross-team terminology conflicts</li><li>Ban problematic terms: DTO, Manager, Handler, Service, Helper</li><li>Commit to glossary—terms MUST appear in code and scenarios</li></ol><p><strong>Outcome:</strong> Shared vocabulary preventing miscommunication</p></div></div></div></div><div class="slide align-center" data-slide-index="11"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.3: Domain Modeling Workshop</p></h2><div class="slide-body" style="color: #333333"><p>Define aggregate boundaries and invariants.
+</p><p><strong>Led by:</strong> Architect (with Dev testability, PO business rules)
+</p><p><strong>When:</strong> Once per epic, revisited when TDD reveals friction
+</p><p><strong>Process:</strong>
+</p><ol><li>Start with aggregate candidates from event storming</li><li>Define aggregate boundaries</li><li>Identify entities vs value objects</li><li>Document invariants: business rules that must always hold</li><li>Model state transitions using Mermaid diagrams</li><li>Define commands and events per aggregate</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="12"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.3: Domain Model Example Code</p></h2><div class="slide-body" style="color: #333333"><p>Rich domain models enforce business rules.
+</p><pre><code class="language-java">public class Tenant {
+    private final TenantId id;
+    private CompanyName companyName;
+    private TenantStatus status;
+    
+    public void activate() {
+        if (!canTransitionTo(ACTIVE)) {
+            throw new IllegalStateTransitionException(...);
+        }
+        this.status = ACTIVE;
+    }
+}
+
+public record TenantId(UUID value) {
+    public TenantId {
+        if (value == null) 
+            throw new IllegalArgumentException(&quot;ID required&quot;);
+    }
+}
+</code></pre></div></div></div></div><div class="slide align-center" data-slide-index="13"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.4: Context Mapping</p></h2><div class="slide-body" style="color: #333333"><p>Define integration patterns between bounded contexts.
+</p><p><strong>Led by:</strong> Architect (with PM dependencies, Dev integration complexity)
+</p><p><strong>When:</strong> After domain modeling, revisited when boundaries change
+</p><p><strong>Integration patterns:</strong>
+</p><ul><li>Published Language: Share domain events</li><li>Anticorruption Layer: Protect from external models</li><li>Conformist: Downstream adapts to upstream</li><li>Shared Kernel: Same team shares code</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="14"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1.5: Domain Model Governance Verification</p></h2><div class="slide-body" style="color: #333333"><p>Validate Phase 1 artifacts before Phase 2.
+</p><p><strong>Led by:</strong> Architect (with PM governance audit)
+</p><p><strong>Validation:</strong>
+</p><ul><li>All aggregates, entities, value objects present per DDD</li><li>Value objects use Java Records (POL-033)</li><li>Ubiquitous language covers all domain terms</li><li>Mermaid diagrams present: events, state machines, context maps</li><li>CHARTER.md alignment verified</li></ul><p><strong>Outcome:</strong> Approved domain model ready for specification phase</p></div></div></div></div><div class="slide align-center" data-slide-index="15"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Phase 2: Specification (BDD-Led)</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="16"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2: Critical Prerequisites</p></h2><div class="slide-body" style="color: #333333"><p>Must complete before any Phase 2 ceremony.
+</p><p>Required validations:
+</p><ul><li>Read CHARTER.md Section 3: Problem, Solution, Scope</li><li>Identify all entities and content types from scope</li><li>Review relevant ADRs from Phase 1 domain decisions</li><li>Validate ubiquitous language includes scope entities</li></ul><p>Why critical: Phase 2 creates executable specifications. If specs don't align with scope, all implementation work is wasted.</p></div></div></div></div><div class="slide align-center" data-slide-index="17"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2.1: Three Amigos Specification Session</p></h2><div class="slide-body" style="color: #333333"><p>Write BDD scenarios before implementation.
+</p><p><strong>Led by:</strong> Product Owner (with Architect domain alignment, Dev implementability)
+</p><p><strong>When:</strong> Per user story, before implementation starts
+</p><p><strong>Process:</strong>
+</p><ol><li>Review CHARTER.md scope and ubiquitous language</li><li>Review user story together</li><li>Write Given/When/Then scenarios in plain language</li><li>Use ubiquitous language from glossary</li><li>Identify missing rules or unclear acceptance criteria</li><li>Validate against domain model and CHARTER.md scope</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="18"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2.1: Example Gherkin Scenario</p></h2><div class="slide-body" style="color: #333333"><p>Domain-focused scenarios using ubiquitous language.
+</p><pre><code class="language-gherkin">Feature: Provision New Tenant
+
+  Scenario: Successfully provision valid tenant
+    Given no tenant exists with company name &quot;Acme Corp&quot;
+    When I provision a tenant for &quot;Acme Corp&quot;
+    Then a TenantProvisioned event is raised
+    And the tenant is in PROVISIONED status
+    And the tenant can be activated
+</code></pre><p>Uses ubiquitous language: TenantProvisioned, PROVISIONED
+</p><p>Domain-focused: No UI details
+</p><p>Concrete: Specific example, not vague</p></div></div></div></div><div class="slide align-center" data-slide-index="19"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2.2: Example Mapping</p></h2><div class="slide-body" style="color: #333333"><p>Discover business rules before writing scenarios.
+</p><p><strong>Led by:</strong> Product Owner (with Architect rule consistency, Dev edge cases)
+</p><p><strong>When:</strong> Per complex story, before Three Amigos session
+</p><p><strong>Process:</strong>
+</p><ol><li>Review CHARTER.md scope for relevant entities</li><li>Write user story on card</li><li>Extract business rules: blue cards</li><li>Provide concrete examples: green cards covering all content types</li><li>Surface questions: pink cards</li><li>Resolve questions with Product Owner</li><li>Validate all entities from CHARTER.md are covered</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="20"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2.3: Acceptance Criteria Review</p></h2><div class="slide-body" style="color: #333333"><p>Validate scenarios align with domain model.
+</p><p><strong>Led by:</strong> Architect (with PO business validation, Dev implementation clarity)
+</p><p><strong>When:</strong> After Three Amigos, before implementation
+</p><p><strong>Validation:</strong>
+</p><ul><li>Draft scenarios use ubiquitous language</li><li>Scenarios align with CHARTER.md scope</li><li>Domain model can support this behavior</li><li>Identify gaps requiring model refinement</li><li>Approve for implementation OR send back for revision</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="21"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2.4: Specification Governance Verification</p></h2><div class="slide-body" style="color: #333333"><p>Validate Phase 2 artifacts before Phase 3.
+</p><p><strong>Led by:</strong> Architect
+</p><p><strong>Validation:</strong>
+</p><ul><li>Scenario coverage: All examples from Example Map have BDD scenarios</li><li>Ubiquitous language: All scenarios use glossary terms</li><li>Domain alignment: All aggregates tested in scenarios</li><li>CHARTER.md scope: All in-scope features covered</li></ul><p><strong>Outcome:</strong> Approved specifications ready for implementation</p></div></div></div></div><div class="slide align-center" data-slide-index="22"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Phase 3: Implementation (TDD-Led)</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="23"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 3.1: Test-First Pairing Session</p></h2><div class="slide-body" style="color: #333333"><p>Write failing tests before implementation.
+</p><p><strong>Led by:</strong> Bench Developer (with Architect domain guidance)
+</p><p><strong>When:</strong> Daily during active development
+</p><p><strong>Process:</strong>
+</p><ol><li>Choose failing BDD scenario to implement</li><li>Identify aggregate requiring changes</li><li>Write failing unit test for aggregate behavior</li><li>Implement minimum code to pass test</li><li>Refactor while maintaining passing tests</li><li>Repeat until BDD scenario passes</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="24"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 3.2: Red-Green-Refactor Cycle</p></h2><div class="slide-body" style="color: #333333"><p>The TDD implementation loop.
+</p><p><strong>RED:</strong> Write failing test <strong>GREEN:</strong> Write minimum code to pass <strong>REFACTOR:</strong> Improve design without breaking tests <strong>COMMIT:</strong> Small, frequent commits
+</p><p><strong>Why this works:</strong> Test-first forces good design, enables confident refactoring, documents behavior through tests</p></div></div></div></div><div class="slide align-center" data-slide-index="25"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 3.3: Property-Based Testing</p></h2><div class="slide-body" style="color: #333333"><p>Discover edge cases through generative testing.
+</p><p><strong>Led by:</strong> Bench Developer + Architect (co-led)
+</p><p><strong>When:</strong> Per aggregate after initial TDD tests pass
+</p><p><strong>Process:</strong>
+</p><ol><li>Identify invariants from domain model</li><li>Write property-based tests: use jqwik</li><li>Run tests with random inputs</li><li>Analyze failures: shrinking reveals edge cases</li><li>Add edge cases to Example Map and BDD scenarios</li></ol><p><strong>Outcome:</strong> More thorough test coverage, fewer production bugs</p></div></div></div></div><div class="slide align-center" data-slide-index="26"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 3.4: Implementation Governance Verification</p></h2><div class="slide-body" style="color: #333333"><p>Validate Phase 3 artifacts before Phase 4.
+</p><p><strong>Led by:</strong> Architect + Bench Developer (co-led)
+</p><p><strong>Validation:</strong>
+</p><ul><li>Test coverage: ≥80% line coverage, ≥90% for aggregates</li><li>All P0 BDD scenarios passing (GREEN)</li><li>All P1 scenarios passing or with documented deferral</li><li>No production TODOs in code</li><li>Observability instrumented: metrics, logs, traces</li></ul><p><strong>Outcome:</strong> Production-ready code with passing tests</p></div></div></div></div><div class="slide align-center" data-slide-index="27"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Phase 4: Integration &amp; Feedback</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="28"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 4.1: Scenario-to-Test Decomposition</p></h2><div class="slide-body" style="color: #333333"><p>Map BDD scenarios to unit tests.
+</p><p><strong>Led by:</strong> Architect (with Dev test coverage, PO behavioral completeness)
+</p><p><strong>When:</strong> Per complex scenario, or when acceptance tests fail
+</p><p><strong>Process:</strong>
+</p><ol><li>Pick failing BDD scenario</li><li>Identify aggregates involved</li><li>Map unit tests to scenario steps</li><li>Identify gaps: missing or wrong tests</li><li>Add missing unit tests</li></ol><p><strong>Outcome:</strong> Full test coverage tracing back to BDD scenarios</p></div></div></div></div><div class="slide align-center" data-slide-index="29"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 4.2: Domain Model Retrospective</p></h2><div class="slide-body" style="color: #333333"><p>Reflect on code-model alignment.
+</p><p><strong>Led by:</strong> Architect (with Dev pain points, PO business alignment)
+</p><p><strong>When:</strong> End of sprint or when TDD reveals friction
+</p><p><strong>Process:</strong>
+</p><ol><li>Review implemented code vs domain model</li><li>Identify friction: hard-to-test code, unclear names</li><li>Propose model refinements</li><li>Update ubiquitous language if needed</li><li>Create refactoring backlog</li></ol><p><strong>Outcome:</strong> Improved domain model, updated glossary</p></div></div></div></div><div class="slide align-center" data-slide-index="30"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 4.3: Living Documentation Sync</p></h2><div class="slide-body" style="color: #333333"><p>Keep scenarios, diagrams, glossary synchronized.
+</p><p><strong>Led by:</strong> Program Manager (with Architect, Dev, PO)
+</p><p><strong>When:</strong> Bi-weekly, or after major domain changes
+</p><p><strong>Process:</strong>
+</p><ol><li>Review changed BDD scenarios</li><li>Update domain diagrams if needed</li><li>Update ubiquitous language glossary</li><li>Archive deprecated scenarios</li><li>Cross-reference all artifacts</li></ol><p><strong>Outcome:</strong> Documentation stays in sync with code</p></div></div></div></div><div class="slide align-center" data-slide-index="31"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 4.4: Cross-Boundary Integration Testing</p></h2><div class="slide-body" style="color: #333333"><p>Validate anti-corruption layers and contracts.
+</p><p><strong>Led by:</strong> Program Manager + Architect (co-led)
+</p><p><strong>When:</strong> Per program increment or when contracts change
+</p><p><strong>Process:</strong>
+</p><ol><li>Review context map and integration contracts</li><li>Write integration tests: not UI tests</li><li>Validate ACLs work correctly</li><li>Test failure scenarios</li><li>Verify contract tests pass on both sides</li></ol></div></div></div></div><div class="slide align-center" data-slide-index="32"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 4.5: Automated Deployment Ceremony</p></h2><div class="slide-body" style="color: #333333"><p>Deploy validated services with automated checks.
+</p><p><strong>Led by:</strong> Platform Team (Tech Lead)
+</p><p><strong>When:</strong> Continuous (dev), scheduled (staging/production)
+</p><p><strong>Deployment workflow:</strong>
+</p><div class="mermaid-diagram" data-diagram-type="flowchart"><svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 1541.22px; background-color: transparent;" viewBox="0 0 1541.21875 177" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#my-svg .cluster-label text{fill:#333;}#my-svg .cluster-label span{color:#333;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#333;color:#333;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#my-svg .arrowheadPath{fill:#333333;}#my-svg .edgePath .path{stroke:#333333;stroke-width:2.0px;}#my-svg .flowchart-link{stroke:#333333;fill:none;}#my-svg .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#my-svg .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#my-svg .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#my-svg .cluster text{fill:#333;}#my-svg .cluster span{color:#333;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#my-svg .icon-shape rect,#my-svg .image-shape rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M120.469,87L124.635,87C128.802,87,137.135,87,144.802,87C152.469,87,159.469,87,162.969,87L166.469,87" id="L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTIwLjQ2ODc1LCJ5Ijo4N30seyJ4IjoxNDUuNDY4NzUsInkiOjg3fSx7IngiOjE3MC40Njg3NSwieSI6ODd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M311.516,87L315.682,87C319.849,87,328.182,87,335.849,87C343.516,87,350.516,87,354.016,87L357.516,87" id="L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MzExLjUxNTYyNSwieSI6ODd9LHsieCI6MzM2LjUxNTYyNSwieSI6ODd9LHsieCI6MzYxLjUxNTYyNSwieSI6ODd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M492.548,107.796L502.356,111.497C512.165,115.197,531.782,122.599,547.266,126.299C562.75,130,574.102,130,579.777,130L585.453,130" id="L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NDkyLjU0Nzg2MTA4ODk5MDY2LCJ5IjoxMDcuNzk1ODg4OTExMDA5MzZ9LHsieCI6NTUxLjM5ODQzNzUsInkiOjEzMH0seyJ4Ijo1ODkuNDUzMTI1LCJ5IjoxMzB9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M492.548,66.204L502.356,62.503C512.165,58.803,531.782,51.401,559.117,47.701C586.453,44,621.508,44,654.387,44C687.266,44,717.969,44,736.877,45.565C755.785,47.131,762.898,50.262,766.454,51.827L770.011,53.393" id="L_C_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_E_0" data-points="W3sieCI6NDkyLjU0Nzg2MTA4ODk5MDY2LCJ5Ijo2Ni4yMDQxMTEwODg5OTA2NH0seyJ4Ijo1NTEuMzk4NDM3NSwieSI6NDR9LHsieCI6NjU2LjU2MjUsInkiOjQ0fSx7IngiOjc0OC42NzE4NzUsInkiOjQ0fSx7IngiOjc3My42NzE4NzUsInkiOjU1LjAwNDQ3ODU2Njg1ODYxfV0=" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M723.672,130L727.839,130C732.005,130,740.339,130,748.062,128.435C755.785,126.869,762.898,123.738,766.454,122.173L770.011,120.607" id="L_D_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_E_0" data-points="W3sieCI6NzIzLjY3MTg3NSwieSI6MTMwfSx7IngiOjc0OC42NzE4NzUsInkiOjEzMH0seyJ4Ijo3NzMuNjcxODc1LCJ5IjoxMTguOTk1NTIxNDMzMTQxMzl9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M919.047,87L923.214,87C927.38,87,935.714,87,943.38,87C951.047,87,958.047,87,961.547,87L965.047,87" id="L_E_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_F_0" data-points="W3sieCI6OTE5LjA0Njg3NSwieSI6ODd9LHsieCI6OTQ0LjA0Njg3NSwieSI6ODd9LHsieCI6OTY5LjA0Njg3NSwieSI6ODd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M1106.813,87L1110.979,87C1115.146,87,1123.479,87,1131.146,87C1138.813,87,1145.813,87,1149.313,87L1152.813,87" id="L_F_G_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_F_G_0" data-points="W3sieCI6MTEwNi44MTI1LCJ5Ijo4N30seyJ4IjoxMTMxLjgxMjUsInkiOjg3fSx7IngiOjExNTYuODEyNSwieSI6ODd9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M1253.475,66.506L1263.233,61.255C1272.991,56.004,1292.507,45.502,1311.129,40.251C1329.75,35,1347.477,35,1356.34,35L1365.203,35" id="L_G_H_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_G_H_0" data-points="W3sieCI6MTI1My40NzQ4NzM1MjE2ODIsInkiOjY2LjUwNjEyMzUyMTY4Mn0seyJ4IjoxMzEyLjAyMzQzNzUsInkiOjM1fSx7IngiOjEzNjkuMjAzMTI1LCJ5IjozNX1d" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M1253.475,107.494L1263.233,112.745C1272.991,117.996,1292.507,128.498,1307.941,133.749C1323.375,139,1334.727,139,1340.402,139L1346.078,139" id="L_G_I_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_G_I_0" data-points="W3sieCI6MTI1My40NzQ4NzM1MjE2ODIsInkiOjEwNy40OTM4NzY0NzgzMTh9LHsieCI6MTMxMi4wMjM0Mzc1LCJ5IjoxMzl9LHsieCI6MTM1MC4wNzgxMjUsInkiOjEzOX1d" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(551.3984375, 130)"><g class="label" data-id="L_C_D_0" transform="translate(-13.0546875, -12)"><foreignObject width="26.109375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Yes</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(656.5625, 44)"><g class="label" data-id="L_C_E_0" transform="translate(-10.2265625, -12)"><foreignObject width="20.453125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>No</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_E_F_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_F_G_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1312.0234375, 35)"><g class="label" data-id="L_G_H_0" transform="translate(-13.0546875, -12)"><foreignObject width="26.109375" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Yes</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(1312.0234375, 139)"><g class="label" data-id="L_G_I_0" transform="translate(-10.2265625, -12)"><foreignObject width="20.453125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>No</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="flowchart-A-0" transform="translate(64.234375, 87)"><rect class="basic label-container" style="" x="-56.234375" y="-39" width="112.46875" height="78"/><g class="label" style="" transform="translate(-26.234375, -24)"><rect/><foreignObject width="52.46875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>📋 List<br />Targets</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-B-1" transform="translate(240.9921875, 87)"><rect class="basic label-container" style="" x="-70.5234375" y="-39" width="141.046875" height="78"/><g class="label" style="" transform="translate(-40.5234375, -24)"><rect/><foreignObject width="81.046875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>✅ Validate<br />Readiness</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-C-3" transform="translate(437.4296875, 87)"><polygon points="75.9140625,0 151.828125,-75.9140625 75.9140625,-151.828125 0,-75.9140625" class="label-container" transform="translate(-75.4140625, 75.9140625)"/><g class="label" style="" transform="translate(-36.9140625, -24)"><rect/><foreignObject width="73.828125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Approvals<br />Required?</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-D-5" transform="translate(656.5625, 130)"><rect class="basic label-container" style="" x="-67.109375" y="-39" width="134.21875" height="78"/><g class="label" style="" transform="translate(-37.109375, -24)"><rect/><foreignObject width="74.21875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>👥 GitHub<br />Issue</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-E-7" transform="translate(846.359375, 87)"><rect class="basic label-container" style="" x="-72.6875" y="-39" width="145.375" height="78"/><g class="label" style="" transform="translate(-42.6875, -24)"><rect/><foreignObject width="85.375" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🚀 Execute<br />Deployment</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-F-11" transform="translate(1037.9296875, 87)"><rect class="basic label-container" style="" x="-68.8828125" y="-39" width="137.765625" height="78"/><g class="label" style="" transform="translate(-38.8828125, -24)"><rect/><foreignObject width="77.765625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>📊 Monitor<br />5 min</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-G-13" transform="translate(1215.390625, 87)"><polygon points="58.578125,0 117.15625,-58.578125 58.578125,-117.15625 0,-58.578125" class="label-container" transform="translate(-58.078125, 58.578125)"/><g class="label" style="" transform="translate(-31.578125, -12)"><rect/><foreignObject width="63.15625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Healthy?</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-H-15" transform="translate(1441.6484375, 35)"><rect class="basic label-container" style="" x="-72.4453125" y="-27" width="144.890625" height="54"/><g class="label" style="" transform="translate(-42.4453125, -12)"><rect/><foreignObject width="84.890625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>✅ Success</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-I-17" transform="translate(1441.6484375, 139)"><rect class="basic label-container" style="" x="-91.5703125" y="-27" width="183.140625" height="54"/><g class="label" style="" transform="translate(-61.5703125, -12)"><rect/><foreignObject width="123.140625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>⬅️ Auto-Rollback</p></span></div></foreignObject></g></g></g></g></g></svg></div></div></div></div></div><div class="slide align-center" data-slide-index="33"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Cross-Phase Validation</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="34"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 1 to Phase 2 Validation</p></h2><div class="slide-body" style="color: #333333"><p>Ensure domain model completeness before specification.
+</p><p><strong>Trigger:</strong> Before starting Phase 2 ceremonies
+</p><p><strong>Validations:</strong>
+</p><ul><li>Example Map covers ALL aggregates from Phase 1</li><li>Example Map covers ALL entities in CHARTER.md scope</li><li>Example Map references ALL content types</li><li>All terms in Example Map exist in Ubiquitous Language</li><li>CHARTER.md alignment verified</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="35"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 2 to Phase 3 Validation</p></h2><div class="slide-body" style="color: #333333"><p>Ensure specification completeness before implementation.
+</p><p><strong>Trigger:</strong> Before starting Phase 3 (TDD Implementation)
+</p><p><strong>Validations:</strong>
+</p><ul><li>BDD scenarios cover ALL examples from Example Map</li><li>BDD scenarios test ALL rules from Example Map</li><li>BDD scenarios resolve ALL questions from Example Map</li><li>Acceptance Criteria references ALL BDD scenarios</li><li>Test data covers edge cases from Example Map questions</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="36"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Phase 3 to Phase 4 Validation</p></h2><div class="slide-body" style="color: #333333"><p>Ensure implementation completeness before integration.
+</p><p><strong>Trigger:</strong> During Phase 4.1 (Scenario-to-Test Decomposition)
+</p><p><strong>Validations:</strong>
+</p><ul><li>Unit tests cover ALL BDD scenarios</li><li>Unit tests cover ALL aggregates</li><li>Unit tests cover ALL invariants and business rules</li><li>Test pyramid: 70-80% unit, 15-20% integration, 5-10% acceptance</li><li>All P0 BDD scenarios GREEN</li><li>All P1 scenarios GREEN or with documented deferral</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="37"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Tools &amp; Automation</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="38"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Mill Tasks: SDLC Orchestration</p></h2><div class="slide-body" style="color: #333333"><p>Automate ceremony validation and project scaffolding.
+</p><p><strong>Philosophy:</strong> Ceremonies are human-first, validation is automation-first.
+</p><table><thead><tr><th style="text-align: left">Task Namespace</th><th style="text-align: left">Purpose</th></tr></thead><tbody><tr><td style="text-align: left">bootstrap.*</td><td style="text-align: left">Project scaffolding and setup</td></tr><tr><td style="text-align: left">validate.specification</td><td style="text-align: left">BDD scenario validation</td></tr><tr><td style="text-align: left">validate.domain</td><td style="text-align: left">Domain model validation</td></tr><tr><td style="text-align: left">validate.testing</td><td style="text-align: left">TDD enforcement and coverage</td></tr><tr><td style="text-align: left">validate.quality</td><td style="text-align: left">Code quality and security</td></tr><tr><td style="text-align: left">deployValidate/Execute</td><td style="text-align: left">Deployment orchestration</td></tr></tbody></table></div></div></div></div><div class="slide align-center" data-slide-index="39"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Mill Tasks: Ceremony Execution vs CI/CD</p></h2><div class="slide-body" style="color: #333333"><p>Two distinct usage contexts with different value.
+</p><p><strong>Ceremony Execution (Manual-First):</strong>
+</p><ul><li><strong>Context:</strong> Live ceremonies (Event Storming, Three Amigos)</li><li><strong>Validation Role:</strong> OPTIONAL sanity check</li><li><strong>Primary Quality Gate:</strong> Manual team review and discussion</li><li><strong>When to Use:</strong> Post-ceremony optional check</li></ul><p><strong>CI/CD Automation (Validation Primary):</strong>
+</p><ul><li><strong>Context:</strong> Pre-commit hooks, pull request gates, release checks</li><li><strong>Validation Role:</strong> PRIMARY quality gate</li><li><strong>Benefit:</strong> Catches issues before code review</li><li><strong>When to Use:</strong> Pre-commit, pull requests, releases</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="40"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Key Mill Task Examples</p></h2><div class="slide-body" style="color: #333333"><p>Common Mill commands for ceremony validation.
+</p><p>Domain model validation: mill .domain.domainValidate
+</p><p>BDD scenario validation: mill validate.specification
+</p><p>Test coverage validation: mill .coverage
+</p><p>Deployment validation: mill .deployValidate staging
+</p><p>Run all validations in parallel: mill .validateAll --jobs 8</p></div></div></div></div><div class="slide align-center" data-slide-index="41"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Technology Stack</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="42"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Enterprise Java Core Stack</p></h2><div class="slide-body" style="color: #333333"><p>Non-negotiable technologies.
+</p><table><thead><tr><th style="text-align: left">Category</th><th style="text-align: left">Technologies</th></tr></thead><tbody><tr><td style="text-align: left">Core</td><td style="text-align: left">Java 21+, Pekko, Kafka, PostgreSQL</td></tr><tr><td style="text-align: left">Testing</td><td style="text-align: left">Karate (BDD), JUnit 5</td></tr><tr><td style="text-align: left">Observability</td><td style="text-align: left">OpenTelemetry</td></tr><tr><td style="text-align: left">Rejected</td><td style="text-align: left">Spring Boot, Redis, Blocking I/O</td></tr></tbody></table><p><strong>Key principle:</strong> Non-blocking everything. If it blocks, it's wrong.</p></div></div></div></div><div class="slide align-center" data-slide-index="43"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Architectural Principles</p></h2><div class="slide-body" style="color: #333333"><p>Four non-negotiable patterns.
+</p><p><strong>Non-blocking Everything:</strong>
+</p><ul><li>Use CompletionStage, reactive Postgres drivers, Pekko actors</li><li>Ban: Future.get(), Thread.sleep(), JDBC, blocking I/O</li><li>Rule: If it blocks, it's wrong</li></ul><p><strong>Actor-Based Concurrency:</strong>
+</p><ul><li>Use Pekko actors for business logic</li><li>Typed actors with sealed interfaces</li></ul><p><strong>Event-Driven Architecture:</strong>
+</p><ul><li>CQRS, Event Sourcing with Pekko Persistence</li><li>Published Language between bounded contexts</li></ul><p><strong>Reactive Persistence:</strong>
+</p><ul><li>Reactive Postgres drivers, no JDBC</li><li>Non-blocking migrations</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="44"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Value Objects: Java Records (POL-033)</p></h2><div class="slide-body" style="color: #333333"><p>Use Java Records for all value objects.
+</p><p>Benefits: 68% less code than traditional classes
+</p><p>Example:
+</p><pre><code class="language-java">public record TenantId(UUID value) {
+    public TenantId {
+        if (value == null) 
+            throw new IllegalArgumentException(&quot;ID required&quot;);
+    }
+}
+
+public record CompanyName(String value) {
+    public CompanyName {
+        if (value == null || value.isBlank()) 
+            throw new IllegalArgumentException(&quot;Name required&quot;);
+    }
+}
+</code></pre><p>Policy: ALL value objects MUST use Java Records</p></div></div></div></div><div class="slide align-center" data-slide-index="45"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Team Workflow</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="46"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Typical 3-Week Sprint Flow</p></h2><div class="slide-body" style="color: #333333"><p><strong>Week 1: Discovery &amp; Specification</strong>
+</p><ul><li>Monday: Event Storming or Ubiquitous Language Workshop</li><li>Tuesday: Domain Modeling Workshop</li><li>Wednesday: Three Amigos for Sprint stories</li><li>Thursday: Example Mapping for complex stories</li><li>Friday: Acceptance Criteria Review</li></ul><p><strong>Deliverables:</strong> Approved BDD scenarios, domain model updates</p></div></div></div></div><div class="slide align-center" data-slide-index="47"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Week 2: Implementation</p></h2><div class="slide-body" style="color: #333333"><ul><li>Daily Test-First Pairing with Red-Green-Refactor cycles</li><li>Mid-week Property-Based Test Design for critical aggregates</li><li>Friday Scenario-to-Test Decomposition if any scenarios fail</li></ul><p><strong>Deliverables:</strong> Working software with passing tests</p></div></div></div></div><div class="slide align-center" data-slide-index="48"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Week 3: Integration &amp; Feedback</p></h2><div class="slide-body" style="color: #333333"><ul><li>Monday: Cross-Boundary Integration Testing if multiple contexts</li><li>Tuesday: Domain Model Retrospective</li><li>Wednesday: Living Documentation Sync</li><li>Thursday: Sprint Review and demo to stakeholders</li><li>Friday: Sprint Retrospective with max 3 action items</li></ul><p><strong>Deliverables:</strong> Updated documentation, retrospective action items</p></div></div></div></div><div class="slide align-center" data-slide-index="49"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Key Governance Policies</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="50"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Non-Negotiable Rules</p></h2><div class="slide-body" style="color: #333333"><p>Four core rules guide all work.
+</p><p><strong>Ubiquitous Language Everywhere:</strong>
+</p><ul><li>Code/docs/scenarios use exact terms from glossary</li><li>Ban: DTO, Manager, Handler, Service, Helper in domain code</li><li>Infrastructure layer (ACL/adapters) can use technical terms</li></ul><p><strong>Non-Blocking Everything:</strong>
+</p><ul><li>Use: CompletionStage, reactive Postgres, Pekko actors/streams</li><li>Ban: Future.get(), Thread.sleep(), JDBC, blocking I/O</li><li>Rule: If it blocks, it's wrong</li></ul><p><strong>Test-First Always:</strong>
+</p><ul><li>Order: BDD scenarios → failing unit test → implement</li><li>Coverage: Use jqwik for property-based invariant testing</li><li>Language: Test names use domain language</li></ul></div></div></div></div><div class="slide align-center" data-slide-index="51"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Key Policies</p></h2><div class="slide-body" style="color: #333333"><p>Three critical policies enforce quality.
+</p><table><thead><tr><th style="text-align: left">Policy</th><th style="text-align: left">Rule</th><th style="text-align: left">Requirement</th></tr></thead><tbody><tr><td style="text-align: left">POL-033</td><td style="text-align: left">Java Records for Value Objects</td><td style="text-align: left">ALL value objects use Records (68% code reduction)</td></tr><tr><td style="text-align: left">POL-030</td><td style="text-align: left">Mill Deploy Usage</td><td style="text-align: left">ALL deployments viamill &lt;service&gt;.deployExecute</td></tr><tr><td style="text-align: left">POL-036</td><td style="text-align: left">Retrospective Limit</td><td style="text-align: left">Max 3 action items per sprint retrospective</td></tr></tbody></table></div></div></div></div><div class="slide align-center" data-slide-index="52"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Onboarding</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="53"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>New Team Member: Week 1 Foundation</p></h2><div class="slide-body" style="color: #333333"><p>Days 1-3: Read Core Documentation
+</p><p>Read in order:
+</p><ol><li>HOW-WE-WORK.md: Complete SDLC playbook</li><li>CHARTER.md: Master project charter</li><li>ARCHITECTURE.md: System architecture</li><li>Ceremony guide: doc/internal/reference/SBPF/Blending-DDD-BDD-TDD.md</li></ol><p>Days 4-5: Setup Development Environment
+</p><p>Install: Java 21+, Mill 0.11.6+, VS Code + Metals extension See: doc/internal/reference/developer-setup.md Get: GitHub organization access</p></div></div></div></div><div class="slide align-center" data-slide-index="54"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Week 2: Immersion</p></h2><div class="slide-body" style="color: #333333"><p>Shadow All Ceremonies
+</p><p>Attend all 4 ceremony types as observer Ask questions and take notes Review ceremony artifacts No responsibility, just learning</p></div></div></div></div><div class="slide align-center" data-slide-index="55"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Week 3: Participation</p></h2><div class="slide-body" style="color: #333333"><p>Active Participation
+</p><p>Participate in ceremonies (not leading yet) Pair with Bench Developer or shadow Product Owner Create first artifact using templates Receive feedback from mentor</p></div></div></div></div><div class="slide align-center" data-slide-index="56"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Week 4: Leadership</p></h2><div class="slide-body" style="color: #333333"><p>Co-Lead Ceremonies
+</p><p>Co-lead a ceremony with mentor Full responsibility for one ceremony output Ready for independent work</p></div></div></div></div><div class="slide align-center" data-slide-index="57"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Quick Reference: Red Flags</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="58"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Code Red Flags</p></h2><div class="slide-body" style="color: #333333"><p>Watch for these code patterns.
+</p><ul><li><strong>Blocking patterns:</strong> Future.get(), Thread.sleep(), JDBC, blocking I/O</li><li><strong>Anemic models:</strong> Classes with just getters/setters</li><li><strong>Technical jargon:</strong> DTO, Manager, Service, Handler in domain code</li><li><strong>Implementation-first:</strong> Tests written after code</li><li><strong>Wrong tools:</strong> Traditional classes instead of Java Records for value objects</li></ul><p>All are rework signals. Fix immediately.</p></div></div></div></div><div class="slide align-center" data-slide-index="59"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Documentation Red Flags</p></h2><div class="slide-body" style="color: #333333"><p>Watch for these documentation patterns.
+</p><ul><li><strong>No templates:</strong> Docs created without using provided templates</li><li><strong>No diagrams:</strong> Mermaid diagrams missing from design docs</li><li><strong>No language:</strong> BDD scenarios without domain vocabulary</li><li><strong>Untracked:</strong> Ceremony artifacts not in Git version control</li></ul><p>Documentation drift causes rework. Keep docs synchronized.</p></div></div></div></div><div class="slide align-center" data-slide-index="60"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Process Red Flags</p></h2><div class="slide-body" style="color: #333333"><p>Watch for these process violations.
+</p><ul><li><strong>Skipped ceremonies:</strong> Pressure shortcuts phase activities</li><li><strong>Wrong order:</strong> Tests written after implementation</li><li><strong>Unfinished phases:</strong> Phase 3 starts before Phase 2 complete</li><li><strong>No approval:</strong> Implementation without accepted specifications</li><li><strong>Documentation drift:</strong> Code and docs out of sync</li></ul><p>Process violations compound into major rework. Maintain discipline.</p></div></div></div></div><div class="slide align-center" data-slide-index="61"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>FAQ</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="62"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Common Questions</p></h2><div class="slide-body" style="color: #333333"><p>Q: Do we really need all these ceremonies? A: Yes. Each ceremony addresses specific questions and produces specific artifacts. Skipping ceremonies leads to misalignment and rework.
+</p><p>Q: Can we combine ceremonies? A: Some can be back-to-back (Three Amigos → Example Mapping), but don't merge distinct ceremonies (Event Storming + Domain Modeling).
+</p><p>Q: What if Product Owner is unavailable? A: Block specification ceremonies until PO is available. Developers MUST NOT make business decisions.</p></div></div></div></div><div class="slide align-center" data-slide-index="63"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>More FAQ</p></h2><div class="slide-body" style="color: #333333"><p>Q: Can we use external tools like Miro or PowerPoint? A: No. Everything must be Git-tracked and in Mermaid. Ensures version control and portability.
+</p><p>Q: What if TDD is slowing us down? A: TDD only slows initially, speeds up over time by reducing bugs. If tests are hard to write, your design is wrong.
+</p><p>Q: Do we need both charter AND canvas? A: Yes. Charter for deep work, canvas for daily reference. Different audiences, different update frequencies.
+</p><p>Q: How often do we update ubiquitous language? A: Bi-weekly during active development, monthly during maintenance. Add new terms immediately when discovered.</p></div></div></div></div><div class="slide align-center" data-slide-index="64"><div class="slide-content-wrapper"><div class="title-slide"><div class="title-slide-header"><h1 class="slide-title" style="color: #2c3e50"><p>Summary: The SDLC Loop</p></h1></div></div></div></div><div class="slide align-center" data-slide-index="65"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>The Complete Cycle</p></h2><div class="slide-body" style="color: #333333"><p>Each phase builds on previous phase outputs.
+</p><div class="mermaid-diagram" data-diagram-type="flowchart"><svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 558.875px; background-color: transparent;" viewBox="0 0 558.875 622" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#my-svg .cluster-label text{fill:#333;}#my-svg .cluster-label span{color:#333;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#333;color:#333;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#my-svg .arrowheadPath{fill:#333333;}#my-svg .edgePath .path{stroke:#333333;stroke-width:2.0px;}#my-svg .flowchart-link{stroke:#333333;fill:none;}#my-svg .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#my-svg .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#my-svg .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#my-svg .cluster text{fill:#333;}#my-svg .cluster span{color:#333;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#my-svg .icon-shape rect,#my-svg .image-shape rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M141.63,86L135.509,94.167C129.389,102.333,117.148,118.667,111.027,134.333C104.906,150,104.906,165,104.906,172.5L104.906,180" id="L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTQxLjYzMDE0OTE0NzcyNzI4LCJ5Ijo4Nn0seyJ4IjoxMDQuOTA2MjUsInkiOjEzNX0seyJ4IjoxMDQuOTA2MjUsInkiOjE4NH1d" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M104.906,262L104.906,270.167C104.906,278.333,104.906,294.667,104.906,310.333C104.906,326,104.906,341,104.906,348.5L104.906,356" id="L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MTA0LjkwNjI1LCJ5IjoyNjJ9LHsieCI6MTA0LjkwNjI1LCJ5IjozMTF9LHsieCI6MTA0LjkwNjI1LCJ5IjozNjB9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M104.906,438L104.906,446.167C104.906,454.333,104.906,470.667,110.627,486.467C116.348,502.266,127.79,517.533,133.51,525.166L139.231,532.799" id="L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6MTA0LjkwNjI1LCJ5Ijo0Mzh9LHsieCI6MTA0LjkwNjI1LCJ5Ijo0ODd9LHsieCI6MTQxLjYzMDE0OTE0NzcyNzI4LCJ5Ijo1MzZ9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M200.089,536L206.209,527.833C212.33,519.667,224.571,503.333,230.692,480.5C236.813,457.667,236.813,428.333,236.813,399C236.813,369.667,236.813,340.333,236.813,311C236.813,281.667,236.813,252.333,236.813,223C236.813,193.667,236.813,164.333,231.092,142.033C225.371,119.734,213.929,104.467,208.208,96.834L202.488,89.201" id="L_D_A_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_A_0" data-points="W3sieCI6MjAwLjA4ODYwMDg1MjI3MjcyLCJ5Ijo1MzZ9LHsieCI6MjM2LjgxMjUsInkiOjQ4N30seyJ4IjoyMzYuODEyNSwieSI6Mzk5fSx7IngiOjIzNi44MTI1LCJ5IjozMTF9LHsieCI6MjM2LjgxMjUsInkiOjIyM30seyJ4IjoyMzYuODEyNSwieSI6MTM1fSx7IngiOjIwMC4wODg2MDA4NTIyNzI3MiwieSI6ODZ9XQ==" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(104.90625, 135)"><g class="label" data-id="L_A_B_0" transform="translate(-75.6171875, -24)"><foreignObject width="151.234375" height="48"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Domain Model<br />Ubiquitous Language</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(104.90625, 311)"><g class="label" data-id="L_B_C_0" transform="translate(-54.6875, -24)"><foreignObject width="109.375" height="48"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>BDD Scenarios<br />Example Maps</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(104.90625, 487)"><g class="label" data-id="L_C_D_0" transform="translate(-49.2109375, -24)"><foreignObject width="98.421875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Passing Tests<br />Code</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(236.8125, 311)"><g class="label" data-id="L_D_A_0" transform="translate(-50.6953125, -24)"><foreignObject width="101.390625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Updated Docs<br />Retrospective</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="flowchart-A-0" transform="translate(170.859375, 47)"><rect class="basic label-container" style="" x="-77.328125" y="-39" width="154.65625" height="78"/><g class="label" style="" transform="translate(-47.328125, -24)"><rect/><foreignObject width="94.65625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🔍 Discovery<br />(Phase 1)</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-B-1" transform="translate(104.90625, 223)"><rect class="basic label-container" style="" x="-87.5703125" y="-39" width="175.140625" height="78"/><g class="label" style="" transform="translate(-57.5703125, -24)"><rect/><foreignObject width="115.140625" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>📝 Specification<br />(Phase 2)</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-C-3" transform="translate(104.90625, 399)"><rect class="basic label-container" style="" x="-96.90625" y="-39" width="193.8125" height="78"/><g class="label" style="" transform="translate(-66.90625, -24)"><rect/><foreignObject width="133.8125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>💻 Implementation<br />(Phase 3)</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-D-5" transform="translate(170.859375, 575)"><rect class="basic label-container" style="" x="-80.015625" y="-39" width="160.03125" height="78"/><g class="label" style="" transform="translate(-50.015625, -24)"><rect/><foreignObject width="100.03125" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🔄 Integration<br />(Phase 4)</p></span></div></foreignObject></g></g><g class="node default" id="flowchart-E-8" transform="translate(424.53125, 47)"><rect class="basic label-container" style="" x="-126.34375" y="-39" width="252.6875" height="78"/><g class="label" style="" transform="translate(-96.34375, -24)"><rect/><foreignObject width="192.6875" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>🔁 Continuous Sync<br />Governance | Observability</p></span></div></foreignObject></g></g></g></g></g></svg></div><p><strong>Outcome:</strong> Each cycle delivers tested, documented features aligned with business goals.</p></div></div></div></div><div class="slide align-center" data-slide-index="66"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Key Success Metrics</p></h2><div class="slide-body" style="color: #333333"><p>Measure team and technical health.
+</p><table><thead><tr><th style="text-align: left">Metric</th><th style="text-align: left">Target</th></tr></thead><tbody><tr><td style="text-align: left">Code Coverage</td><td style="text-align: left">≥80% unit tests, ≥90% for aggregates</td></tr><tr><td style="text-align: left">Deployment Frequency</td><td style="text-align: left">Multiple/day (dev), daily (staging), weekly (prod)</td></tr><tr><td style="text-align: left">Deployment Duration</td><td style="text-align: left">&lt;2 min (local), &lt;5 min (dev), &lt;10 min (staging/prod)</td></tr><tr><td style="text-align: left">Rollback Rate</td><td style="text-align: left">&lt;5% (automatic on failure)</td></tr><tr><td style="text-align: left">MTTR (Mean Time to Recovery)</td><td style="text-align: left">&lt;2 min (P95) via automatic rollback</td></tr><tr><td style="text-align: left">Scenario Pass Rate</td><td style="text-align: left">100% of P0 scenarios GREEN before production</td></tr></tbody></table></div></div></div></div><div class="slide align-center" data-slide-index="67"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Remember</p></h2><div class="slide-body" style="color: #333333"><p>Four core principles guide all work.
+</p><p>Documentation is Code: Everything Git-tracked, version-controlled, and executable.
+</p><p>Ceremonies are Human-First: Automation validates, humans decide.
+</p><p>Non-Blocking Everything: If it blocks, it's wrong.
+</p><p>Ubiquitous Language Everywhere: Code talks the business domain.</p></div></div></div></div><div class="slide align-center" data-slide-index="68"><div class="slide-content-wrapper"><div class="content-slide"><h2 class="slide-heading" style="color: #2c3e50"><p>Resources</p></h2><div class="slide-body" style="color: #333333"><p>Find detailed information in the repository.
+</p><p>Complete Playbook: HOW-WE-WORK.md Project Charter: CHARTER.md System Architecture: ARCHITECTURE.md Ceremony Instructions: doc/internal/ceremonies/ (27 files) Document Templates: doc/internal/reference/templates/
+</p><p>Questions? Ask your Architect or Program Manager.</p></div></div></div></div></div><div class="controls"><span class="slide-counter" id="slide-counter">1 / 69</span></div><script>
+    let currentSlide = 0;
+    const totalSlides = 69;
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      currentSlide = index;
+
+      const counter = document.getElementById('slide-counter');
+      counter.textContent = (index + 1) + ' / ' + totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    function firstSlide() {
+      currentSlide = 0;
+      showSlide(currentSlide);
+    }
+
+    function lastSlide() {
+      currentSlide = totalSlides - 1;
+      showSlide(currentSlide);
+    }
+
+    // Auto-scale code blocks that exceed 20 lines (PDR-006)
+    function scaleCodeBlocks() {
+      document.querySelectorAll('pre code').forEach(codeBlock => {
+        const lines = codeBlock.textContent.split('\n').length;
+        if (lines > 20) {
+          // Calculate scale factor: 20 lines = 1.0, 40 lines = 0.7, 60+ lines = 0.5
+          const scaleFactor = Math.max(0.5, 1.0 - ((lines - 20) * 0.015));
+          codeBlock.parentElement.style.fontSize = (18 * scaleFactor) + 'px';
+        }
+      });
+    }
+
+    // Auto-scale body content that exceeds viewport height (PDR-001, PDR-006)
+    function scaleBodyContent() {
+      document.querySelectorAll('.slide').forEach(slide => {
+        const slideBody = slide.querySelector('.slide-body');
+        if (!slideBody) return;
+
+        // Use actual rendered height instead of line count
+        // PDR-006: Max body height is 70vh (leaving room for header/footer/padding)
+        const maxHeight = window.innerHeight * 0.70;
+        const actualHeight = slideBody.scrollHeight;
+
+        if (actualHeight > maxHeight) {
+          // PDR-006 scaling formula: fontSize = max(10px, currentFontSize * (maxHeight / actualHeight))
+          const scaleFactor = maxHeight / actualHeight;
+          const currentFontSize = parseFloat(window.getComputedStyle(slideBody).fontSize) || 24;
+          const minFontSize = 10; // Readability floor
+          const scaledFontSize = Math.max(minFontSize, currentFontSize * scaleFactor);
+
+          slideBody.style.fontSize = scaledFontSize + 'px';
+
+          // Also scale code blocks proportionally
+          slideBody.querySelectorAll('pre code').forEach(code => {
+            const codeFontSize = parseFloat(window.getComputedStyle(code).fontSize) || 18;
+            code.parentElement.style.fontSize = Math.max(10, codeFontSize * scaleFactor) + 'px';
+          });
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          firstSlide();
+          break;
+        case 'End':
+          e.preventDefault();
+          lastSlide();
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          // Open speaker view with current slide index
+          window.open(`speaker.html?slide=${currentSlide}`, 'speaker-view', 'width=1024,height=768');
+          break;
+      }
+    });
+
+    // Run auto-scaling on page load (PDR-001, PDR-006)
+    window.addEventListener('DOMContentLoaded', () => {
+      scaleCodeBlocks();
+      scaleBodyContent();
+    });
+  </script><script>document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });</script><script src="presentation-timer.js"></script><script src="navigation-history.js"></script><script src="goto-function.js"></script><script src="history-logging.js"></script><script src="header-footer.js"></script><script src="break-mode.js"></script></body></html>

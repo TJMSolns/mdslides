@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# MDSlides Wrapper Script (Unix/macOS)
+# Executes the MDSlides JAR with proper classpath and config directory references
+
+# Determine the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Set up classpath and config references
+MDSLIDES_HOME="${MDSLIDES_HOME:-$HOME/.mdslides}"
+MDSLIDES_JAR="$SCRIPT_DIR/mdslides.jar"
+MDSLIDES_CONFIG="$MDSLIDES_HOME/config"
+MDSLIDES_TEMPLATES="$MDSLIDES_HOME/templates"
+
+# Check if JAR exists
+if [ ! -f "$MDSLIDES_JAR" ]; then
+  echo "Error: mdslides.jar not found at $MDSLIDES_JAR"
+  echo "Please reinstall MDSlides"
+  exit 1
+fi
+
+# Export environment variables for the JAR to use
+export MDSLIDES_HOME
+export MDSLIDES_CONFIG
+export MDSLIDES_TEMPLATES
+
+# Execute the JAR, passing all arguments through
+java -jar "$MDSLIDES_JAR" "$@"
