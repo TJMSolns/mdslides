@@ -7,6 +7,10 @@
 
 ---
 
+## Charter
+
+**Mission:** To support TJM Solutions' productivity and engineering showcase by providing a Scala 3 / Cats Effect CLI tool for rendering markdown presentation decks to styled HTML with speaker view.
+
 ## Current Phase
 
 **Maintenance + incremental feature development.** mdslides is a Scala 3 / Mill / Cats Effect CLI tool for rendering markdown presentation decks to HTML with speaker view. It is complete and used actively. Work is driven by feature requests and bugs, not a milestone roadmap.
