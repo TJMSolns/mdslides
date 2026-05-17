@@ -5,6 +5,13 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-05-17
+
+### Fixed
+- **Two-column CSS coverage (MS-014):** Lists (`ul`/`ol`/`li`), paragraphs (`p`), and tables (`th`/`td`/`tbody`) inside two-column slides were not styled because column content is rendered in `section.column` elements without a `.slide-body` wrapper. All `.slide-body X` CSS rules now also target `.column X`. Regression tests added in `HTMLRendererTwoColumnSpec`.
+
+---
+
 ## [1.0.4] - 2026-05-17
 
 ### Fixed
