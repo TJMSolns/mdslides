@@ -8,7 +8,8 @@ P4 priority. Work items are driven by feature requests, bugs, and maintenance ne
 
 | ID | Item | Owner | Status | Depends On |
 |----|------|-------|--------|-----------|
-| MS-013 | **BUG** — `PathResolverSpec.findInputFile - error when not found` failing: assert that error message contains `"nonexistent.md"` fails; pre-existing as of cd067f6 (confirmed: failure present before MS-009 changes via git stash verification); MS-007 fix may not have covered this specific test case | Claude | Queued | — |
+| MS-015 | **BUG** — 20 domain tests pre-existing failures: SlideProperties, ContentSlideProperties (property-based), HeaderFooterSpec. Confirmed pre-existing (stash verification b575694). Scope: domain module only; CLI and infrastructure pass. Needs investigation. | Claude | Queued | — |
+| ~~MS-013~~ | ~~**BUG** — PathResolverSpec `findInputFile - error when not found` failing~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | ~~MS-009~~ | ~~Add explicit version declaration to build.sc; wire into `--version` CLI flag~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | ~~MS-010~~ | ~~Audit `.slide-body`-only CSS selectors for `.column` coverage gaps~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | MS-014 | **BUG** — CSS coverage gaps in two-column layout: `.slide-body`-scoped selectors for lists (ul/ol/li, bullet hierarchy), paragraphs (p margins), and tables (th/td styling, alternating rows) do NOT apply inside `.column.column-left` / `.column.column-right` because column content is not wrapped in `.slide-body`. Fix: duplicate each `.slide-body` selector rule to also target `.column` (e.g. `.slide-body ul, .column ul`). Affects HTMLRenderer.scala lines 442–519. Add regression tests in HTMLRendererTwoColumnSpec. | Claude | Queued | — |
@@ -22,6 +23,7 @@ P4 priority. Work items are driven by feature requests, bugs, and maintenance ne
 
 | ID | Item | Evidence |
 |----|------|---------|
+| MS-013 | PathResolverSpec findInputFile error-when-not-found test fix | `PathResolver.scala` error message now includes `$deckName.md` as substring — commit (v1.0.2); release at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.2 — 2026-05-17 |
 | MS-010 | Audit `.slide-body`-only CSS gaps in HTMLRenderer | Audit complete: 15 selectors (list hierarchy, paragraphs, tables) gap inside `.column` elements; MS-014 queued — 2026-05-17 |
 | MS-009 | Add version constant to build.sc; wire `--version` flag | `build.sc` `mdSlidesVersion="1.0.1"` + `BuildInfo.scala` generated + `Main.scala` updated — commit ead6d25 — 2026-05-17 |
 | MS-011 | MCP capability surface spike | `doc/internal/governance/adr/ADR-013-mcp-server-architecture.md` — file-in/file-out architecture; 4-tool surface (`render_deck`, `validate_deck`, `list_themes`, `get_deck_info`); MS-012 queued for implementation — 2026-05-17 |
