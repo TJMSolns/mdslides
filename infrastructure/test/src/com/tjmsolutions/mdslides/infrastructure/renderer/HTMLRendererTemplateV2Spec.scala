@@ -235,8 +235,8 @@ graph TD
     val deck = SlideDeck(NonEmptyList.one(slide))
     val html = HTMLRenderer.renderDeck(deck, Theme.light)
 
-    // Verify diagram content is rendered
-    assert(html.contains("class=\"mermaid\""), "Should contain Mermaid diagram element")
+    // Verify diagram content is rendered (mermaid-diagram when pre-rendered, mermaid-fallback otherwise)
+    assert(html.contains("mermaid-diagram") || html.contains("mermaid-fallback"), "Should contain Mermaid diagram element")
     assert(html.contains("graph TD"), "Should contain Mermaid source")
     assert(html.contains("A[Client]"), "Should contain diagram nodes")
 

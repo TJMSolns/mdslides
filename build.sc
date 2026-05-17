@@ -25,7 +25,7 @@ import mill.scalalib.publish._
  * - ADR-009: Property-Based Testing Strategy
  */
 
-val mdSlidesVersion = "1.0.3"
+val mdSlidesVersion = "1.0.4"
 
 // Common configuration shared across all modules
 trait MDSlidesModule extends ScalaModule {

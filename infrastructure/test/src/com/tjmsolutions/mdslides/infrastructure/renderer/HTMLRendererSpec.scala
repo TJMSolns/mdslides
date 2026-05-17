@@ -149,8 +149,8 @@ class HTMLRendererSpec extends munit.FunSuite:
     // Check JavaScript has correct total
     assert(html.contains("const totalSlides = 3"))
 
-    // Check first slide has "active" class
-    assert(html.contains("class=\"slide active\""))
+    // Check first slide has "active" class (may also have alignment class suffix)
+    assert(html.contains("slide active"))
 
     // Check data attributes for navigation
     assert(html.contains("data-slide-index=\"0\""))
@@ -297,9 +297,9 @@ class HTMLRendererSpec extends munit.FunSuite:
 
     val html = HTMLRenderer.renderDeck(deck)
 
-    // Should include inline style with per-slide background
+    // Should include inline style with per-slide background (path rewritten to images/ by rewriteImageUrl)
     assert(html.contains("background-image"))
-    assert(html.contains("backgrounds/custom.png"))
+    assert(html.contains("images/custom.png"))
   }
 
   test("render slide using template background from theme") {
@@ -418,9 +418,9 @@ class HTMLRendererSpec extends munit.FunSuite:
 
     val html = HTMLRenderer.renderDeck(deck, theme)
 
-    // Should use per-slide background, not template background
-    assert(html.contains("backgrounds/override.png"))
-    assert(!html.contains("backgrounds/content-bg.png"))
+    // Should use per-slide background (path rewritten to images/ by rewriteImageUrl), not template background
+    assert(html.contains("images/override.png"))
+    assert(!html.contains("images/content-bg.png"))
   }
 
   test("slide without background falls back to theme default") {

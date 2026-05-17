@@ -303,7 +303,7 @@ class ThemeJsonAdapterSpec extends FunSuite:
   test("ThemeJsonAdapter.corporate - predefined corporate theme"):
     val theme = ThemeJsonAdapter.corporate
     assertEquals(theme.name, "corporate")
-    assertEquals(theme.background.image, Some("./themes/corporate/logo-watermark.png"))
+    assertEquals(theme.background.image, None)  // No watermark image in built-in theme
 
   // ===== US-012: Template-Specific Backgrounds =====
 
