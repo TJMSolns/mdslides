@@ -13,12 +13,12 @@ Close this session cleanly by writing a handoff entry.
 2. Read `docs/agents/DECISION-REGISTER.md` — note any decisions made this session
 3. Review recent conversation context to summarize what happened
 
-4. **Update WORK-QUEUE:**
+4. **Harvest check:** Are there patterns, lessons, or decisions from this session worth generalizing to other projects or org methodology? If yes, note them as `**Harvest candidates:**` in the ledger entry. If no, omit.\n\n4b. **Retro prompt:** Scan the last 3 HANDOFF-LEDGER entries for `**Harvest candidates:**` lines. If any exist that have not been promoted to a WQ item, methodology section, or governance doc, print:\n   ```\n   ⚠  Unprocessed harvest candidates exist. Run /retro now — or queue a WORK-QUEUE item. The methodology loop only closes when lessons land in a file.\n   ```\n\n5. **Update WORK-QUEUE:**
    - Set completed items to `done` with evidence (file path or decision ID)
    - Leave in_progress items as-is if genuinely still in progress
    - Add any newly discovered items
 
-5. **Write HANDOFF-LEDGER entry** at the TOP of `docs/agents/HANDOFF-LEDGER.md`:
+6. **Write HANDOFF-LEDGER entry** at the TOP of `docs/agents/HANDOFF-LEDGER.md`:
    ```markdown
    ## HL-<next-id> — <date> — <session summary in 5 words>
 
@@ -35,4 +35,4 @@ Close this session cleanly by writing a handoff entry.
    ---
    ```
 
-6. Confirm the entry was written. Print the "Next owner" line.
+7. Confirm the entry was written. Print the "Next owner" line.

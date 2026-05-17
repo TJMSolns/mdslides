@@ -93,9 +93,29 @@ MUnit + ScalaCheck (property-based). 300+ tests across both modules.
 - Configuration merges at three levels; `ConfigurationMerger` in domain handles the merge logic
 - ADRs (`doc/internal/governance/adr/`) and PDRs (`doc/internal/governance/pdr/`) document all significant decisions — check them before changing architecture or adding features
 
+## Definition of Done — Bug Fix
+
+1. Write a **failing test** that reproduces the bug before touching the code
+2. Fix makes the test pass; all previously-passing tests still pass
+3. Update `CHANGELOG.md` under the next version heading
+4. Bump PATCH version in `build.sc` (`val mdSlidesVersion`)
+5. Build: `mill cli.assembly`
+6. Upload: `cp out/cli/assembly.dest/out.jar /tmp/md-slides.jar && gh release upload vX.Y.Z /tmp/md-slides.jar --repo TJMSolns/MD-Slides --clobber`
+7. **Verify immediately:** `gh release view vX.Y.Z --repo TJMSolns/MD-Slides --json assets --jq '.assets[] | "\(.name) \(.updatedAt)"'`
+8. Confirm: `md-slides.jar` timestamp is current; no stale `out.jar` present
+
 ## Governance Artifacts
 
 When implementing a feature, cross-reference with:
 - User Stories (`US-XXX`) in `doc/internal/planning/`
 - Product Decision Records (`PDR-XXX`) in `doc/internal/governance/pdr/`
 - Architecture Decision Records (`ADR-XXX`) in `doc/internal/governance/adr/`
+
+## Harness Rules — Non-Negotiable
+
+**Rule 1 — Bugs and issues:** Use `/bug <description>`. Queue it. Stop. `/groom` decides priority. `/next` executes. No inline diagnosis, no inline fixes, no self-sequencing.
+
+**Rule 2 — Discussion is not instruction:** A design conversation or question produces words only — no file writes, no WORK-QUEUE additions, no artifacts — unless Tony explicitly asks for one. If something seems worth recording, ask "Should I queue this?" and wait.
+
+**Rule 3 — Approved plan ≠ execute permission:** A plan record in HANDOFF-LEDGER is history, not a command. Execution requires explicit instruction in the current session.
+
