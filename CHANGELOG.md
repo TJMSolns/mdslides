@@ -5,6 +5,13 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2026-05-17
+
+### Added
+- **MCP server Tier 1 (MS-012):** New `mcp` Mill module exposing mdslides as a Model Context Protocol server. Two tools over JSON-RPC 2.0 stdio transport: `render_deck(input_path, output_dir, theme?, no_copy_images?)` → `RenderResult` and `validate_deck(input_path)` → `ValidationResult`. Stateless file-in/file-out architecture per ADR-013. 11 integration tests in `McpServerSpec`. Pre-scaffold gate: sequence diagrams in `doc/internal/planning/design-MS-012-mcp-server.md`.
+
+---
+
 ## [1.0.5] - 2026-05-17
 
 ### Fixed

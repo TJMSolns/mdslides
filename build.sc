@@ -25,7 +25,7 @@ import mill.scalalib.publish._
  * - ADR-009: Property-Based Testing Strategy
  */
 
-val mdSlidesVersion = "1.0.5"
+val mdSlidesVersion = "1.0.6"
 
 // Common configuration shared across all modules
 trait MDSlidesModule extends ScalaModule {
@@ -115,6 +115,45 @@ object infrastructure extends MDSlidesModule {
       ivy"org.scalameta::munit:0.7.29",
 
       // Test utilities for Cats Effect
+      ivy"org.typelevel::munit-cats-effect:2.0.0"
+    )
+  }
+}
+
+/**
+ * MCP Module: Model Context Protocol server (Tier 1)
+ *
+ * Exposes mdslides rendering pipeline as MCP tools:
+ * - render_deck(input_path, output_dir, theme?, no_copy_images?) → RenderResult
+ * - validate_deck(input_path) → ValidationResult
+ *
+ * Protocol: JSON-RPC 2.0 over stdio (standard MCP transport)
+ * Architecture: file-in/file-out (stateless); see ADR-013
+ *
+ * Related Governance:
+ * - ADR-013: MCP Server Architecture
+ * - MS-012: MCP Server Tier 1 implementation
+ */
+object mcp extends MDSlidesModule {
+  override def moduleDeps = Seq(infrastructure)
+
+  override def ivyDeps = Agg(
+    // Effect system
+    ivy"org.typelevel::cats-effect:3.5.4",
+
+    // JSON parsing/encoding for JSON-RPC 2.0
+    ivy"io.circe::circe-core:0.14.6",
+    ivy"io.circe::circe-generic:0.14.6",
+    ivy"io.circe::circe-parser:0.14.6"
+  )
+
+  def mainClass = T { Some("com.tjmsolutions.mdslides.mcp.Main") }
+
+  def assembly = T { super.assembly() }
+
+  object test extends ScalaTests with TestModule.Munit {
+    override def ivyDeps = Agg(
+      ivy"org.scalameta::munit:0.7.29",
       ivy"org.typelevel::munit-cats-effect:2.0.0"
     )
   }
