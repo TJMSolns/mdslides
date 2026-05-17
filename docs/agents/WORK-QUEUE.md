@@ -8,7 +8,8 @@ P4 priority. Work items are driven by feature requests, bugs, and maintenance ne
 
 | ID | Item | Owner | Status | Depends On |
 |----|------|-------|--------|-----------|
-| MS-015 | **BUG** — 20 domain tests pre-existing failures: SlideProperties, ContentSlideProperties (property-based), HeaderFooterSpec. Confirmed pre-existing (stash verification b575694). Scope: domain module only; CLI and infrastructure pass. Needs investigation. | Claude | Queued | — |
+| MS-016 | **BUG** — 5 infrastructure tests pre-existing failures: HTMLRendererTemplateV2Spec (diagram), HTMLRendererSpec (multi-slide, per-slide background x2), ThemeJsonAdapterSpec (corporate). Confirmed pre-existing (stash verification b9578b2). Needs investigation. | Claude | Queued | — |
+| ~~MS-015~~ | ~~**BUG** — 20 domain tests pre-existing failures~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | ~~MS-013~~ | ~~**BUG** — PathResolverSpec `findInputFile - error when not found` failing~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | ~~MS-009~~ | ~~Add explicit version declaration to build.sc; wire into `--version` CLI flag~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 | ~~MS-010~~ | ~~Audit `.slide-body`-only CSS selectors for `.column` coverage gaps~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
@@ -23,6 +24,7 @@ P4 priority. Work items are driven by feature requests, bugs, and maintenance ne
 
 | ID | Item | Evidence |
 |----|------|---------|
+| MS-015 | Fix 20 domain test failures (HeaderFooter placeholder format + density ContentError→DensityWarning alignment) | `HeaderFooter.scala` placeholder format corrected ({single} not {{double}}); SlideSpec/ContentSlideSpec/properties updated to DensityWarning assertions — commit (v1.0.3); release at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.3 — 2026-05-17 |
 | MS-013 | PathResolverSpec findInputFile error-when-not-found test fix | `PathResolver.scala` error message now includes `$deckName.md` as substring — commit (v1.0.2); release at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.2 — 2026-05-17 |
 | MS-010 | Audit `.slide-body`-only CSS gaps in HTMLRenderer | Audit complete: 15 selectors (list hierarchy, paragraphs, tables) gap inside `.column` elements; MS-014 queued — 2026-05-17 |
 | MS-009 | Add version constant to build.sc; wire `--version` flag | `build.sc` `mdSlidesVersion="1.0.1"` + `BuildInfo.scala` generated + `Main.scala` updated — commit ead6d25 — 2026-05-17 |

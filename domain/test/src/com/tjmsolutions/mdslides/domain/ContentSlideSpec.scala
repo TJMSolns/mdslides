@@ -131,7 +131,7 @@ class ContentSlideSpec extends munit.FunSuite:
       case Left(errors) =>
         val errorMessages = errors.toList.map(_.displayMessage)
         assert(errorMessages.exists(_.contains("body")))
-        assert(errorMessages.exists(_.contains("exceeds max 12 lines")))
+        assert(errorMessages.exists(_.contains("exceeds recommended line limit")))
 
       case Right(_) =>
         fail("Expected validation to fail with ContentError for body exceeding 12 lines")
@@ -157,7 +157,7 @@ class ContentSlideSpec extends munit.FunSuite:
       case Left(errors) =>
         val errorMessages = errors.toList.map(_.displayMessage)
         assert(errorMessages.exists(_.contains("body")))
-        assert(errorMessages.exists(_.contains("exceeds max 150 words")))
+        assert(errorMessages.exists(_.contains("exceeds recommended word limit")))
 
       case Right(_) =>
         fail("Expected validation to fail with ContentError for body exceeding 150 words")

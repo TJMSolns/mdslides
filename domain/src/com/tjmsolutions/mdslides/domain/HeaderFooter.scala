@@ -73,10 +73,12 @@ object HeaderFooter:
     elapsedTime: String
   ): String =
     val replacements = List(
-      ("{{title}}", metadata.getOrElse("title", "")),           // AC-7
-      ("{{pageNumber}}", (currentSlide + 1).toString),          // AC-5: 1-indexed
-      ("{{totalPages}}", totalSlides.toString),                 // AC-6: Static
-      ("{{timer}}", elapsedTime)                                // AC-3, AC-4: Dynamic
+      ("{title}", metadata.getOrElse("title", "")),
+      ("{author}", metadata.getOrElse("author", "")),
+      ("{date}", metadata.getOrElse("date", "")),
+      ("{current-slide}", (currentSlide + 1).toString),
+      ("{total-slides}", totalSlides.toString),
+      ("{elapsed-time}", elapsedTime)
     )
 
     replacements.foldLeft(template) { case (acc, (placeholder, value)) =>

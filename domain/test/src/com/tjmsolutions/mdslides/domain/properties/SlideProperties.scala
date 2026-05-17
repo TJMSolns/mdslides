@@ -124,16 +124,16 @@ class SlideProperties extends munit.ScalaCheckSuite:
   /**
    * Property 6: Slide with constraint violations always fails content validation.
    *
-   * Invariant: Exceeding max lines/chars triggers ContentError.
+   * Invariant: Exceeding max lines triggers DensityWarning (per PDR-001: density = warning, not error).
    */
   property("slide with title exceeding 2 lines always fails validation") {
     forAll(slideWithContentErrorGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Left(errors) =>
-          // Should have at least one ContentError about lines
+          // Should have at least one DensityWarning about line limit (PDR-001)
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg, _) =>
-              slotName == "title" && msg.contains("exceeds max 2 lines")
+            case ValidationError.DensityWarning(_, slotName, msg, _) =>
+              slotName == "title" && msg.contains("exceeds recommended line limit")
             case _ => false
           }
 

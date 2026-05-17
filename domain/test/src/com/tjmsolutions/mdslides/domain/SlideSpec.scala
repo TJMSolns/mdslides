@@ -87,7 +87,7 @@ class SlideSpec extends munit.FunSuite:
       case Left(errors) =>
         val errorMessages = errors.toList.map(_.displayMessage)
         assert(errorMessages.exists(_.contains("title")))
-        assert(errorMessages.exists(_.contains("exceeds max 2 lines")))
+        assert(errorMessages.exists(_.contains("exceeds recommended line limit")))
 
       case Right(_) =>
         fail("Expected validation to fail with ContentError for title exceeding 2 lines")
@@ -210,7 +210,7 @@ class SlideSpec extends munit.FunSuite:
       case Left(errors) =>
         val errorMessages = errors.toList.map(_.displayMessage)
         assert(errorMessages.exists(_.contains("subtitle")))
-        assert(errorMessages.exists(_.contains("exceeds max 2 lines")))
+        assert(errorMessages.exists(_.contains("exceeds recommended line limit")))
 
       case Right(_) =>
         fail("Expected validation to fail with ContentError for subtitle exceeding 2 lines")

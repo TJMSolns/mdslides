@@ -160,16 +160,16 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
   /**
    * Property 7: Body exceeding 12 lines always fails content validation.
    *
-   * Invariant: Exceeding max lines triggers ContentError.
+   * Invariant: Exceeding max lines triggers DensityWarning (per PDR-001: density = warning, not error).
    */
   property("content slide with body exceeding 12 lines always fails validation") {
     forAll(contentSlideWithExcessiveLinesGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Left(errors) =>
-          // Should have at least one ContentError about lines
+          // Should have at least one DensityWarning about line limit (PDR-001)
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg, _) =>
-              slotName == "body" && msg.contains("exceeds max 12 lines")
+            case ValidationError.DensityWarning(_, slotName, msg, _) =>
+              slotName == "body" && msg.contains("exceeds recommended line limit")
             case _ => false
           }
 
@@ -182,16 +182,16 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
   /**
    * Property 8: Body exceeding 150 words always fails content validation.
    *
-   * Invariant: Exceeding max words triggers ContentError.
+   * Invariant: Exceeding max words triggers DensityWarning (per PDR-001: density = warning, not error).
    */
   property("content slide with body exceeding 150 words always fails validation") {
     forAll(contentSlideWithExcessiveWordsGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Left(errors) =>
-          // Should have at least one ContentError about words
+          // Should have at least one DensityWarning about word limit (PDR-001)
           errors.toList.exists {
-            case ValidationError.ContentError(_, slotName, msg, _) =>
-              slotName == "body" && msg.contains("exceeds max 150 words")
+            case ValidationError.DensityWarning(_, slotName, msg, _) =>
+              slotName == "body" && msg.contains("exceeds recommended word limit")
             case _ => false
           }
 
