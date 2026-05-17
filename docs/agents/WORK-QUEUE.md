@@ -11,6 +11,7 @@ P4 priority. Work items are driven by feature requests, bugs, and maintenance ne
 | MS-009 | Add explicit version declaration to build.sc; wire into `--version` CLI flag | Claude | Queued | — |
 | MS-010 | Audit all remaining `.slide-body`-only CSS selectors in HTMLRenderer — find any other `.column` coverage gaps (e.g., code block styling, blockquotes, inline formatting) | Claude | Queued | — |
 | MS-001 | Spike: investigate I/O performance improvements via deeper Cats Effect / fs2 usage (streaming file I/O, parallel rendering pipeline) and Calico for terminal UI — Calico applicability to JVM CLI needs validation (primarily Scala.js); CE/fs2 JVM applicability is not in question | Claude | Queued | — |
+| MS-011 | **P4 SPIKE** — MCP capability surface design: define which MD-Slides operations make sense as agent-callable tools (e.g., `create_deck`, `add_slide`, `set_slide_content`, `apply_theme`, `render_to_html`); evaluate near-term use cases (Chora pitch decks, ArcLight customer reports, demo generation); assess whether MCP surface should be file-in/file-out or stateful session; produces ADR and capability surface spec before any implementation | Claude | Queued | — |
 
 ---
 
