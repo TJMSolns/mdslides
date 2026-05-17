@@ -4,6 +4,56 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-003 — 2026-05-17 — MCP capability surface designed (MS-011 complete)
+
+**Session:** Tony + Claude (org root — /next)
+**What happened:**
+- MS-011 (MCP capability surface spike) executed: reviewed mdslides domain, CLI pipeline, and ADR history
+- Evaluated file-in/file-out vs stateful session architectures for MCP server
+- Decision: file-in/file-out (Architecture A) — stateless, composable with Claude Code file tools, matches existing mental model
+- ADR-013 written: `doc/internal/governance/adr/ADR-013-mcp-server-architecture.md`
+- Capability surface defined: 4 tools in 2 tiers (`render_deck`, `validate_deck` Tier 1; `list_themes`, `get_deck_info` Tier 2)
+- MS-012 queued: implement MCP server Tier 1 (stdio transport + render_deck + validate_deck)
+
+**Work queue changes:**
+- MS-011: Queued → done (ADR-013)
+- MS-012: Added (Queued) — implement Tier 1 MCP server; pre-scaffold gate required
+
+**Status after session:**
+- MS-009, MS-010, MS-001: Queued (unblocked)
+- MS-012: Queued (pre-scaffold gate: sequence diagrams required before implementation)
+
+**Harvest candidates:** ADR-013 MCP architecture pattern (file-in/file-out for wrapping CLI tools as MCP servers) — could apply to mdslides, future CLI tools in the org. Flag for `/harvest` if/when other projects need MCP exposure.
+
+**Next session should start with:** `/next` picks MS-009 (version declaration in build.sc) or MS-012 (sequence diagrams for MCP server, then implementation).
+
+---
+
+## HL-002 — 2026-05-16 — v1.0.1 released, process hardened
+
+**Session:** Tony + Claude (sonnet-4-6)
+**What happened:**
+- Rewrote `examples/feature-tour.md` to 45 slides: clean two-column convention, background demo, zero validation errors — commit 50c4aa7
+- Fixed two-column slides not rendering headings: parser now extracts `## heading` to `"heading"` slot; renderer uses heading-or-title fallback — `MarkdownParser.scala` + `HTMLRenderer.scala`, commit 115a3ba
+- Fixed lists/tables in two-column columns having no indent/styling: extended all `.slide-body` CSS selectors to also cover `.column` — `HTMLRenderer.scala`, commit 12c6314
+- Added 11 regression tests in `HTMLRendererTwoColumnSpec.scala` — all passing
+- Fixed PathResolverSpec pre-existing failure: error message now lists explicit filenames tried
+- Updated `CHANGELOG.md` with [1.0.1] section; `build.sc` version confirmed at 1.0.1
+- Cut v1.0.1 GitHub release: https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.1 — asset `md-slides.jar` verified present, 44 MB, timestamped 2026-05-16T16:32:16Z
+- Added DoD for bug fixes to `Projects/mdslides/CLAUDE.md`
+- Added Release Discipline section to org methodology (`Projects/claude-code-methodology.md`)
+- Added release asset verification step to `/handoff` skill
+
+**Decisions made:** none formal
+**Harvest candidates:** release artifact filename gotcha (gh names asset by source filename); CSS selector scoping gap pattern (slide-body vs column)
+**Open items carried forward:**
+- MS-009: Add `--version` CLI flag wired to `mdSlidesVersion`
+- MS-010: Audit remaining `.slide-body`-only CSS selectors for other `.column` gaps
+- Pre-existing: 20 domain + 5 infrastructure test failures not introduced this session; not yet assigned IDs
+**Next owner:** any — MS-009 (`--version` flag) is the cleanest next item; MS-010 (CSS audit) is higher-risk
+
+---
+
 ## HL-001 — 2026-05-07 — Methodology harness applied
 
 **Session:** Tony + Claude
