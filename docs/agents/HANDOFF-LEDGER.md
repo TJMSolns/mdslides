@@ -4,6 +4,89 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-006 — 2026-05-17 — MCP server Tier 1 implemented (MS-012 complete)
+
+**Session:** Tony + Claude (org root — /next continuation)
+**What happened:**
+- MS-012 (MCP server Tier 1) designed, gated, and implemented
+- Pre-scaffold gate: wrote `doc/internal/planning/design-MS-012-mcp-server.md` with sequence diagrams for render_deck happy path, 3 error paths (file not found, parse fail, write fail), validate_deck happy path, and full JSON-RPC wire format reference
+- Implemented new `mcp` Mill module (4th module; depends on infrastructure):
+  - `McpModels.scala` — JSON-RPC 2.0 request/response types + RenderResult/ValidationResult
+  - `McpServer.scala` — stdio transport: initialize/tools-list/tools-call/error dispatch
+  - `RenderDeckTool.scala` — file existence check → parse → validate → render → write
+  - `ValidateDeckTool.scala` — file existence check → parse → validate → return issues
+  - `Main.scala` — IOApp entry point
+- 11 integration tests (McpServerSpec) — all passing
+- JSON-RPC output clean: null fields omitted via custom Circe encoder
+- Version bumped to 1.0.6; both `md-slides.jar` and `mdslides-mcp.jar` released at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.6
+- Commit: 029af0b pushed to github.com:TJMSolns/mdslides.git
+
+**Work queue changes:**
+- MS-012: Queued → done
+
+**Status after session:**
+- MS-001 (fs2/CE spike): Queued — only remaining queued item
+- All MS-0xx bugs resolved
+- MCP Tier 2 (`list_themes`, `get_deck_info`): not yet queued — add as MS-017 if/when needed
+
+**Harvest candidate:** MCP transport layer pattern for Scala Cats Effect CLIs (~150 LoC, stateless JSON-RPC 2.0 stdio, custom Circe encoder to omit nulls). Applicable to any future CLI tool needing MCP exposure. Specifically: omitting null optional fields requires a custom Encoder — `deriveEncoder` includes nulls by default.
+
+**Next session should start with:** `/next` picks MS-001 (fs2/CE I/O performance spike). Or queue MS-017 for MCP Tier 2 if demo/pitch-deck workflows validate Tier 1.
+
+---
+
+## HL-005 — 2026-05-17 — Two-column CSS coverage fixed (MS-014 complete)
+
+**Session:** Tony + Claude (org root — /next continuation)
+**What happened:**
+- MS-014 (CSS coverage gaps in two-column layout) designed, tested, and fixed
+- TDD: wrote HTMLRendererTwoColumnSpec (12 tests) first — 7 CSS selector tests + 5 content tests
+- 7 CSS tests failed as expected (no `.column` selectors in CSS)
+- Fix: duplicated all `.slide-body X` CSS rules to also target `.column X` — paragraph, list hierarchy (ul/ol/li, 3 levels of nesting, mixed), table (table/th/td/tbody tr:nth-child/hover)
+- All 12 tests now pass; full suite (domain + infrastructure + cli) clean — 0 failures
+- Version bumped to 1.0.5, commit c3ec86e, release at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.5
+
+**Work queue changes:**
+- MS-014: Queued → done
+
+**Status after session:**
+- MS-001 (fs2/CE spike): Queued
+- MS-012 (MCP server Tier 1): Queued — pre-scaffold gate (sequence diagrams) required
+- All bugs resolved: MS-013, MS-015, MS-016, MS-014 all done
+
+**Harvest candidate:** Pattern — CSS "selector duplication for sibling containers" (when two distinct class paths both need the same styling rules, maintain the parallel selector list rather than restructuring HTML). Applicable whenever a new layout template wraps content without `.slide-body`.
+
+**Next session should start with:** `/next` picks MS-012 (pre-scaffold gate: sequence diagrams for render_deck happy/error paths) or MS-001 (fs2/CE spike).
+
+---
+
+## HL-004 — 2026-05-17 — Infrastructure test suite now fully green (MS-016 complete)
+
+**Session:** Tony + Claude (org root — /next continuation)
+**What happened:**
+- MS-016 (5 pre-existing infrastructure test failures) investigated and fixed
+- Root causes identified for each failure — all were test-vs-implementation alignment issues:
+  1. `render multi-slide deck`: test checked exact `class="slide active"` but renderer adds alignment suffix → substring check
+  2. `render slide with per-slide background`: `rewriteImageUrl` converts `backgrounds/X.png` → `images/X.png` → test updated
+  3. `per-slide background overrides template background`: same rewriteImageUrl issue → test updated
+  4. `ThemeJsonAdapter.corporate`: theme has `image = None` (no built-in watermark) → test corrected
+  5. `diagram renders Mermaid correctly`: renderer uses fallback (`mermaid-fallback`) when no pre-rendered SVGs → test accepts both
+- Full test suite (domain + infrastructure + cli) confirmed green: 0 failures
+- Version bumped to 1.0.4, release cut at https://github.com/TJMSolns/MD-Slides/releases/tag/v1.0.4
+- Commit: ecb377f pushed to github.com:TJMSolns/mdslides.git
+
+**Work queue changes:**
+- MS-016: Queued → done
+
+**Status after session:**
+- MS-014 (CSS two-column layout gaps): Queued — next bug to fix
+- MS-012 (MCP server Tier 1): Queued — pre-scaffold gate (sequence diagrams) required first
+- MS-001 (fs2/CE spike): Queued
+
+**Next session should start with:** `/next` picks MS-014 (CSS coverage gaps in two-column layout).
+
+---
+
 ## HL-003 — 2026-05-17 — MCP capability surface designed (MS-011 complete)
 
 **Session:** Tony + Claude (org root — /next)
