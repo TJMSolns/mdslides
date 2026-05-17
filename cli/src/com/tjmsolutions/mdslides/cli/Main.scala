@@ -937,7 +937,7 @@ Examples:
 
 For more information, visit: https://github.com/tjm/mdslides""").as(ExitCode.Success)
     else if args.contains("--version") || args.contains("-v") then
-      IO.println("mdslides v0.2.0").as(ExitCode.Success)
+      IO.println(s"mdslides v${BuildInfo.version}").as(ExitCode.Success)
     else if args.isEmpty then
       IO.println("Usage: mdslides <command> [options]\n\nCommands:\n  render DECK_NAME [options]    Convert markdown to HTML\n  display DECK_NAME            Open presentation in browser\n  report DECK_NAME             Show session analytics\n  config                       Show configuration\n  DECK_NAME                    Smart default (report → render → display)\n\nUse 'mdslides --help' for more information").as(ExitCode.Error)
     else if args(0) == "config" then

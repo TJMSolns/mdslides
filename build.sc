@@ -25,6 +25,8 @@ import mill.scalalib.publish._
  * - ADR-009: Property-Based Testing Strategy
  */
 
+val mdSlidesVersion = "1.0.1"
+
 // Common configuration shared across all modules
 trait MDSlidesModule extends ScalaModule {
   def scalaVersion = "3.3.1"
@@ -141,6 +143,18 @@ object cli extends MDSlidesModule {
     // Effect system
     ivy"org.typelevel::cats-effect:3.5.4"
   )
+
+  override def generatedSources = T {
+    val dir = T.dest / "generated"
+    os.makeDir.all(dir)
+    os.write(
+      dir / "BuildInfo.scala",
+      s"""package com.tjmsolutions.mdslides.cli
+         |object BuildInfo { val version = "$mdSlidesVersion" }
+         |""".stripMargin
+    )
+    Seq(PathRef(dir))
+  }
 
   // Main entry point
   def mainClass = T { Some("com.tjmsolutions.mdslides.cli.Main") }
