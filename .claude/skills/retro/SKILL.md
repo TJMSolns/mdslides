@@ -36,14 +36,25 @@ Present to the user:
 
 ### 4. For each finding, produce the right artifact
 
-| Finding type | Action |
-|---|---|
-| New standing rule | Use `/decide pol <title>` pattern |
-| ADR that needs updating | Flag for review — do not auto-edit |
-| CONTEXT-KERNEL non-negotiable change | Propose the edit; do not write until confirmed |
-| Process improvement | Write to LESSONS-LEARNED |
-| Tooling improvement | Write to LESSONS-LEARNED; open WQ item if implementation needed |
-| Informational | Write to LESSONS-LEARNED |
+| Finding type | Action | WQ item required? |
+|---|---|---|
+| New standing rule | Use `/decide pol <title>` pattern | Yes — queue item to enforce/implement the rule |
+| ADR that needs updating | Flag for review — do not auto-edit | Yes — queue item for Tony to review and update |
+| CONTEXT-KERNEL non-negotiable change | Propose the edit; do not write until confirmed | Yes — queue item once confirmed |
+| Process improvement | Write to LESSONS-LEARNED | Yes — queue item to implement the improvement |
+| Tooling improvement | Write to LESSONS-LEARNED | Yes — queue item to make the change |
+| Informational | Write to LESSONS-LEARNED | No |
+
+### 4b. Close the loop — queue WQ items (mandatory)
+
+For every finding that requires a WQ item (see table above):
+1. Open `docs/agents/WORK-QUEUE.md`
+2. Add a concrete WQ item — one item per finding, specific enough to be executable
+3. Record the WQ item ID in the LL entry (see step 5 format)
+
+**A retro that produces actionable findings without queued WQ items has not closed the loop.** An LL entry without a WQ item ID is a dead end — the finding will never be executed.
+
+Exception: If the action was completed during the retro itself (e.g., a POL was written inline, a CONTEXT-KERNEL edit was applied), no separate WQ item is needed — note "executed inline" in the LL entry.
 
 ### 5. Append to LESSONS-LEARNED
 
@@ -51,7 +62,7 @@ For each finding worth preserving, append an LL-NNN entry to `docs/agents/LESSON
 ```markdown
 ## LL-<NNN> — <date> — <short title>
 **Finding:** <what was learned>
-**Action taken:** <POL created / WQ item added / no action>
+**Action taken:** <POL created / WQ item <ID> queued / executed inline / no action (informational)>
 ```
 
 ### 6. Append retro summary to HANDOFF-LEDGER
@@ -60,10 +71,11 @@ For each finding worth preserving, append an LL-NNN entry to `docs/agents/LESSON
 ## HL-NNN — Retrospective <date>
 **Items reviewed:** <WQ IDs or "org-level">
 **Findings:** <N> (<N with action>, <N informational>)
+**WQ items queued:** <N> (list IDs)
 **Artifacts produced:** <list>
 **Next retro:** <suggested date>
 ```
 
 ### 7. Report
 
-Print a brief summary: period covered, finding count, artifacts produced, any open decisions that remain unresolved.
+Print a brief summary: period covered, finding count, WQ items queued, artifacts produced, any open decisions that remain unresolved.
