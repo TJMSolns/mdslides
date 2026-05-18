@@ -4,6 +4,19 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-007 — 2026-05-18 — Harvest note: WQ-P4-047
+
+**Harvest note** (from org-level `/harvest` run — WQ-P4-047):
+
+Patterns harvested from mdslides into org methodology + OAP chora-kb:
+- **ADR-013** (MCP server architecture, file-in/file-out stateless): new "MCP Tool Design Patterns" section in `Projects/claude-code-methodology.md`; harvest file written to `oap/docs/modules/chora-kb/harvest/mdslides-adr-013-mcp-architecture.md`; HARVEST-MDSLIDES-MCP-ARCH queued in chora-kb BACKLOG
+- **LL-003** (typed slot name ADT): "Typed slot name ADT" sub-section added to methodology (Testing and Validation Discipline)
+- **LL-004** (pre-scaffold gate evidence): quantitative evidence note added to "Pre-Scaffold Gate (Sequence Diagrams)" section in methodology
+
+**Next owner:** WQ-P4-043 (gate confirmation pass) is next unblocked org item. MS-017 (typed SlotName ADT, mdslides) is the implementation item that consumes the LL-003 pattern.
+
+---
+
 ## HL-006 — 2026-05-17 — MCP server Tier 1 implemented (MS-012 complete)
 
 **Session:** Tony + Claude (org root — /next continuation)
