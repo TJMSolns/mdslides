@@ -13,7 +13,26 @@ Close this session cleanly by writing a handoff entry.
 2. Read `docs/agents/DECISION-REGISTER.md` — note any decisions made this session
 3. Review recent conversation context to summarize what happened
 
-4. **Harvest check:** Are there patterns, lessons, or decisions from this session worth generalizing to other projects or org methodology? If yes, note them as `**Harvest candidates:**` in the ledger entry. If no, omit.\n\n4b. **Retro prompt:** Scan the last 3 HANDOFF-LEDGER entries for `**Harvest candidates:**` lines. If any exist that have not been promoted to a WQ item, methodology section, or governance doc, print:\n   ```\n   ⚠  Unprocessed harvest candidates exist. Run /retro now — or queue a WORK-QUEUE item. The methodology loop only closes when lessons land in a file.\n   ```\n\n5. **Update WORK-QUEUE:**
+4. **Harvest check:** Are there patterns, lessons, or decisions from this session worth generalizing to other projects or org methodology? If yes, note them as `**Harvest candidates:**` in the ledger entry. If no, omit.
+
+4b. **Harvest gate (blocking — POL-010):** Before writing the HL entry, resolve every candidate named in step 4:
+
+   - **Already has a WQ item:** Record the WQ item ID in the HL entry — no action needed.
+   - **No WQ item:** Choose one before closing:
+     - **(a) Queue inline:** Add a concrete WQ item to `docs/agents/WORK-QUEUE.md` now; add the new ID to the HL entry.
+     - **(b) Defer explicitly:** Add to the HL entry body:
+       ```
+       **Harvest deferred:** <candidate name> — <reason> — revisit by <date, within 30 days>
+       ```
+
+   **Do not write the HL entry until every named harvest candidate has either a WQ item ID or an explicit deferral.** (POL-010: 7-day SLA from HL entry date)
+
+   Separately: scan the last 3 HANDOFF-LEDGER entries for older `**Harvest candidates:**` lines without visible resolution. If any are found, print:
+   ```
+   ⚠  Unresolved harvest candidates in prior sessions — queue or defer per POL-010 (7-day SLA).
+   ```
+
+5. **Update WORK-QUEUE:**
    - Set completed items to `done` with evidence (file path or decision ID)
    - Leave in_progress items as-is if genuinely still in progress
    - Add any newly discovered items
