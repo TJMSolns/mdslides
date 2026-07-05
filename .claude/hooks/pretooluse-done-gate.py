@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """PreToolUse gate: block moving a WORK-QUEUE item into ## Done without a valid
-evidence artifact at docs/agents/evidence/<ID>.md (DN-001/GATE-004; DN-002 E2 extension)."""
+evidence artifact at docs/agents/evidence/<ID>.md (DN-001/GATE-004; DN-002 E2
+extension; DN-006 transcript corroboration, closing Gap 1)."""
 import sys
 import json
 import re
@@ -14,6 +15,8 @@ REQUIRED_FIELDS = [
     "Verifier-tier:",
     "Verifier-verdict:",
 ]
+
+TIER_NAMES = ("haiku", "sonnet", "opus")  # tier NAMES not model IDs — see draw-verifier-tier.py
 
 
 def done_ids(text):
@@ -66,6 +69,81 @@ def verifier_veto(evidence_text):
     if not verdict.upper().startswith("PASS"):
         return verdict, "veto"
     return None, None
+
+
+def claimed_tier(evidence_text):
+    """Extracts just the tier NAME from Verifier-tier:, which typically also
+    carries explanatory prose (e.g. 'opus (drawn via real python3 random...)')."""
+    raw = field_value(evidence_text, "Verifier-tier:")
+    if not raw:
+        return None
+    m = re.match(r"(" + "|".join(TIER_NAMES) + r")", raw, re.IGNORECASE)
+    return m.group(1).lower() if m else None
+
+
+def parse_verifier_agent_calls(transcript_text):
+    """Yields (tool_use_id, model) for every Agent tool_use entry in the
+    transcript with subagent_type == 'verifier'."""
+    calls = []
+    for line in transcript_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            entry = json.loads(line)
+        except Exception:
+            continue
+        content = entry.get("message", {}).get("content", [])
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if not isinstance(block, dict) or block.get("type") != "tool_use":
+                continue
+            if block.get("name") != "Agent":
+                continue
+            inp = block.get("input", {}) or {}
+            if inp.get("subagent_type") == "verifier":
+                calls.append((block.get("id"), inp.get("model")))
+    return calls
+
+
+NOTIFICATION_RE = re.compile(
+    r"<task-notification>.*?<tool-use-id>(?P<tid>[^<]*)</tool-use-id>.*?"
+    r"<status>(?P<status>[^<]*)</status>.*?<result>(?P<result>.*?)</result>.*?"
+    r"</task-notification>",
+    re.S,
+)
+
+
+def transcript_corroborates_pass(transcript_path, expected_tier):
+    """DN-006: cross-check a claimed PASS against the session transcript
+    rather than trusting the evidence file's Verifier-verdict field alone.
+
+    Returns True/False when the transcript could actually be read and
+    checked (False = readable but does NOT corroborate — a real finding).
+    Returns None ONLY when the transcript is genuinely unavailable (missing
+    path, missing file, unreadable) — infrastructure absence degrades to the
+    pre-DN-006 evidence-field-only check rather than blocking on a systemic
+    condition unrelated to this specific claim."""
+    if not transcript_path or not os.path.isfile(transcript_path):
+        return None
+    try:
+        with open(transcript_path, "r") as f:
+            text = f.read()
+    except OSError:
+        return None
+
+    for tool_use_id, model in parse_verifier_agent_calls(text):
+        if model != expected_tier:
+            continue
+        for m in NOTIFICATION_RE.finditer(text):
+            if m.group("tid") != tool_use_id:
+                continue
+            if m.group("status") != "completed":
+                continue
+            if m.group("result").rstrip().upper().endswith("PASS"):
+                return True
+    return False
 
 
 def main():
@@ -127,9 +205,23 @@ def main():
                 )
             else:
                 problems.append(f"{item_id}: verifier did not PASS — {veto}")
+            continue
+
+        # DN-006: corroborate a claimed PASS against the session transcript —
+        # closes Gap 1 (DN-002), a doer could otherwise hand-write PASS
+        # without ever spawning a verifier. Infrastructure absence (None)
+        # degrades to the pre-DN-006 check; an actual mismatch (False) blocks.
+        tier = claimed_tier(ev_text)
+        corroborated = transcript_corroborates_pass(data.get("transcript_path"), tier)
+        if corroborated is False:
+            problems.append(
+                f"{item_id}: Verifier-verdict: PASS is not corroborated by the session transcript "
+                f"(DN-006) — no completed 'verifier' Agent call at tier '{tier}' with a matching PASS "
+                f"result was found. This could mean the verifier was never actually spawned."
+            )
 
     if problems:
-        print("BLOCKED — Done transition without valid evidence artifact (DN-001/GATE-004; DN-002 E2; DN-004 E4):", file=sys.stderr)
+        print("BLOCKED — Done transition without valid evidence artifact (DN-001/GATE-004; DN-002 E2; DN-004 E4; DN-006):", file=sys.stderr)
         for p in problems:
             print(f"  - {p}", file=sys.stderr)
         print(

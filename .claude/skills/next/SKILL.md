@@ -43,6 +43,10 @@ Autonomously drive the WORK-QUEUE forward.
      WORK-QUEUE edit if this is missing, incomplete, or the verdict is VETO/ESCALATE — this is the
      enforcement, not this line. On ESCALATE: do not fix-and-retry, log to
      `docs/agents/ESCALATIONS.md` and stop for Tony instead.
+     - **Gap 1 closed (HE-011/DN-006):** a written `PASS` is now cross-checked against the session
+       transcript's actual `Agent` tool-call record (`subagent_type: "verifier"`, matching `model`,
+       a completed result ending in `PASS`) — spawning the verifier for real is what makes the check
+       pass, not just writing the field.
    - Update `docs/agents/WORK-QUEUE.md`: move to Done with evidence
    - Write a HANDOFF-LEDGER entry (use the `/handoff` pattern)
 
