@@ -47,6 +47,11 @@ Autonomously drive the WORK-QUEUE forward.
        transcript's actual `Agent` tool-call record (`subagent_type: "verifier"`, matching `model`,
        a completed result ending in `PASS`) — spawning the verifier for real is what makes the check
        pass, not just writing the field.
+       - **Model unavailable (HE-012/DN-007):** if the `Agent` call fails because the
+         drawn tier can't be invoked in this environment, redraw once via
+         `draw-verifier-tier.py <P1|P2|P3> <doer-tier> <excluded-tiers-comma-separated>` —
+         it falls back to your own tier if both others are excluded. If that redraw itself
+         outputs `tier=ESCALATE`, do not retry again — emit `ESCALATE` yourself and stop.
    - Update `docs/agents/WORK-QUEUE.md`: move to Done with evidence
    - Write a HANDOFF-LEDGER entry (use the `/handoff` pattern)
 

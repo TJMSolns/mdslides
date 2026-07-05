@@ -4,7 +4,14 @@ hand-transcribed prose in planner.md/next SKILL.md that produced one real
 process slip (HE-004: P1 stake-weighting mistakenly applied to a P2 draw,
 caught before submission but not by any mechanism — this script exists so it
 can't happen again). Uses real randomness (python3's random module, seeded
-from the OS), not a value picked by the calling agent."""
+from the OS), not a value picked by the calling agent.
+
+DN-007 (HE-012 Part 2): optional 3rd CLI arg is a comma-separated exclude
+list, for retrying after a drawn tier turned out unavailable in this
+environment. The doer's own tier is the guaranteed fallback floor (it must
+be callable, since the doer itself is running) — if even that's excluded,
+the draw signals ESCALATE (exit 2) rather than retry indefinitely; that's a
+genuinely broken environment, a job for Tony (E4), not a retry loop."""
 import sys
 import random
 
@@ -21,7 +28,11 @@ import random
 LADDER = ["haiku", "sonnet", "opus"]
 
 
-def draw(priority, doer_tier):
+def draw(priority, doer_tier, excluded=None):
+    """Returns (tier, raw_offset, final_offset, resampled). `tier` is None only
+    if every tier (including doer_tier) is in `excluded` — signals ESCALATE,
+    not a retryable condition (DN-007)."""
+    excluded = set(excluded or [])
     doer_idx = LADDER.index(doer_tier)
     offset = random.choice([-1, 0, 1])
     raw_offset = offset
@@ -31,16 +42,37 @@ def draw(priority, doer_tier):
             offset = random.choice([0, 1])
             resampled = True
     idx = max(0, min(2, doer_idx + offset))
-    return LADDER[idx], raw_offset, offset, resampled
+    candidate = LADDER[idx]
+
+    if candidate not in excluded:
+        return candidate, raw_offset, offset, resampled
+
+    # DN-007: candidate is unavailable. Fall back to the doer's own tier
+    # (guaranteed callable — the doer itself is running) rather than
+    # re-rolling indefinitely. If even that's excluded, there's nothing left
+    # to try — signal ESCALATE.
+    if doer_tier not in excluded:
+        return doer_tier, raw_offset, offset, resampled
+    remaining = [t for t in LADDER if t not in excluded]
+    if remaining:
+        return remaining[0], raw_offset, offset, resampled
+    return None, raw_offset, offset, resampled
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: draw-verifier-tier.py <P1|P2|P3> <doer-tier: haiku|sonnet|opus>", file=sys.stderr)
+    if len(sys.argv) not in (3, 4):
+        print(
+            "Usage: draw-verifier-tier.py <P1|P2|P3> <doer-tier: haiku|sonnet|opus> "
+            "[exclude-tiers-comma-separated]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     priority = sys.argv[1].upper()
     doer_tier = sys.argv[2].lower()
+    excluded = set()
+    if len(sys.argv) == 4 and sys.argv[3].strip():
+        excluded = {t.strip().lower() for t in sys.argv[3].split(",")}
 
     if doer_tier not in LADDER:
         print(f"Invalid doer tier: '{doer_tier}'. Must be one of {LADDER}.", file=sys.stderr)
@@ -48,11 +80,26 @@ def main():
     if priority not in ("P1", "P2", "P3"):
         print(f"Invalid priority: '{priority}'. Must be P1, P2, or P3.", file=sys.stderr)
         sys.exit(1)
+    invalid_excludes = excluded - set(LADDER)
+    if invalid_excludes:
+        print(f"Invalid excluded tier(s): {sorted(invalid_excludes)}. Must be from {LADDER}.", file=sys.stderr)
+        sys.exit(1)
 
-    tier, raw_offset, final_offset, resampled = draw(priority, doer_tier)
+    tier, raw_offset, final_offset, resampled = draw(priority, doer_tier, excluded)
+
+    if tier is None:
+        print(
+            f"tier=ESCALATE raw_offset={raw_offset} final_offset={final_offset} "
+            f"resampled={resampled} priority={priority} doer={doer_tier} excluded={sorted(excluded)} "
+            f"(DN-007: every tier including the doer's own is excluded — not retryable, "
+            f"escalate to Tony via E4 instead)"
+        )
+        sys.exit(2)  # distinct from the exit-1 usage-error path
+
+    suffix = f" excluded={sorted(excluded)}" if excluded else ""
     print(
         f"tier={tier} raw_offset={raw_offset} final_offset={final_offset} "
-        f"resampled={resampled} priority={priority} doer={doer_tier}"
+        f"resampled={resampled} priority={priority} doer={doer_tier}{suffix}"
     )
 
 
