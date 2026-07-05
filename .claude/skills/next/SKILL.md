@@ -38,8 +38,7 @@ Autonomously drive the WORK-QUEUE forward.
    - **Evidence-artifact + independent-verifier gate (propagated from harness-evolution HE-005,
      DN-001/DN-002):** create `docs/agents/evidence/<ID>.md` with `Commit:`, `Run-count:`,
      `Invariance-recheck:`, `Verified-by:`, `Verifier-tier:`, and `Verifier-verdict:` filled in.
-     Spawn the `verifier` agent (fresh context, tier drawn per DN-002's ±1 clamped/stake-weighted
-     coin — never self-selected) and require its `PASS` before the Done edit; do not self-certify. A
+     Spawn the `verifier` agent (fresh context, tier drawn by running `python3 .claude/hooks/draw-verifier-tier.py <P1|P2|P3> <doer-tier>` — HE-009/RL-001, the ONLY correct way to draw; never hand-derive the offset/clamp/stake-weighting yourself) and require its `PASS` before the Done edit; do not self-certify. A
      `PreToolUse` hook (`.claude/hooks/pretooluse-done-gate.py`) structurally blocks (exit 2) the
      WORK-QUEUE edit if this is missing, incomplete, or the verdict is VETO/ESCALATE — this is the
      enforcement, not this line. On ESCALATE: do not fix-and-retry, log to
