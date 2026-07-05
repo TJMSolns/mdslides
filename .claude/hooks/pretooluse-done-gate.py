@@ -118,9 +118,20 @@ def iter_message_texts(transcript_text):
                 yield block.get("text", "")
 
 
+FALLBACK_MARKER = "VERIFIER-FALLBACK (DN-010):"
+
+
 def parse_verifier_agent_calls(transcript_text):
     """Yields (tool_use_id, model) for every Agent tool_use entry in the
-    transcript with subagent_type == 'verifier'."""
+    transcript with subagent_type == 'verifier' — OR (DN-010, HE-016) a
+    'general-purpose' call whose prompt starts with FALLBACK_MARKER, used
+    when subagent_type: 'verifier' itself is unavailable (not the same as
+    DN-007's model-tier-unavailable case, which is a different axis: model
+    still resolves to 'verifier', just a different tier). Without this
+    second branch, the documented fallback procedure (next SKILL.md) would
+    let a real, independent verification happen that DN-006 still couldn't
+    corroborate — closing a gap of the same shape DN-008 found for
+    Workflow-dispatched verifiers, before it ever shipped silently broken."""
     calls = []
     for entry in iter_transcript_entries(transcript_text):
         content = entry.get("message", {}).get("content", [])
@@ -134,6 +145,10 @@ def parse_verifier_agent_calls(transcript_text):
             inp = block.get("input", {}) or {}
             if inp.get("subagent_type") == "verifier":
                 calls.append((block.get("id"), inp.get("model")))
+            elif inp.get("subagent_type") == "general-purpose":
+                prompt = inp.get("prompt", "") or ""
+                if prompt.startswith(FALLBACK_MARKER):
+                    calls.append((block.get("id"), inp.get("model")))
     return calls
 
 
