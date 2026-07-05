@@ -158,13 +158,26 @@ def find_notification_result(transcript_text, tool_use_id):
     return None
 
 
+FENCE_LINE_RE = re.compile(r"^```\w*$")
+
+
 def result_is_pass(result_text):
-    """Requires the LAST NON-EMPTY LINE to be exactly PASS (case-insensitive)
-    per the verifier's own output contract ('exactly one of PASS/VETO:.../
-    ESCALATE:...', nothing else) — NOT just any text ending in the substring
-    'PASS', which would wrongly match a result ending in a word like
-    'bypass' ("bypass".upper().endswith("PASS") is True in Python)."""
+    """Requires the LAST NON-EMPTY, NON-FENCE-DELIMITER LINE to be exactly
+    PASS (case-insensitive) per the verifier's own output contract ('exactly
+    one of PASS/VETO:.../ESCALATE:...', nothing else) — NOT just any text
+    ending in the substring 'PASS', which would wrongly match a result
+    ending in a word like 'bypass' ("bypass".upper().endswith("PASS") is
+    True in Python).
+
+    Bare markdown code-fence delimiter lines (```` ``` ```` or ```` ```lang ````)
+    are stripped before checking the last line — found live in production
+    (HE-012's own verifier run): a model sometimes wraps its otherwise-bare
+    `PASS` output in a fence purely as a formatting habit, making the fence
+    marker the literal last line. Only bare delimiter lines are stripped,
+    never fenced CONTENT — a VETO reason legitimately quoting a code block
+    keeps that content; only the ``` lines themselves are ignored."""
     lines = [line.strip() for line in result_text.splitlines() if line.strip()]
+    lines = [line for line in lines if not FENCE_LINE_RE.match(line)]
     if not lines:
         return False
     return lines[-1].upper() == "PASS"
