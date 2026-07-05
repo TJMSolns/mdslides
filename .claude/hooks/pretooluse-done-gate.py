@@ -81,18 +81,48 @@ def claimed_tier(evidence_text):
     return m.group(1).lower() if m else None
 
 
-def parse_verifier_agent_calls(transcript_text):
-    """Yields (tool_use_id, model) for every Agent tool_use entry in the
-    transcript with subagent_type == 'verifier'."""
-    calls = []
+def iter_transcript_entries(transcript_text):
+    """Decodes each transcript.jsonl line as JSON and yields the parsed entry.
+    CRITICAL: all downstream regex/text matching must operate on values
+    pulled from these decoded entries, never on transcript_text directly —
+    the raw file bytes contain JSON-escaped sequences (e.g. a literal
+    backslash-n, not a real newline byte) inside string values. A prior
+    version of this hook regex-matched the raw file text directly; it
+    happened to work for an `.endswith("PASS")` check (which doesn't care
+    about line structure) but silently broke a later, more precise
+    line-based check (`result_is_pass`) that requires real newlines to
+    exist. Caught only because that later check was tested against this
+    session's own real transcript, not just synthetic data."""
     for line in transcript_text.splitlines():
         line = line.strip()
         if not line:
             continue
         try:
-            entry = json.loads(line)
+            yield json.loads(line)
         except Exception:
             continue
+
+
+def iter_message_texts(transcript_text):
+    """Yields the JSON-DECODED text content of every text-type content block
+    across the transcript — real newlines, not escape sequences."""
+    for entry in iter_transcript_entries(transcript_text):
+        content = entry.get("message", {}).get("content", [])
+        if isinstance(content, str):
+            yield content
+            continue
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                yield block.get("text", "")
+
+
+def parse_verifier_agent_calls(transcript_text):
+    """Yields (tool_use_id, model) for every Agent tool_use entry in the
+    transcript with subagent_type == 'verifier'."""
+    calls = []
+    for entry in iter_transcript_entries(transcript_text):
         content = entry.get("message", {}).get("content", [])
         if not isinstance(content, list):
             continue
@@ -113,6 +143,31 @@ NOTIFICATION_RE = re.compile(
     r"</task-notification>",
     re.S,
 )
+
+
+def find_notification_result(transcript_text, tool_use_id):
+    """Searches DECODED message texts (see iter_message_texts) for a
+    completed <task-notification> matching tool_use_id. Returns the result
+    text, or None if no completed match is found."""
+    for text in iter_message_texts(transcript_text):
+        if tool_use_id not in text:
+            continue
+        for m in NOTIFICATION_RE.finditer(text):
+            if m.group("tid") == tool_use_id and m.group("status") == "completed":
+                return m.group("result")
+    return None
+
+
+def result_is_pass(result_text):
+    """Requires the LAST NON-EMPTY LINE to be exactly PASS (case-insensitive)
+    per the verifier's own output contract ('exactly one of PASS/VETO:.../
+    ESCALATE:...', nothing else) — NOT just any text ending in the substring
+    'PASS', which would wrongly match a result ending in a word like
+    'bypass' ("bypass".upper().endswith("PASS") is True in Python)."""
+    lines = [line.strip() for line in result_text.splitlines() if line.strip()]
+    if not lines:
+        return False
+    return lines[-1].upper() == "PASS"
 
 
 def transcript_corroborates_pass(transcript_path, expected_tier):
@@ -136,13 +191,9 @@ def transcript_corroborates_pass(transcript_path, expected_tier):
     for tool_use_id, model in parse_verifier_agent_calls(text):
         if model != expected_tier:
             continue
-        for m in NOTIFICATION_RE.finditer(text):
-            if m.group("tid") != tool_use_id:
-                continue
-            if m.group("status") != "completed":
-                continue
-            if m.group("result").rstrip().upper().endswith("PASS"):
-                return True
+        result = find_notification_result(text, tool_use_id)
+        if result and result_is_pass(result):
+            return True
     return False
 
 
