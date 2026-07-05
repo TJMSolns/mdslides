@@ -35,6 +35,15 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/stop-git-durability-gate.py",
+            "timeout": 10000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -55,6 +64,31 @@
             "type": "command",
             "command": "bash .claude/hooks/source-edit-check.sh",
             "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "bash /home/tjm/Cloud/Dropbox/TJM-ALL/TJMSolns/.claude/snitches/secrets-snitch.sh",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/tjm/Cloud/Dropbox/TJM-ALL/TJMSolns/.claude/snitches/secrets-snitch.sh",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pretooluse-done-gate.py",
+            "timeout": 5000
           }
         ]
       }

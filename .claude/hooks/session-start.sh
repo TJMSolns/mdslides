@@ -4,6 +4,7 @@
 CONTEXT="docs/agents/CONTEXT-KERNEL.md"
 QUEUE="docs/agents/WORK-QUEUE.md"
 LEDGER="docs/agents/HANDOFF-LEDGER.md"
+ESCALATIONS="docs/agents/ESCALATIONS.md"
 
 if [ -f "$CONTEXT" ]; then
   PHASE=$(sed -n '/Current Phase/,/^##/p' "$CONTEXT" 2>/dev/null \
@@ -15,7 +16,7 @@ else
 fi
 
 if [ -f "$QUEUE" ]; then
-  ACTIVE=$(grep -cE "\| MS-[0-9]+" "$QUEUE" 2>/dev/null || echo 0)
+  ACTIVE=$(grep -cE "\| MS-[0-9]+" "$QUEUE" 2>/dev/null)
 else
   ACTIVE="?"
 fi
@@ -27,10 +28,20 @@ else
   LAST_HL="(HANDOFF-LEDGER missing)"
 fi
 
+if [ -f "$ESCALATIONS" ]; then
+  read -r ESC_TOTAL ESC_OPEN <<< "$(python3 .claude/hooks/count-escalations.py "$ESCALATIONS" 2>/dev/null)"
+  ESC_OPEN=${ESC_OPEN:-0}
+else
+  ESC_OPEN=0
+fi
+
 echo "┌─ mdslides ───────────────────────────────────────────────┐"
 printf "│ Phase:       %-45s │\n" "$PHASE"
 printf "│ Queue:       %-45s │\n" "$ACTIVE item(s) tracked"
 printf "│ Last handoff: %-44s │\n" "$LAST_HL"
+if [ "$ESC_OPEN" -gt 0 ]; then
+  printf "│ ⚠ Escalations pending: %-36s │\n" "$ESC_OPEN — see docs/agents/ESCALATIONS.md"
+fi
 echo "│ MANDATORY: read CONTEXT-KERNEL → WORK-QUEUE → HANDOFF   │"
 echo "│ Try /status for details, /next to start working          │"
 echo "└──────────────────────────────────────────────────────────┘"

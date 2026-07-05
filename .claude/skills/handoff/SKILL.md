@@ -36,6 +36,52 @@ Close this session cleanly by writing a handoff entry.
    - Set completed items to `done` with evidence (file path or decision ID)
    - Leave in_progress items as-is if genuinely still in progress
    - Add any newly discovered items
+   - **Evidence-artifact gate (propagated from harness-evolution HE-005, DN-001/DN-002):** before
+     moving any item into `## Done`, create `docs/agents/evidence/<ID>.md` with `Commit:`,
+     `Run-count:`, `Invariance-recheck:`, `Verified-by:`, `Verifier-tier:`, and `Verifier-verdict:`
+     (PASS required) filled in. A `PreToolUse` hook (`.claude/hooks/pretooluse-done-gate.py`) blocks
+     the WORK-QUEUE edit (exit 2) if it's missing or incomplete, or if the verifier verdict is a VETO
+     or ESCALATE rather than PASS — spawn the `verifier` agent (fresh context, tier drawn per DN-002's
+     ±1 clamped/stake-weighted coin) before marking done; never self-certify.
+
+5a. **CONTEXT-KERNEL substantive-edit gate (BLOCKING — POL-013 / WQ-P4-109)**:
+   ```bash
+   git diff HEAD -- docs/agents/CONTEXT-KERNEL.md 2>/dev/null
+   ```
+   If the diff is non-empty:
+   - **Substantive change** (Current Phase, Status, dormancy decision, non-negotiables, decisions, charter) → drafted HL MUST include `**CONTEXT-KERNEL change:** <section> — <reason or DR-ID>`.
+   - **Cosmetic only** → include `**CONTEXT-KERNEL change:** cosmetic — <one-line>` to satisfy explicitly.
+   Source: POL-013, RL-009 F3.
+
+5b. **Git audit gate (BLOCKING — WQ-P4-103)** — applies to this project's repo.
+
+   **(a) Working tree clean check:**
+   ```bash
+   git status --short
+   ```
+   If output is non-empty, do **not** write the HL entry. Resolve first:
+     - **Commit** the file(s) and reference the new hash in the HL entry; or
+     - **Stash** with `git stash push -m "pre-handoff stash"`; or
+     - **Explicit defer** — add to the HL body:
+       ```
+       **Working-tree carry-over:** <file path> — <reason> — revisit by <date>
+       ```
+
+   **(b) Commit-hash existence check:** grep the drafted HL body for commit hashes (regex `[0-9a-f]{7,40}` appearing after "commit" / "Commit" / "@"). For each hash:
+   ```bash
+   git cat-file -e <hash> 2>/dev/null && echo OK || echo MISSING
+   ```
+   If any MISSING in this repo, the HL entry references a ghost commit. Correct or remove the hash before writing.
+
+   Source: HL-093 ghost-commit pattern; org POL via TJMSolns WQ-P4-103.
+
+   **Now also structurally enforced (propagated from harness-evolution HE-005, DN-003/DN-005):** a
+   blocking `Stop` hook (`.claude/hooks/stop-git-durability-gate.py`) sweeps every repo touched this
+   session (via the transcript, not just CWD) at session end and blocks the stop if any is dirty or
+   unpushed — this step's manual check is context for why, not the sole enforcement. A pre-existing,
+   deliberately-deferred backlog can be carved out via `docs/agents/GIT-DURABILITY-DEFER.md` (see that
+   file for mdslides' current entry — the known 54-file backlog, expiring 2026-07-18) rather than
+   silently blocking on debt this session isn't responsible for.
 
 6. **Write HANDOFF-LEDGER entry** at the TOP of `docs/agents/HANDOFF-LEDGER.md`:
    ```markdown
