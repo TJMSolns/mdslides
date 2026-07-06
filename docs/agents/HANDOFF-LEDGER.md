@@ -4,6 +4,25 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-008 — 2026-07-06 — No execution: queue ambiguous, stopped
+
+**Session:** Tony + Claude (mdslides root — autonomous `/next`-style single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-007, HL-006, HL-005) per mandatory startup order
+- Session brief required executing exactly one unblocked, Claude-owned WORK-QUEUE item — found three simultaneously unblocked candidates instead of one: MS-017 (typed SlotName ADT), MS-018 (LMS spike), MS-019 (MCP Tier 2), all `Queued` / Owner `Claude` / `Depends On: —`
+- Picking among three ambiguous candidates is itself a sequencing judgment call reserved for `/groom` (Rule 3 discipline: an approved queue state isn't execute permission for an unspecified item; Rule 1/2: no self-sequencing) — so no item was executed and no code/doc changes were made this session
+- No new decisions recorded (DECISION-REGISTER.md unchanged — still empty placeholder)
+
+**Decisions made:** none
+**CONTEXT-KERNEL change:** pre-existing carry-over, not made this session — Status section (dormancy decision, POL-009/DR-027) and "Last updated" date were already uncommitted before this session started; content matches WQ-P4-121/HL-064 as already reflected in WORK-QUEUE.md
+**Working-tree carry-over:** ~54 modified/untracked files (CHANGELOG.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, doc/, examples/, etc.) predate this session and are already covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144 backlog, expires 2026-07-18) — not touched or duplicated here
+**Open items carried forward:**
+- MS-017, MS-018, MS-019 remain `Queued` — need `/groom` to assign explicit sequencing/priority among them before a future single-item `/next`-style session can pick unambiguously
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** Tony or a `/groom` session — sequence MS-017/MS-018/MS-019 (or explicitly mark which one is next) so a future autonomous single-item session has exactly one unblocked candidate
+
+---
+
 ## HL-007 — 2026-05-18 — Harvest note: WQ-P4-047
 
 **Harvest note** (from org-level `/harvest` run — WQ-P4-047):
