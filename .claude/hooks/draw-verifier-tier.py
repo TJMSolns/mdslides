@@ -62,8 +62,8 @@ def draw(priority, doer_tier, excluded=None):
 def main():
     if len(sys.argv) not in (3, 4):
         print(
-            "Usage: draw-verifier-tier.py <P1|P2|P3> <doer-tier: haiku|sonnet|opus> "
-            "[exclude-tiers-comma-separated]",
+            "Usage: draw-verifier-tier.py <priority-label, e.g. P1/P2/P3/P4> "
+            "<doer-tier: haiku|sonnet|opus> [exclude-tiers-comma-separated]",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -77,8 +77,18 @@ def main():
     if doer_tier not in LADDER:
         print(f"Invalid doer tier: '{doer_tier}'. Must be one of {LADDER}.", file=sys.stderr)
         sys.exit(1)
-    if priority not in ("P1", "P2", "P3"):
-        print(f"Invalid priority: '{priority}'. Must be P1, P2, or P3.", file=sys.stderr)
+    if not priority or not priority[0].isalpha():
+        # Deliberately NOT hardcoded to a fixed set (P1/P2/P3) — different
+        # projects use different priority-label conventions (CNX: P1/P2/P4,
+        # no P3). Found live during HE-024's CNX propagation: this script,
+        # copied byte-identical, hard-rejected CNX's real "P4" lane, silently
+        # breaking E2 for that entire lane — the same class of gap HE-005
+        # already fixed once for done_ids()'s ID-prefix regex. The ONLY
+        # priority value this script treats specially is the literal "P1"
+        # stake-weighting rule below; every other label is accepted and
+        # treated uniformly (unweighted), so this never needs a per-project
+        # edit again. Minimal sanity check only: must start with a letter.
+        print(f"Invalid priority: '{priority}'. Must be a label like P1/P2/P3/P4.", file=sys.stderr)
         sys.exit(1)
     invalid_excludes = excluded - set(LADDER)
     if invalid_excludes:
