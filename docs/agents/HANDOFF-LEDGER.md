@@ -4,6 +4,26 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-011 — 2026-07-07 — No execution: queue still ambiguous (4th repeat of HL-008/009/010)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-010, HL-009, HL-008) per mandatory startup order
+- Session brief required executing exactly one unblocked, Claude-owned WORK-QUEUE item — found the same three simultaneously unblocked candidates as HL-008/009/010: MS-017 (typed SlotName ADT), MS-018 (LMS spike), MS-019 (MCP Tier 2), all `Queued` / Owner `Claude` / `Depends On: —`
+- WORK-QUEUE.md "Last groomed" note still reads GL-029 (2026-07-05) — no `/groom` session has run since HL-010 (2026-07-07) to sequence these three; condition for single-item execution still not met
+- Picking among three ambiguous candidates is a sequencing judgment call reserved for `/groom` (Rule 3: an approved queue state isn't execute permission for an unspecified item; Rule 1/2: no self-sequencing) — so no item was executed and no code/doc changes were made this session
+- No new decisions recorded (DECISION-REGISTER.md unchanged — still empty placeholder)
+
+**Decisions made:** none
+**CONTEXT-KERNEL change:** pre-existing carry-over, not made this session — Status section (dormancy decision, POL-009/DR-027) and "Last updated" date were already uncommitted before this session started; content matches WQ-P4-121/HL-064 as already reflected in WORK-QUEUE.md (same state HL-008 already characterized)
+**Working-tree carry-over:** unchanged from HL-010 — pre-existing backlog (CHANGELOG.md, doc/, docs/, examples/, etc. plus `.claude/hooks/__pycache__/` and `docs/agents/LESSONS-LEARNED.md`) still covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18, not yet expired); not touched or duplicated here
+**Open items carried forward:**
+- MS-017, MS-018, MS-019 remain `Queued` — this is the fourth consecutive session (HL-008, HL-009, HL-010, HL-011) finding the same three-way ambiguity; `/groom` to assign explicit sequencing/priority is now overdue
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** Tony or a `/groom` session — sequence MS-017/MS-018/MS-019 (or explicitly mark which one is next); four unresolved recurrences of the identical blocker should override normal groom cadence and be picked up next
+
+---
+
 ## HL-010 — 2026-07-07 — No execution: queue still ambiguous (repeat of HL-009/HL-008)
 
 **Session:** Tony + Claude (mdslides root — autonomous `/next`-style single-item pick)
