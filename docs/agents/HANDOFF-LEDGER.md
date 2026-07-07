@@ -4,6 +4,25 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-009 — 2026-07-07 — No execution: queue still ambiguous (repeat of HL-008)
+
+**Session:** Tony + Claude (mdslides root — autonomous `/next`-style single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-008, HL-007, HL-006) per mandatory startup order
+- Session brief required executing exactly one unblocked, Claude-owned WORK-QUEUE item — found the same three simultaneously unblocked candidates as HL-008: MS-017 (typed SlotName ADT), MS-018 (LMS spike), MS-019 (MCP Tier 2), all `Queued` / Owner `Claude` / `Depends On: —`
+- No `/groom` session has run between HL-008 (2026-07-06) and now to sequence these three — condition for single-item execution still not met
+- Picking among three ambiguous candidates is a sequencing judgment call reserved for `/groom` (Rule 3: an approved queue state isn't execute permission for an unspecified item; Rule 1/2: no self-sequencing) — so no item was executed and no code/doc changes were made this session
+- No new decisions recorded (DECISION-REGISTER.md unchanged)
+
+**Decisions made:** none
+**Working-tree carry-over:** the pre-existing ~52-file backlog (CHANGELOG.md, doc/, docs/, examples/, etc.) remains untouched this session — still covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18); not touched or duplicated here
+**Open items carried forward:**
+- MS-017, MS-018, MS-019 remain `Queued` — still need `/groom` to assign explicit sequencing/priority before a future single-item `/next`-style session can pick unambiguously
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** Tony or a `/groom` session — sequence MS-017/MS-018/MS-019 (or explicitly mark which one is next) so a future autonomous single-item session has exactly one unblocked candidate
+
+---
+
 ## HL-008 — 2026-07-06 — No execution: queue ambiguous, stopped
 
 **Session:** Tony + Claude (mdslides root — autonomous `/next`-style single-item pick)
