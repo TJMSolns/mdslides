@@ -4,6 +4,26 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-013 — 2026-07-08 — No execution: queue still ambiguous (6th repeat of HL-008/009/010/011/012)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-012, HL-011, HL-010) per mandatory startup order
+- Session brief required executing exactly one unblocked, Claude-owned WORK-QUEUE item — found the same three simultaneously unblocked candidates as HL-008 through HL-012: MS-017 (typed SlotName ADT), MS-018 (LMS spike), MS-019 (MCP Tier 2), all `Queued` / Owner `Claude` / `Depends On: —`
+- WORK-QUEUE.md "Last groomed" note still reads GL-029 (2026-07-05) — no `/groom` session has run since HL-012 (2026-07-08) to sequence these three; condition for single-item execution still not met
+- Picking among three ambiguous candidates is a sequencing judgment call reserved for `/groom` (Rule 3: an approved queue state isn't execute permission for an unspecified item; Rule 1/2: no self-sequencing) — so no item was executed and no code/doc changes were made this session
+- Confirmed the pre-existing working-tree backlog is still covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18, not yet expired) — left untouched, not duplicated here
+- No new decisions recorded (DECISION-REGISTER.md unchanged — still empty placeholder)
+
+**Decisions made:** none
+**Working-tree carry-over:** unchanged from HL-012 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-017, MS-018, MS-019 remain `Queued` — this is the sixth consecutive session (HL-008, HL-009, HL-010, HL-011, HL-012, HL-013) finding the same three-way ambiguity; `/groom` to assign explicit sequencing/priority is now substantially overdue
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** Tony or a `/groom` session — sequence MS-017/MS-018/MS-019 (or explicitly mark which one is next); six unresolved recurrences of the identical blocker is well past the point autonomous sessions can resolve on their own
+
+---
+
 ## HL-012 — 2026-07-08 — No execution: queue still ambiguous (5th repeat of HL-008/009/010/011)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
