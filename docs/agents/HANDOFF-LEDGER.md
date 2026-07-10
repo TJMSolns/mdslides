@@ -4,6 +4,61 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-020 — 2026-07-10 — MS-018 (LMS investigation spike) executed and verified
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-019,
+  HL-018, HL-017) per mandatory startup order
+- WORK-QUEUE.md now shows a `/groom` sequence from GL-030 (2026-07-10, Tony): MS-018 → MS-019 → MS-017
+  — this resolves the 12-session ambiguity blocking HL-008 through HL-019. MS-018 (Sequence 1 of 3,
+  Owner Claude, Depends On —) was the one genuinely unblocked, Claude-executable item
+- Executed MS-018 in full: reviewed the domain model (`Slide`, `SlideDeck`, `HeaderFooter`,
+  `SpeakerViewRenderer`, `PresentationTimer`, `NavigationHistory`) to ground the analysis in the actual
+  codebase rather than a green-field LMS design; wrote
+  `docs/spikes/spike-MS-018-lms-investigation.md` — two-axis analysis (6 standalone-useful features:
+  progress markers, per-slide metadata, transcript export, client-only self-scoring quiz, pacing
+  estimate, handout export; 5 LMS-only features: completion tracking, graded/recorded quizzes, learner
+  identity, enrollment, SCORM/xAPI export) each with effort tier, server-state requirement, and
+  architecture-fit; plus the required worked example (embedded quiz, standalone vs. LMS-integrated)
+- Pre-Implementation Gate skipped per SKILL.md step 4 (a spike doc is a self-evidently single artifact,
+  not an E1–E4 build item)
+- E2 discipline followed: drew verifier tier via `draw-verifier-tier.py P4 sonnet` → haiku; wrote
+  `docs/agents/evidence/MS-018.md` FIRST with an honest `Verifier-verdict: PENDING` placeholder
+  (RL-002/HE-008 ordering), committed that checkpoint, then dispatched a real `verifier` agent (model
+  haiku) against the artifact + the spike doc
+- Verifier returned `PASS` — independently confirmed both commits (`1fca48a` spike doc, `f02dd27`
+  evidence PENDING checkpoint) are real and doc-only, the spike covers both required axes plus the
+  worked example, and every source-code claim in the `Invariance-recheck` (field/behavior citations
+  from all six domain/infra files) holds up against the real code
+- Updated evidence artifact with the real `PASS` verdict; moved MS-018 to Done in WORK-QUEUE.md; updated
+  the GL-030 sequence note to show MS-019 is next
+- Did not process MS-019 or MS-017 (only one item per session, per brief)
+- Confirmed the pre-existing working-tree backlog (untracked `.claude/hooks/__pycache__/`,
+  `docs/agents/LESSONS-LEARNED.md`, and the ~50 modified doc files) is unchanged in scope and still
+  covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18, not
+  yet expired) — left untouched, not duplicated here
+- Pushed via `git -c credential.helper='!gh auth git-credential' push https://github.com/TJMSolns/mdslides.git main`
+  after `origin`'s configured SSH remote failed with `Permission denied (publickey)` in this
+  environment — no git config was modified, `-c` is a one-shot override; `gh auth status` confirmed an
+  authenticated session was already available
+
+**Decisions made:** none formal (execution of an already-approved sequence, not a new decision)
+**Work queue changes:** MS-018: Queued → Done (evidence `docs/agents/evidence/MS-018.md`, verifier
+PASS)
+**Commits:** `1fca48a` (spike doc), `f02dd27` (evidence PENDING checkpoint), `c26eb98` (Done edit +
+verified evidence) — all pushed to `origin/main`
+**Working-tree carry-over:** unchanged from HL-019 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-019 (MCP Tier 2, Sequence 2 of 3) is next in the GL-030 sequence
+- MS-017 (typed SlotName ADT, Sequence 3 of 3) follows MS-019
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** `/next` or a fresh autonomous session should pick MS-019 (MCP server Tier 2: `list_themes`
++ `get_deck_info`) — it is now the sole item at the front of the GL-030 sequence with satisfied
+dependencies
+
+---
+
 ## HL-019 — 2026-07-10 — No execution: queue still ambiguous (12th repeat of HL-008 through HL-018)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
