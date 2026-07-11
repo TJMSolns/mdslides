@@ -4,6 +4,81 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-021 — 2026-07-11 — MS-019 (MCP server Tier 2) executed and verified
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-020,
+  HL-019, HL-018) per mandatory startup order
+- Per the GL-030 sequence (MS-018 → MS-019 → MS-017), MS-018 was already Done (HL-020); MS-019
+  (Sequence 2 of 3, Owner Claude, Depends On —) was the sole genuinely unblocked, Claude-executable
+  item — MS-017 (3 of 3) remains blocked by the sequence, MS-020/MS-021 remain `[PROPOSED]`
+- Pre-Implementation Gate: reviewed ADR-013's Tier 2 spec (tool names, params, `DeckInfo`/`ThemesResult`
+  shapes) — already a complete domain-model-equivalent document; no separate model doc needed
+- Pre-Scaffold Gate: wrote `doc/internal/planning/design-MS-019-mcp-server-tier2.md` — sequence
+  diagrams for `list_themes` happy path + directory-permission error path, `get_deck_info` happy path
+  + missing-file/parse-fail error paths, grounded in the real Tier 1 code (`McpServer.scala`,
+  `ThemeLoader.scala`, `cli/Main.scala`'s `extractImageUrls`/`extractMermaidDiagrams` helpers, which
+  `get_deck_info` reimplements inside `mcp` since ADR-013 forbids a compile-time `mcp` → `cli`
+  dependency)
+- Implemented `ListThemesTool.scala` (wraps `ThemeLoader.listAvailableThemes`; a missing `themes_dir`
+  is not an error, matching `ThemeLoader`'s existing contract) and `GetDeckInfoTool.scala` (slide
+  count, templates used, images referenced via `FlexmarkAdapter.parseInlineFormatting` +
+  `SlideBackground.getImagePath`, Mermaid presence via `DiagramElement` pattern match); wired both into
+  `McpServer.scala`'s `toolList` + dispatch alongside Tier 1's `render_deck`/`validate_deck`; added
+  `ThemesResult`/`DeckInfo` to `McpModels.scala`
+- 8 new integration tests in `McpServerSpec` (tools/list inclusion, list_themes happy/missing-dir/
+  directory-theme-present, get_deck_info missing-file/happy-path-with-mermaid-and-images/no-mermaid) —
+  initial run had 3 failures caused by a test-authoring bug (synchronous `try/finally` deleting temp
+  files before the lazily-composed `IO` chain actually ran); fixed by switching to `IO.guarantee` for
+  cleanup — all 18 `McpServerSpec` tests (10 Tier 1 + 8 Tier 2) pass; full `mill __.test` suite green,
+  no regressions
+- Version bumped to 1.0.7 (`build.sc`); `CHANGELOG.md` updated (staged only the new `[1.0.7]` hunk via
+  a targeted `git apply --cached`, leaving the pre-existing DEFER-001-scope Retisio-rename backlog in
+  that file untouched/unstaged)
+- `mill cli.assembly mcp.assembly` failed once under the environment's default JDK 25 (`Unsupported
+  class file major version 69` in Mill's own ASM-based codesig introspection, unrelated to this
+  session's code); retried with `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` — succeeded. Cut v1.0.7
+  release with `gh release create` (no prior tag existed) uploading `md-slides.jar` +
+  `mdslides-mcp.jar` to `TJMSolns/MD-Slides` (confirmed with Tony's real-time approval given the
+  release's public/hard-to-reverse nature before creating it); verified both assets present with
+  current timestamps
+- E2 discipline followed: drew verifier tier via `draw-verifier-tier.py P4 sonnet` → opus; wrote
+  `docs/agents/evidence/MS-019.md` FIRST with an honest `Verifier-verdict: PENDING` placeholder,
+  committed that checkpoint (a Stop hook fired mid-wait for the verifier — pushed immediately per
+  SKILL.md guidance rather than leaving it uncommitted), then dispatched a real `verifier` agent
+  (model opus) against the artifact + the commits
+- Verifier returned `PASS` — independently confirmed both commits are real and match the claimed
+  diff, re-read all cited source files and confirmed every Invariance-recheck claim, independently
+  re-ran `mill mcp.test` (18/18) plus its own different-perturbation case (3 templates, no images/
+  mermaid) with correct output, and confirmed the v1.0.7 release assets
+- Updated evidence artifact with the real `PASS` verdict; moved MS-019 to Done in WORK-QUEUE.md;
+  updated the GL-030 sequence note to show MS-017 is next
+- Did not process MS-017 (only one item per session, per brief)
+- Confirmed the pre-existing working-tree backlog (~50 modified doc files, untracked
+  `.claude/hooks/__pycache__/`, `docs/agents/LESSONS-LEARNED.md`) is unchanged in scope from HL-020
+  and still covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires
+  2026-07-18, not yet expired) — left untouched, not duplicated here
+- Pushed via `git -c credential.helper='!gh auth git-credential' push https://github.com/TJMSolns/mdslides.git main`
+  (same SSH-key workaround as HL-020's session — `origin`'s configured SSH remote fails with
+  `Permission denied (publickey)` in this environment; no git config modified, `-c` is a one-shot
+  override)
+
+**Decisions made:** none formal (execution of an already-approved sequence, not a new decision)
+**Work queue changes:** MS-019: Queued → Done (evidence `docs/agents/evidence/MS-019.md`, verifier
+PASS)
+**Commits:** `06f3b5b` (implementation), `6c4fc82` (evidence PENDING checkpoint), `94df7d1` (Done edit
++ verified evidence) — all pushed to `origin/main`
+**Working-tree carry-over:** unchanged from HL-020 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-017 (typed SlotName ADT, Sequence 3 of 3) is now the sole item at the front of the GL-030
+  sequence with satisfied dependencies
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom notes
+**Next owner:** `/next` or a fresh autonomous session should pick MS-017 — it is now the only
+unblocked, Claude-owned item in the GL-030 sequence
+
+---
+
 ## HL-020 — 2026-07-10 — MS-018 (LMS investigation spike) executed and verified
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
