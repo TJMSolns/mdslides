@@ -56,7 +56,7 @@ Append-only. New entries at the top.
 **Decisions made:** none formal — two design questions raised in the design note are explicitly
 left open for Tony
 **Work queue changes:** MS-017: Queued → Gated (design note `doc/internal/planning/design-MS-017-typed-slot-name.md`)
-**Commits:** (see below — filled in after commit)
+**Commits:** `da61e1f` (design note + WORK-QUEUE gate + this HL entry)
 **Working-tree carry-over:** unchanged from HL-021 — still DEFER-001 scope, expires 2026-07-18
 **Open items carried forward:**
 - MS-017 needs Tony's review of the two open decisions in the design note (ADT shape, scope)
