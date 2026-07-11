@@ -7,6 +7,23 @@ import json
 import re
 import os
 
+
+def repo_root(path):
+    """Same walk-up-to-.git idiom as stop-git-durability-gate.py's own repo_root()
+    (DN-003) — not a new pattern. Returns None if no .git is found (e.g. the org
+    root, a plain Dropbox directory per DN-017 — this hook was never intended to
+    gate that queue and has no copy installed there anyway)."""
+    d = os.path.abspath(path)
+    if os.path.isfile(d):
+        d = os.path.dirname(d)
+    while True:
+        if os.path.exists(os.path.join(d, ".git")):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            return None
+        d = parent
+
 REQUIRED_FIELDS = [
     "Commit:",
     "Run-count:",
@@ -105,8 +122,23 @@ def iter_transcript_entries(transcript_text):
 
 def iter_message_texts(transcript_text):
     """Yields the JSON-DECODED text content of every text-type content block
-    across the transcript — real newlines, not escape sequences."""
+    across the transcript — real newlines, not escape sequences.
+
+    HE-043: a completed Agent-tool sub-task's notification can also arrive as a
+    top-level `{"type": "queue-operation", "operation": "enqueue", ...,
+    "content": "<task-notification>..."}` entry — no "message" key at all.
+    Confirmed live (MS-017, 2026-07-11): a dispatched implementation subagent's
+    own nested verifier dispatch delivered its completion this way, and this
+    function's prior message-content-only path never yielded it, making a
+    genuine PASS invisible to transcript_corroborates_pass() (which returns
+    False, not None, for a readable-but-blind transcript — a hard, silent
+    false-negative block on a real Done-transition). Additive only — the
+    existing message.content path is unchanged."""
     for entry in iter_transcript_entries(transcript_text):
+        if entry.get("type") == "queue-operation":
+            content = entry.get("content")
+            if isinstance(content, str):
+                yield content
         content = entry.get("message", {}).get("content", [])
         if isinstance(content, str):
             yield content
@@ -238,6 +270,18 @@ def main():
     if tool_name not in ("Edit", "Write"):
         sys.exit(0)
     if not file_path.replace("\\", "/").endswith("docs/agents/WORK-QUEUE.md"):
+        sys.exit(0)
+
+    # HE-042: this gate must only apply within the SAME repo this hook file lives
+    # in — never to a same-named file in a different repo just because the
+    # current session's --add-dir grants make it reachable (confirmed live,
+    # GL-030 2026-07-10: a groom subagent editing keystone's own WORK-QUEUE.md
+    # was wrongly blocked by harness-evolution's own Done-gate policy). Fail
+    # open (never block) if the two repo roots don't match, or if either can't
+    # be determined (e.g. a non-git root — DN-017's org-root case).
+    this_repo = repo_root(os.path.abspath(__file__))
+    target_repo = repo_root(file_path)
+    if this_repo is None or target_repo is None or this_repo != target_repo:
         sys.exit(0)
 
     try:
