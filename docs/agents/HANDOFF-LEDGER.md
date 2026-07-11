@@ -4,6 +4,71 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-022 — 2026-07-11 — MS-017 Pre-Implementation Gate opened, paused for review
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-021,
+  HL-020, HL-019) per mandatory startup order
+- Per the GL-030 sequence (MS-018 → MS-019 → MS-017), both MS-018 and MS-019 were already Done
+  (HL-020, HL-021); MS-017 (Sequence 3 of 3, Owner Claude, Depends On —) was the sole genuinely
+  unblocked, Claude-executable item
+- Researched the current slot-name architecture before writing anything (`Slide.scala`,
+  `SlotDefinition.scala`, `Template.scala`, `MarkdownParser.scala`, `HTMLRenderer.scala`,
+  `SpeakerViewRenderer.scala`, ADR-008, and an already-existing but entirely unused
+  `domain/.../SlotName.scala` opaque type) and found three things that change the shape of the fix
+  from what the WQ item's one-line description implies:
+  1. MS-017's literal wording (`sealed trait SlotName`) conflicts with this repo's own stated
+     convention (CLAUDE.md: "enum over sealed traits for ADTs with label/value fields") — every
+     existing closed domain ADT here (`VerticalAlignment`, `TemplateLayout`) is an `enum`
+  2. Templates are a closed, hardcoded 6-template/8-slot-name set (`Template.scala`'s `fromName`
+     is a fixed `match`, not config/JSON-driven as ADR-008's "v1.1 custom templates" language
+     suggested) — this actually makes a closed enum a *good* fit, unlike what ADR-008 anticipated
+  3. `Slide.slots: Map[String, String]` is also used as a side channel for per-slide frontmatter
+     metadata (`header`/`footer`/`vertical-align`, `MarkdownParser.scala:154-156`) that is never
+     declared via any `SlotDefinition` — a decision is needed on whether `SlotName` should cover
+     that channel too or stay scoped to template-declared content slots (LL-003's actual failure
+     mode)
+- Per this project's own Pre-Implementation Gate (`CLAUDE.md` Design Gates: "domain model document
+  must exist and be reviewed before implementation starts") and the `/next` skill's explicit
+  instruction to pause when a design note is newly written rather than proceed in the same pass,
+  wrote `doc/internal/planning/design-MS-017-typed-slot-name.md` covering the problem, the three
+  findings above, two explicit open decisions (ADT shape: enum vs. the existing opaque type;
+  scope: content-slots-only vs. all of `Slide.slots`) with a recommendation for each, the proposed
+  mechanism, and the ~9 source files / ~12 test files it would touch — then stopped rather than
+  implementing, since this is a real domain-model decision, not a mechanical one
+- Updated `WORK-QUEUE.md`: MS-017 status changed from `Queued` to `Gated — awaiting Tony review of
+  design note`, annotated with the gate's findings; did not touch MS-020/MS-021 (`[PROPOSED]`)
+- No evidence artifact / verifier dispatch — this is a Pre-Implementation Gate output (design note
+  only, explicitly paused per the gate's own rule), not a completed build item; nothing was moved
+  to Done
+- Confirmed the pre-existing working-tree backlog (~52 modified doc files, untracked
+  `.claude/hooks/__pycache__/`) is unchanged in scope from HL-021 and still covered by
+  `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18, not yet
+  expired) — left untouched, not duplicated here
+- Committed and pushed only the files this session touched (design note + WORK-QUEUE.md +
+  HANDOFF-LEDGER.md) via
+  `git -c credential.helper='!gh auth git-credential' push https://github.com/TJMSolns/mdslides.git main`
+  (same SSH-key workaround as HL-020/HL-021's sessions — `origin`'s configured SSH remote fails with
+  `Permission denied (publickey)` in this environment; no git config modified, `-c` is a one-shot
+  override)
+
+**Decisions made:** none formal — two design questions raised in the design note are explicitly
+left open for Tony
+**Work queue changes:** MS-017: Queued → Gated (design note `doc/internal/planning/design-MS-017-typed-slot-name.md`)
+**Commits:** (see below — filled in after commit)
+**Working-tree carry-over:** unchanged from HL-021 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-017 needs Tony's review of the two open decisions in the design note (ADT shape, scope)
+  before implementation can proceed
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom
+  notes
+**Next owner:** Tony — review `doc/internal/planning/design-MS-017-typed-slot-name.md`'s two open
+questions (Q1: enum vs. reuse of the existing opaque `SlotName`; Q2: scope to content slots only
+vs. all of `Slide.slots`) so a future session can implement MS-017 against a settled design
+
+---
+
 ## HL-021 — 2026-07-11 — MS-019 (MCP server Tier 2) executed and verified
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
