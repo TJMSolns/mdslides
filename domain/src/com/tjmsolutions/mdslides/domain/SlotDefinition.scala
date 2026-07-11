@@ -4,7 +4,7 @@ package com.tjmsolutions.mdslides.domain
  * Definition of a slot in a template.
  *
  * Example:
- * - name: "title"
+ * - name: SlotName.Title
  * - required: true
  * - constraints: maxLines = 2
  *
@@ -12,7 +12,7 @@ package com.tjmsolutions.mdslides.domain
  * - ADR-008: Slot-Based Content Model
  */
 case class SlotDefinition(
-  name: String,          // Slot identifier (e.g., "title", "subtitle")
+  name: SlotName,        // Slot identifier (e.g., SlotName.Title, SlotName.Subtitle)
   required: Boolean,     // Must be present in slide
   constraints: SlotConstraints
 )
@@ -27,7 +27,7 @@ object SlotDefinition:
    */
   val title: SlotDefinition =
     SlotDefinition(
-      name = "title",
+      name = SlotName.Title,
       required = true,
       constraints = SlotConstraints(maxLines = Some(2))
     )
@@ -41,7 +41,7 @@ object SlotDefinition:
    */
   val subtitle: SlotDefinition =
     SlotDefinition(
-      name = "subtitle",
+      name = SlotName.Subtitle,
       required = false,
       constraints = SlotConstraints(maxLines = Some(2))
     )
@@ -55,7 +55,7 @@ object SlotDefinition:
    */
   val author: SlotDefinition =
     SlotDefinition(
-      name = "author",
+      name = SlotName.Author,
       required = false,
       constraints = SlotConstraints(maxChars = Some(80))
     )
@@ -69,7 +69,7 @@ object SlotDefinition:
    */
   val heading: SlotDefinition =
     SlotDefinition(
-      name = "heading",
+      name = SlotName.Heading,
       required = true,
       constraints = SlotConstraints(maxChars = Some(80))
     )
@@ -84,7 +84,7 @@ object SlotDefinition:
    */
   val body: SlotDefinition =
     SlotDefinition(
-      name = "body",
+      name = SlotName.Body,
       required = true,
       constraints = SlotConstraints(
         maxLines = Some(12),
@@ -103,7 +103,7 @@ object SlotDefinition:
    */
   val caption: SlotDefinition =
     SlotDefinition(
-      name = "caption",
+      name = SlotName.Caption,
       required = false,
       constraints = SlotConstraints(
         maxLines = Some(1),
@@ -118,7 +118,7 @@ object SlotDefinition:
    */
   val bodyOptional: SlotDefinition =
     SlotDefinition(
-      name = "body",
+      name = SlotName.Body,
       required = false,
       constraints = SlotConstraints(
         maxLines = Some(12),

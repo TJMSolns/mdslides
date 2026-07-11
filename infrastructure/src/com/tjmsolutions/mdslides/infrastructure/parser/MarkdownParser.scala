@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Template}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, SlotName, Template}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.implicits.*
 
@@ -148,17 +148,23 @@ object MarkdownParser:
         case Right(twoColumnSlots) => twoColumnSlots
       case _ => return Left(s"Slide $slideNumber: Unknown template '$templateName'")
 
-    // Add optional frontmatter fields to slots (v3.0.0)
+    // Add optional frontmatter title override to slots (v3.0.0) — this is template
+    // content (SlotName.Title), not out-of-band metadata.
     var slots = baseSlots
-    frontmatter.get("title").foreach(v => slots = slots + ("title" -> v))
-    frontmatter.get("vertical-align").foreach(v => slots = slots + ("vertical-align" -> v))
-    frontmatter.get("header").foreach(v => slots = slots + ("header" -> v))
-    frontmatter.get("footer").foreach(v => slots = slots + ("footer" -> v))
+    frontmatter.get("title").foreach(v => slots = slots + (SlotName.Title -> v))
+
+    // Frontmatter metadata (header/footer/vertical-align): a separate, raw-String-keyed
+    // channel from `slots` (MS-017 design note Q2a) — these are config, not
+    // SlotDefinition-declared template content, so they are not part of SlotName.
+    var metadata = Map.empty[String, String]
+    frontmatter.get("vertical-align").foreach(v => metadata = metadata + ("vertical-align" -> v))
+    frontmatter.get("header").foreach(v => metadata = metadata + ("header" -> v))
+    frontmatter.get("footer").foreach(v => metadata = metadata + ("footer" -> v))
 
     // Create slide ID
     SlideId(slideNumber) match
       case Left(error) => Left(s"Slide $slideNumber: $error")
-      case Right(id) => Right(Slide(id, templateName, slots, backgroundImage, notes))
+      case Right(id) => Right(Slide(id, templateName, slots, backgroundImage, notes, metadata))
 
   /**
    * Extract frontmatter from raw slide content.
@@ -296,23 +302,23 @@ object MarkdownParser:
    * Author (optional, plain text)
    * ```
    */
-  private def parseTitleSlide(content: String): Map[String, String] =
+  private def parseTitleSlide(content: String): Map[SlotName, String] =
     val lines = content.split("\n").map(_.trim).filter(_.nonEmpty)
-    val slots = Map.newBuilder[String, String]
+    val slots = Map.newBuilder[SlotName, String]
 
     // Extract title (# heading)
     lines.find(_.startsWith("# ")).foreach { line =>
-      slots += ("title" -> line.drop(2).trim)
+      slots += (SlotName.Title -> line.drop(2).trim)
     }
 
     // Extract subtitle (## heading)
     lines.find(_.startsWith("## ")).foreach { line =>
-      slots += ("subtitle" -> line.drop(3).trim)
+      slots += (SlotName.Subtitle -> line.drop(3).trim)
     }
 
     // Extract author (any remaining non-heading line)
     lines.find(line => !line.startsWith("#") && line.nonEmpty).foreach { line =>
-      slots += ("author" -> line.trim)
+      slots += (SlotName.Author -> line.trim)
     }
 
     slots.result()
@@ -326,20 +332,20 @@ object MarkdownParser:
    * Body content (required, everything after heading)
    * ```
    */
-  private def parseContentSlide(content: String): Map[String, String] =
+  private def parseContentSlide(content: String): Map[SlotName, String] =
     val lines = content.split("\n")
-    val slots = Map.newBuilder[String, String]
+    val slots = Map.newBuilder[SlotName, String]
 
     // Find heading (## line)
     val headingIndex = lines.indexWhere(_.trim.startsWith("## "))
     if headingIndex >= 0 then
       val heading = lines(headingIndex).trim.drop(3).trim
-      slots += ("heading" -> heading)
+      slots += (SlotName.Heading -> heading)
 
       // Everything after heading is body
       val bodyLines = lines.drop(headingIndex + 1).dropWhile(_.trim.isEmpty)
       if bodyLines.nonEmpty then
-        slots += ("body" -> bodyLines.mkString("\n"))
+        slots += (SlotName.Body -> bodyLines.mkString("\n"))
 
     slots.result()
 
@@ -360,7 +366,7 @@ object MarkdownParser:
    * @param slideNumber Slide number for error messages
    * @return Either error or slots map
    */
-  private def parseTwoColumnSlide(content: String, slideNumber: Int): Either[String, Map[String, String]] =
+  private def parseTwoColumnSlide(content: String, slideNumber: Int): Either[String, Map[SlotName, String]] =
     import com.tjmsolutions.mdslides.domain.TwoColumnSlide
 
     // Split content by ---column--- delimiter
@@ -368,8 +374,8 @@ object MarkdownParser:
       case Left(error) => Left(error.toString)
       case Right((leftColumn, rightColumn)) =>
         Right(Map(
-          "leftColumn" -> leftColumn,
-          "rightColumn" -> rightColumn
+          SlotName.LeftColumn -> leftColumn,
+          SlotName.RightColumn -> rightColumn
         ))
 
 end MarkdownParser

@@ -36,7 +36,7 @@ case class Template(
   /**
    * Find slot definition by name.
    */
-  def getSlot(name: String): Option[SlotDefinition] =
+  def getSlot(name: SlotName): Option[SlotDefinition] =
     slots.find(_.name == name)
 
 end Template
@@ -160,8 +160,8 @@ object Template:
     Template(
       name = "two-column",
       slots = List(
-        SlotDefinition("leftColumn", required = true, constraints = SlotConstraints()),
-        SlotDefinition("rightColumn", required = true, constraints = SlotConstraints())
+        SlotDefinition(SlotName.LeftColumn, required = true, constraints = SlotConstraints()),
+        SlotDefinition(SlotName.RightColumn, required = true, constraints = SlotConstraints())
       )
     )
 

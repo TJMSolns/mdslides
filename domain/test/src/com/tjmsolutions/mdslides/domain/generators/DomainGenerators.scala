@@ -98,38 +98,38 @@ object DomainGenerators:
   /**
    * Generate valid title slide slots.
    */
-  val validTitleSlotsGen: Gen[Map[String, String]] =
+  val validTitleSlotsGen: Gen[Map[SlotName, String]] =
     for
       title <- validTitleGen
       subtitle <- Gen.option(validTitleGen)
       author <- Gen.option(validAuthorGen)
     yield Map(
-      "title" -> title
-    ) ++ subtitle.map("subtitle" -> _).toMap
-      ++ author.filter(_.nonEmpty).map("author" -> _).toMap
+      SlotName.Title -> title
+    ) ++ subtitle.map(SlotName.Subtitle -> _).toMap
+      ++ author.filter(_.nonEmpty).map(SlotName.Author -> _).toMap
 
   /**
    * Generate INVALID title slide slots (missing required title).
    */
-  val missingTitleSlotsGen: Gen[Map[String, String]] =
+  val missingTitleSlotsGen: Gen[Map[SlotName, String]] =
     for
       subtitle <- Gen.option(validTitleGen)
       author <- Gen.option(validAuthorGen)
-    yield subtitle.map("subtitle" -> _).toMap
-      ++ author.filter(_.nonEmpty).map("author" -> _).toMap
+    yield subtitle.map(SlotName.Subtitle -> _).toMap
+      ++ author.filter(_.nonEmpty).map(SlotName.Author -> _).toMap
 
   /**
    * Generate INVALID title slide slots (title exceeds max lines).
    */
-  val invalidTitleSlotsGen: Gen[Map[String, String]] =
+  val invalidTitleSlotsGen: Gen[Map[SlotName, String]] =
     for
       title <- invalidTitleGen
       subtitle <- Gen.option(validTitleGen)
       author <- Gen.option(validAuthorGen)
     yield Map(
-      "title" -> title
-    ) ++ subtitle.map("subtitle" -> _).toMap
-      ++ author.filter(_.nonEmpty).map("author" -> _).toMap
+      SlotName.Title -> title
+    ) ++ subtitle.map(SlotName.Subtitle -> _).toMap
+      ++ author.filter(_.nonEmpty).map(SlotName.Author -> _).toMap
 
   /**
    * Generate valid Slide for title template.
@@ -210,53 +210,53 @@ object DomainGenerators:
   /**
    * Generate valid content slide slots.
    */
-  val validContentSlotsGen: Gen[Map[String, String]] =
+  val validContentSlotsGen: Gen[Map[SlotName, String]] =
     for
       heading <- validHeadingGen
       body <- validBodyGen
     yield Map(
-      "heading" -> heading,
-      "body" -> body
+      SlotName.Heading -> heading,
+      SlotName.Body -> body
     )
 
   /**
    * Generate INVALID content slide slots (missing required heading).
    */
-  val missingHeadingSlotsGen: Gen[Map[String, String]] =
+  val missingHeadingSlotsGen: Gen[Map[SlotName, String]] =
     for
       body <- validBodyGen
-    yield Map("body" -> body)
+    yield Map(SlotName.Body -> body)
 
   /**
    * Generate INVALID content slide slots (missing required body).
    */
-  val missingBodySlotsGen: Gen[Map[String, String]] =
+  val missingBodySlotsGen: Gen[Map[SlotName, String]] =
     for
       heading <- validHeadingGen
-    yield Map("heading" -> heading)
+    yield Map(SlotName.Heading -> heading)
 
   /**
    * Generate INVALID content slide slots (body exceeds max lines).
    */
-  val invalidContentSlotsLinesGen: Gen[Map[String, String]] =
+  val invalidContentSlotsLinesGen: Gen[Map[SlotName, String]] =
     for
       heading <- validHeadingGen
       body <- invalidBodyLinesGen
     yield Map(
-      "heading" -> heading,
-      "body" -> body
+      SlotName.Heading -> heading,
+      SlotName.Body -> body
     )
 
   /**
    * Generate INVALID content slide slots (body exceeds max words).
    */
-  val invalidContentSlotsWordsGen: Gen[Map[String, String]] =
+  val invalidContentSlotsWordsGen: Gen[Map[SlotName, String]] =
     for
       heading <- validHeadingGen
       body <- invalidBodyWordsGen
     yield Map(
-      "heading" -> heading,
-      "body" -> body
+      SlotName.Heading -> heading,
+      SlotName.Body -> body
     )
 
   /**

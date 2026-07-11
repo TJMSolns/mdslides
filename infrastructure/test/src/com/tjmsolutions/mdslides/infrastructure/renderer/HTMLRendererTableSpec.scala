@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, SlotName}
 import cats.data.NonEmptyList
 import munit.FunSuite
 
@@ -25,8 +25,8 @@ class HTMLRendererTableSpec extends munit.FunSuite:
       id = SlideId.unsafe(1),
       templateName = "content",
       slots = Map(
-        "heading" -> "Test Slide",
-        "body"    -> bodyMarkdown
+        SlotName.Heading -> "Test Slide",
+        SlotName.Body -> bodyMarkdown
       )
     )
     SlideDeck(NonEmptyList.one(slide))

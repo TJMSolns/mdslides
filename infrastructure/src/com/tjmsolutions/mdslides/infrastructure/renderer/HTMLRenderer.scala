@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme, ListElement, UnorderedListElement, OrderedListElement, UnorderedListElementDeprecated, OrderedListElementDeprecated, ContentElement, ParagraphElement, CodeBlockElement, ImageElement, DiagramElement, MermaidDiagram, TemplateConfiguration, TemplateColors, TableElement, Table}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, FormattedContent, TextSpan, Link, CodeBlock, ContentImage, Theme, ListElement, UnorderedListElement, OrderedListElement, UnorderedListElementDeprecated, OrderedListElementDeprecated, ContentElement, ParagraphElement, CodeBlockElement, ImageElement, DiagramElement, MermaidDiagram, TemplateConfiguration, TemplateColors, TableElement, Table, SlotName}
 import com.tjmsolutions.mdslides.infrastructure.parser.FlexmarkAdapter
 import scalatags.Text.all.*
 import java.nio.file.Paths
@@ -844,15 +844,15 @@ object HTMLRenderer:
     div(cls := "title-slide")(
       // Header section (top-justified)
       div(cls := "title-slide-header")(
-        slide.getSlot("title").map(title =>
+        slide.getSlot(SlotName.Title).map(title =>
           h1(cls := "slide-title", style := s"color: ${colors("heading")}")(renderFormattedText(title, preRenderedDiagrams))
         ),
-        slide.getSlot("subtitle").map(subtitle =>
+        slide.getSlot(SlotName.Subtitle).map(subtitle =>
           h2(cls := "slide-subtitle", style := s"color: ${colors("subtitle")}")(renderFormattedText(subtitle, preRenderedDiagrams))
         )
       ),
       // Footer section (bottom-justified)
-      slide.getSlot("author").map(author =>
+      slide.getSlot(SlotName.Author).map(author =>
         div(cls := "title-slide-footer")(
           p(cls := "slide-author", style := s"color: ${colors("author")}")(renderFormattedText(author, preRenderedDiagrams))
         )
@@ -864,10 +864,10 @@ object HTMLRenderer:
    */
   private def renderContentSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
     div(cls := "content-slide")(
-      slide.getSlot("heading").map(heading =>
+      slide.getSlot(SlotName.Heading).map(heading =>
         h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
       ),
-      slide.getSlot("body").map(body =>
+      slide.getSlot(SlotName.Body).map(body =>
         div(cls := "slide-body", style := s"color: ${colors("body")}")(
           renderFormattedText(body, preRenderedDiagrams)
         )
@@ -884,17 +884,17 @@ object HTMLRenderer:
    */
   private def renderDiagramSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
     div(cls := "diagram-slide")(
-      slide.getSlot("heading").map(heading =>
+      slide.getSlot(SlotName.Heading).map(heading =>
         h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
       ),
       // Body contains Mermaid diagram(s)
-      slide.getSlot("body").map(body =>
+      slide.getSlot(SlotName.Body).map(body =>
         div(cls := "slide-body", style := s"color: ${colors("body")}")(
           renderFormattedText(body, preRenderedDiagrams)
         )
       ),
       // Optional caption below diagram (Scenario 18)
-      slide.getSlot("caption").map(caption =>
+      slide.getSlot(SlotName.Caption).map(caption =>
         p(cls := "diagram-caption")(renderFormattedText(caption, preRenderedDiagrams))
       )
     )
@@ -909,10 +909,10 @@ object HTMLRenderer:
    */
   private def renderClosingSlide(slide: Slide, preRenderedDiagrams: Map[String, String], colors: Map[String, String]): Frag =
     div(cls := "closing-slide")(
-      slide.getSlot("heading").map(heading =>
+      slide.getSlot(SlotName.Heading).map(heading =>
         h1(cls := "closing-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
       ),
-      slide.getSlot("body").map(body =>
+      slide.getSlot(SlotName.Body).map(body =>
         div(cls := "slide-body", style := s"color: ${colors("body")}")(
           renderFormattedText(body, preRenderedDiagrams)
         )
@@ -947,12 +947,12 @@ object HTMLRenderer:
       div(cls := "section-title-slide section-title-two-column", attr("role") := "region", attr("aria-label") := "Section title slide")(
         div(cls := "two-column-container", style := s"grid-template-columns: $leftWidth $rightWidth")(
           tag("section")(cls := "column column-left", attr("aria-label") := "Section heading", style := s"color: ${leftColors("heading")}")(
-            slide.getSlot("heading").map(heading =>
+            slide.getSlot(SlotName.Heading).map(heading =>
               h1(cls := "section-title-heading", style := s"color: ${leftColors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
             ).getOrElse(div())
           ),
           tag("section")(cls := "column column-right", attr("aria-label") := "Section description", style := s"color: ${rightColors("body")}")(
-            slide.getSlot("body").map(body =>
+            slide.getSlot(SlotName.Body).map(body =>
               div(cls := "section-body")(renderFormattedText(body, preRenderedDiagrams))
             ).getOrElse(div())
           )
@@ -961,10 +961,10 @@ object HTMLRenderer:
     else
       // Standard centered layout
       div(cls := "section-title-slide")(
-        slide.getSlot("heading").map(heading =>
+        slide.getSlot(SlotName.Heading).map(heading =>
           h1(cls := "section-title-heading", style := s"color: ${colors("heading")}")(renderFormattedText(heading, preRenderedDiagrams))
         ),
-        slide.getSlot("body").map(body =>
+        slide.getSlot(SlotName.Body).map(body =>
           p(cls := "section-subtitle", style := s"color: ${colors("body")}")(renderFormattedText(body, preRenderedDiagrams))
         )
       )
@@ -985,18 +985,18 @@ object HTMLRenderer:
     // AC-12 (Two-Column Layout): ARIA attributes for accessibility
     div(cls := "two-column-slide", attr("role") := "region", attr("aria-label") := "Two-column slide")(
       // Render title if present in frontmatter
-      slide.getSlot("title").map(title =>
+      slide.getSlot(SlotName.Title).map(title =>
         h2(cls := "slide-heading", style := s"color: ${colors("heading")}")(renderFormattedText(title, preRenderedDiagrams))
       ),
       // Two-column container
       div(cls := "two-column-container")(
         tag("section")(cls := "column column-left", attr("aria-label") := "Left column", style := s"color: ${colors("body")}")(
-          slide.getSlot("leftColumn").map(leftContent =>
+          slide.getSlot(SlotName.LeftColumn).map(leftContent =>
             renderFormattedText(leftContent, preRenderedDiagrams)
           ).getOrElse(div(cls := "error")("Missing left column"))
         ),
         tag("section")(cls := "column column-right", attr("aria-label") := "Right column", style := s"color: ${colors("body")}")(
-          slide.getSlot("rightColumn").map(rightContent =>
+          slide.getSlot(SlotName.RightColumn).map(rightContent =>
             renderFormattedText(rightContent, preRenderedDiagrams)
           ).getOrElse(div(cls := "error")("Missing right column"))
         )

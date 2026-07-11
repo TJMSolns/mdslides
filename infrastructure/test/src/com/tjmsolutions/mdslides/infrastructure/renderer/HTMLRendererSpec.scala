@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, FormattedContent, TextSpan, ListElement, UnorderedListElement, OrderedListElement}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, FormattedContent, TextSpan, ListElement, UnorderedListElement, OrderedListElement, SlotName}
 import cats.data.NonEmptyList
 
 /**
@@ -24,7 +24,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Welcome to MDSlides")
+      slots = Map(SlotName.Title -> "Welcome to MDSlides")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -65,9 +65,9 @@ class HTMLRendererSpec extends munit.FunSuite:
       id = SlideId.unsafe(1),
       templateName = "title",
       slots = Map(
-        "title" -> "MDSlides Framework",
-        "subtitle" -> "Building Better Presentations",
-        "author" -> "John Doe"
+        SlotName.Title -> "MDSlides Framework",
+        SlotName.Subtitle -> "Building Better Presentations",
+        SlotName.Author -> "John Doe"
       )
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -90,8 +90,8 @@ class HTMLRendererSpec extends munit.FunSuite:
       id = SlideId.unsafe(1),
       templateName = "content",
       slots = Map(
-        "heading" -> "Key Principles",
-        "body" -> "Domain-Driven Design\nTest-Driven Development\nClean Architecture"
+        SlotName.Heading -> "Key Principles",
+        SlotName.Body -> "Domain-Driven Design\nTest-Driven Development\nClean Architecture"
       )
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -116,22 +116,22 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide1 = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Introduction")
+      slots = Map(SlotName.Title -> "Introduction")
     )
     val slide2 = Slide(
       id = SlideId.unsafe(2),
       templateName = "content",
       slots = Map(
-        "heading" -> "Overview",
-        "body" -> "This is the overview."
+        SlotName.Heading -> "Overview",
+        SlotName.Body -> "This is the overview."
       )
     )
     val slide3 = Slide(
       id = SlideId.unsafe(3),
       templateName = "content",
       slots = Map(
-        "heading" -> "Conclusion",
-        "body" -> "Thank you!"
+        SlotName.Heading -> "Conclusion",
+        SlotName.Body -> "Thank you!"
       )
     )
     val deck = SlideDeck(NonEmptyList.of(slide1, slide2, slide3))
@@ -179,8 +179,8 @@ class HTMLRendererSpec extends munit.FunSuite:
       id = SlideId.unsafe(1),
       templateName = "content",
       slots = Map(
-        "heading" -> "Test",
-        "body" -> "Line 1\n\n\nLine 2\n   \nLine 3"
+        SlotName.Heading -> "Test",
+        SlotName.Body -> "Line 1\n\n\nLine 2\n   \nLine 3"
       )
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -203,7 +203,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -228,7 +228,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -252,7 +252,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -271,8 +271,8 @@ class HTMLRendererSpec extends munit.FunSuite:
         id = SlideId.unsafe(i),
         templateName = "content",
         slots = Map(
-          "heading" -> s"Slide $i",
-          "body" -> s"Content $i"
+          SlotName.Heading -> s"Slide $i",
+          SlotName.Body -> s"Content $i"
         )
       )
     }
@@ -290,7 +290,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> "Content"),
+      slots = Map(SlotName.Heading -> "Test", SlotName.Body -> "Content"),
       backgroundImage = Some("backgrounds/custom.png")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -351,7 +351,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> "Content"),
+      slots = Map(SlotName.Heading -> "Test", SlotName.Body -> "Content"),
       backgroundImage = None  // No per-slide override
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -411,7 +411,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> "Content"),
+      slots = Map(SlotName.Heading -> "Test", SlotName.Body -> "Content"),
       backgroundImage = Some("backgrounds/override.png")  // Should override template
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -469,7 +469,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> "Content"),
+      slots = Map(SlotName.Heading -> "Test", SlotName.Body -> "Content"),
       backgroundImage = None
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -751,7 +751,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -765,7 +765,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -779,7 +779,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -792,7 +792,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -807,7 +807,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 
@@ -877,7 +877,7 @@ class HTMLRendererSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("title" -> "Test")
+      slots = Map(SlotName.Title -> "Test")
     )
     val deck = SlideDeck(NonEmptyList.one(slide))
 

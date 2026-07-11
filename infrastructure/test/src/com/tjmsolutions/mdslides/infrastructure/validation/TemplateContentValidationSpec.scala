@@ -31,8 +31,8 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),  // Use unsafe for tests
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Architecture Overview",
-        "caption" -> "System components"
+        SlotName.Heading -> "Architecture Overview",
+        SlotName.Caption -> "System components"
       )
     )
 
@@ -72,8 +72,8 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Architecture",
-        "body" -> s"```mermaid\n$mermaidSource\n```"
+        SlotName.Heading -> "Architecture",
+        SlotName.Body -> s"```mermaid\n$mermaidSource\n```"
       )
     )
 
@@ -83,7 +83,7 @@ class TemplateContentValidationSpec extends FunSuite:
     }
 
     // Verify test setup: Mermaid diagram is present
-    val bodyContent = parsedSlots("body")
+    val bodyContent = parsedSlots(SlotName.Body)
     val hasMermaidDiagram = bodyContent.content.exists {
       case DiagramElement(diagram) =>
         assertEquals(diagram.diagramType, "flowchart", s"Expected flowchart, got ${diagram.diagramType}")
@@ -107,7 +107,7 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> s"Diagram\n\n```mermaid\n$mermaidSource\n```"
+        SlotName.Heading -> s"Diagram\n\n```mermaid\n$mermaidSource\n```"
       )
     )
 
@@ -117,7 +117,7 @@ class TemplateContentValidationSpec extends FunSuite:
     }
 
     // Verify Mermaid is in heading
-    val headingContent = parsedSlots("heading")
+    val headingContent = parsedSlots(SlotName.Heading)
     val hasMermaidDiagram = headingContent.content.exists {
       case DiagramElement(_) => true
       case _ => false
@@ -136,8 +136,8 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "closing",
       slots = Map(
-        "heading" -> "Thank You",
-        "body" -> "Questions?\n\nContact: tony@example.com"
+        SlotName.Heading -> "Thank You",
+        SlotName.Body -> "Questions?\n\nContact: tony@example.com"
       )
     )
 
@@ -165,8 +165,8 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "section-title",
       slots = Map(
-        "heading" -> "Part 2: Implementation",
-        "body" -> "Deep dive into the architecture"
+        SlotName.Heading -> "Part 2: Implementation",
+        SlotName.Body -> "Deep dive into the architecture"
       )
     )
 
@@ -194,8 +194,8 @@ class TemplateContentValidationSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Multiple Views",
-        "body" -> """
+        SlotName.Heading -> "Multiple Views",
+        SlotName.Body -> """
 ```mermaid
 graph TD
   A --> B
@@ -215,7 +215,7 @@ sequenceDiagram
     }
 
     // Verify multiple diagrams are present
-    val bodyContent = parsedSlots("body")
+    val bodyContent = parsedSlots(SlotName.Body)
     val diagrams = bodyContent.content.collect {
       case DiagramElement(d) => d
     }
@@ -233,8 +233,8 @@ sequenceDiagram
       id = SlideId.unsafe(1),
       templateName = "content",
       slots = Map(
-        "heading" -> "Architecture",
-        "body" -> """
+        SlotName.Heading -> "Architecture",
+        SlotName.Body -> """
 Some text explaining the architecture.
 
 ```mermaid
@@ -262,7 +262,7 @@ graph TD
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Empty Diagram"
+        SlotName.Heading -> "Empty Diagram"
         // No body or other slots
       )
     )

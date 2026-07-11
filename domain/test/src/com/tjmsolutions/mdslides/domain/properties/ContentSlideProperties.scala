@@ -34,7 +34,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
           // Content template requires "heading" and "body" slots
-          validSlide.hasSlot("heading") && validSlide.hasSlot("body")
+          validSlide.hasSlot(SlotName.Heading) && validSlide.hasSlot(SlotName.Body)
 
         case Left(_) =>
           // Validation failed, property doesn't apply
@@ -51,7 +51,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
     forAll(validContentSlideGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
-          validSlide.getSlot("heading") match
+          validSlide.getSlot(SlotName.Heading) match
             case Some(heading) =>
               heading.length <= 80
 
@@ -74,7 +74,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
     forAll(validContentSlideGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
-          validSlide.getSlot("body") match
+          validSlide.getSlot(SlotName.Body) match
             case Some(body) =>
               val lineCount = SlotContent.fromPlainText(body).lineCount
               lineCount <= 12
@@ -98,7 +98,7 @@ class ContentSlideProperties extends munit.ScalaCheckSuite:
     forAll(validContentSlideGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
-          validSlide.getSlot("body") match
+          validSlide.getSlot(SlotName.Body) match
             case Some(body) =>
               val wordCount = SlotContent.fromPlainText(body).wordCount
               wordCount <= 150

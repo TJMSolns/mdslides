@@ -30,7 +30,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
           // Title template requires "title" slot
-          validSlide.hasSlot("title") == true
+          validSlide.hasSlot(SlotName.Title) == true
 
         case Left(_) =>
           // Validation failed, property doesn't apply
@@ -47,7 +47,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
     forAll(validTitleSlideGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
-          validSlide.getSlot("title") match
+          validSlide.getSlot(SlotName.Title) match
             case Some(title) =>
               val lineCount = SlotContent.fromPlainText(title).lineCount
               lineCount <= 2
@@ -69,7 +69,7 @@ class SlideProperties extends munit.ScalaCheckSuite:
     forAll(validTitleSlideGen) { slide =>
       Slide.validated(slide.id, slide.templateName, slide.slots) match
         case Right(validSlide) =>
-          validSlide.getSlot("author") match
+          validSlide.getSlot(SlotName.Author) match
             case Some(author) =>
               author.length <= 80
 
@@ -154,8 +154,8 @@ class SlideProperties extends munit.ScalaCheckSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "Line 1\nLine 2\nLine 3",  // Exceeds max 2 lines
-        "author" -> ("x" * 100)                // Exceeds max 80 chars
+        SlotName.Title -> "Line 1\nLine 2\nLine 3",  // Exceeds max 2 lines
+        SlotName.Author -> ("x" * 100)                // Exceeds max 80 chars
       )
     )
 

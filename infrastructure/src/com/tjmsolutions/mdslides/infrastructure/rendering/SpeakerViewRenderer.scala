@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.rendering
 
-import com.tjmsolutions.mdslides.domain.SlideDeck
+import com.tjmsolutions.mdslides.domain.{SlideDeck, SlotName}
 import io.circe.syntax.*
 import io.circe.{Encoder, Json}
 
@@ -302,8 +302,8 @@ object SpeakerViewRenderer:
           case Some(notes) => Json.fromString(notes)
           case None => Json.Null
         }),
-        "title" -> Json.fromString(slide.getSlot("title").getOrElse("")),
-        "heading" -> Json.fromString(slide.getSlot("heading").getOrElse(""))
+        "title" -> Json.fromString(slide.getSlot(SlotName.Title).getOrElse("")),
+        "heading" -> Json.fromString(slide.getSlot(SlotName.Heading).getOrElse(""))
       )
     }
 

@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Theme}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Theme, SlotName}
 import cats.data.NonEmptyList
 import munit.FunSuite
 
@@ -21,8 +21,8 @@ End of slide."""
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Image Test",
-        "body" -> bodyMarkdown
+        SlotName.Heading -> "Image Test",
+        SlotName.Body -> bodyMarkdown
       )
     )
 

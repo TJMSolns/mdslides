@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.rendering
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, SlotName}
 import cats.data.NonEmptyList
 
 /**
@@ -20,9 +20,9 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     SlideId.unsafe(1),
     "title",
     Map(
-      "title" -> "Sample Presentation",
-      "subtitle" -> "Test Deck",
-      "author" -> "Author Name"
+      SlotName.Title -> "Sample Presentation",
+      SlotName.Subtitle -> "Test Deck",
+      SlotName.Author -> "Author Name"
     ),
     notes = Some("Welcome the audience")
   )
@@ -31,8 +31,8 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     SlideId.unsafe(2),
     "content",
     Map(
-      "heading" -> "Introduction",
-      "body" -> "This is the intro slide"
+      SlotName.Heading -> "Introduction",
+      SlotName.Body -> "This is the intro slide"
     ),
     notes = Some("Emphasize the key point\nPause here for questions")
   )
@@ -41,8 +41,8 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     SlideId.unsafe(3),
     "content",
     Map(
-      "heading" -> "Conclusion",
-      "body" -> "Thank you"
+      SlotName.Heading -> "Conclusion",
+      SlotName.Body -> "Thank you"
     )
     // No notes field
   )
@@ -106,7 +106,7 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     val slideWithHtmlNotes = Slide(
       SlideId.unsafe(1),
       "content",
-      Map("heading" -> "Test", "body" -> "Body"),
+      Map(SlotName.Heading -> "Test", SlotName.Body -> "Body"),
       notes = Some("Use <strong> tags & check \"quotes\"")
     )
     val deck = SlideDeck(NonEmptyList.of(slideWithHtmlNotes))
@@ -127,7 +127,7 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     val slideWithoutNotes = Slide(
       SlideId.unsafe(1),
       "content",
-      Map("heading" -> "Test", "body" -> "Body"),
+      Map(SlotName.Heading -> "Test", SlotName.Body -> "Body"),
       notes = None
     )
     val deck = SlideDeck(NonEmptyList.of(slideWithoutNotes))
@@ -142,7 +142,7 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     val slideWithEmptyNotes = Slide(
       SlideId.unsafe(1),
       "content",
-      Map("heading" -> "Test", "body" -> "Body"),
+      Map(SlotName.Heading -> "Test", SlotName.Body -> "Body"),
       notes = Some("")
     )
     val deck = SlideDeck(NonEmptyList.of(slideWithEmptyNotes))
@@ -157,7 +157,7 @@ class SpeakerViewRendererSpec extends munit.FunSuite:
     val slideWithMultilineNotes = Slide(
       SlideId.unsafe(1),
       "content",
-      Map("heading" -> "Test", "body" -> "Body"),
+      Map(SlotName.Heading -> "Test", SlotName.Body -> "Body"),
       notes = Some("Line 1\nLine 2\nLine 3")
     )
     val deck = SlideDeck(NonEmptyList.of(slideWithMultilineNotes))

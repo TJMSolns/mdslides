@@ -21,6 +21,12 @@ import cats.data.NonEmptyList
  * - Notes are presentation metadata (not rendered content)
  * - Optional field (None if no notes provided)
  *
+ * Frontmatter metadata (MS-017 design note, Q2a):
+ * - `header`/`footer`/`vertical-align` frontmatter keys are carried in `metadata`, a
+ *   separate raw-`String`-keyed channel — NOT in `slots`. They are config, not
+ *   template-declared content, so they are deliberately out of scope for the `SlotName`
+ *   ADT that closes the LL-003 gap for template content slots.
+ *
  * Related Governance:
  * - ADR-008: Slot-Based Content Model
  * - PDR-011: Background Image Architecture
@@ -30,29 +36,42 @@ import cats.data.NonEmptyList
 case class Slide(
   id: SlideId,
   templateName: String,
-  slots: Map[String, String],  // Slot name → content
+  slots: Map[SlotName, String],  // Slot name → content (template-declared content only)
   backgroundImage: Option[SlideBackground] = None,  // Optional per-slide background override
-  notes: Option[String] = None  // Optional speaker notes (US-004)
+  notes: Option[String] = None,  // Optional speaker notes (US-004)
+  metadata: Map[String, String] = Map.empty  // Frontmatter metadata (header/footer/vertical-align), raw String keys (Q2a)
 ):
   /**
-   * Get content for a slot.
+   * Get content for a template-declared slot.
    *
    * @param slotName The slot to retrieve
    * @return Some(content) if slot exists, None otherwise
    */
-  def getSlot(slotName: String): Option[String] =
+  def getSlot(slotName: SlotName): Option[String] =
     slots.get(slotName)
+
+  /**
+   * Get a frontmatter metadata value (header/footer/vertical-align) by its raw string key.
+   *
+   * This is a separate channel from `slots` (Q2a) — it is not validated against
+   * `SlotDefinition`/`Template` and carries no compile-time enforcement.
+   *
+   * @param key The metadata key (e.g., "header", "footer", "vertical-align")
+   * @return Some(value) if present, None otherwise
+   */
+  def getSlot(key: String): Option[String] =
+    metadata.get(key)
 
   /**
    * Check if a slot is present (even if empty).
    */
-  def hasSlot(slotName: String): Boolean =
+  def hasSlot(slotName: SlotName): Boolean =
     slots.contains(slotName)
 
   /**
    * Get all slot names present in this slide.
    */
-  def slotNames: Set[String] =
+  def slotNames: Set[SlotName] =
     slots.keySet
 
 end Slide
@@ -75,11 +94,12 @@ object Slide:
   def validated(
     id: SlideId,
     templateName: String,
-    slots: Map[String, String],
+    slots: Map[SlotName, String],
     backgroundImage: Option[SlideBackground] = None,
-    notes: Option[String] = None
+    notes: Option[String] = None,
+    metadata: Map[String, String] = Map.empty
   ): Either[NonEmptyList[ValidationError], Slide] =
-    val slide = Slide(id, templateName, slots, backgroundImage, notes)
+    val slide = Slide(id, templateName, slots, backgroundImage, notes, metadata)
 
     // Phase 1: Structure validation
     val structureErrors = validateStructure(slide)
@@ -116,7 +136,7 @@ object Slide:
           .map(slotDef =>
             ValidationError.StructureError(
               slide.id,
-              s"Required slot '${slotDef.name}' is missing"
+              s"Required slot '${slotDef.name.value}' is missing"
             )
           )
 
@@ -139,7 +159,7 @@ object Slide:
           template.getSlot(slotName) match
             case None => Nil  // Unknown slot (ignore for now)
             case Some(slotDef) =>
-              validateSlotContent(slide.id, slotName, content, slotDef.constraints)
+              validateSlotContent(slide.id, slotName.value, content, slotDef.constraints)
         }
 
   /**
@@ -206,7 +226,7 @@ object Slide:
    */
   def validateTemplateSpecificContent(
     slide: Slide,
-    parsedSlots: Map[String, FormattedContent]
+    parsedSlots: Map[SlotName, FormattedContent]
   ): List[ValidationError] =
     slide.templateName match
       case "diagram" =>

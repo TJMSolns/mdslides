@@ -30,7 +30,7 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "Welcome to MDSlides"
+        SlotName.Title -> "Welcome to MDSlides"
       )
     )
 
@@ -39,9 +39,9 @@ class SlideSpec extends munit.FunSuite:
     result match
       case Right(validSlide) =>
         assertEquals(validSlide.templateName, "title")
-        assertEquals(validSlide.getSlot("title"), Some("Welcome to MDSlides"))
-        assertEquals(validSlide.getSlot("subtitle"), None)
-        assertEquals(validSlide.getSlot("author"), None)
+        assertEquals(validSlide.getSlot(SlotName.Title), Some("Welcome to MDSlides"))
+        assertEquals(validSlide.getSlot(SlotName.Subtitle), None)
+        assertEquals(validSlide.getSlot(SlotName.Author), None)
 
       case Left(errors) =>
         fail(s"Expected validation to succeed, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -53,9 +53,9 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "Welcome to MDSlides",
-        "subtitle" -> "Create Beautiful Presentations with Markdown",
-        "author" -> "Tony Moores"
+        SlotName.Title -> "Welcome to MDSlides",
+        SlotName.Subtitle -> "Create Beautiful Presentations with Markdown",
+        SlotName.Author -> "Tony Moores"
       )
     )
 
@@ -63,9 +63,9 @@ class SlideSpec extends munit.FunSuite:
 
     result match
       case Right(validSlide) =>
-        assertEquals(validSlide.getSlot("title"), Some("Welcome to MDSlides"))
-        assertEquals(validSlide.getSlot("subtitle"), Some("Create Beautiful Presentations with Markdown"))
-        assertEquals(validSlide.getSlot("author"), Some("Tony Moores"))
+        assertEquals(validSlide.getSlot(SlotName.Title), Some("Welcome to MDSlides"))
+        assertEquals(validSlide.getSlot(SlotName.Subtitle), Some("Create Beautiful Presentations with Markdown"))
+        assertEquals(validSlide.getSlot(SlotName.Author), Some("Tony Moores"))
 
       case Left(errors) =>
         fail(s"Expected validation to succeed, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -77,7 +77,7 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "This is a very long title\nthat spans three\nseparate lines"
+        SlotName.Title -> "This is a very long title\nthat spans three\nseparate lines"
       )
     )
 
@@ -99,7 +99,7 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "subtitle" -> "Just a subtitle, no title"
+        SlotName.Subtitle -> "Just a subtitle, no title"
       )
     )
 
@@ -124,8 +124,8 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "My Presentation",
-        "author" -> longAuthor
+        SlotName.Title -> "My Presentation",
+        SlotName.Author -> longAuthor
       )
     )
 
@@ -147,7 +147,7 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "super-fancy-template",
       slots = Map(
-        "title" -> "My Title"
+        SlotName.Title -> "My Title"
       )
     )
 
@@ -169,9 +169,9 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "Introduction to **Fourier Transforms** and ∑ Notation",
-        "subtitle" -> "Mathematical foundations for signal processing",
-        "author" -> "Tony Moores"
+        SlotName.Title -> "Introduction to **Fourier Transforms** and ∑ Notation",
+        SlotName.Subtitle -> "Mathematical foundations for signal processing",
+        SlotName.Author -> "Tony Moores"
       )
     )
 
@@ -181,11 +181,11 @@ class SlideSpec extends munit.FunSuite:
       case Right(validSlide) =>
         // Markdown formatting and Unicode should be preserved
         assertEquals(
-          validSlide.getSlot("title"),
+          validSlide.getSlot(SlotName.Title),
           Some("Introduction to **Fourier Transforms** and ∑ Notation")
         )
         assertEquals(
-          validSlide.getSlot("subtitle"),
+          validSlide.getSlot(SlotName.Subtitle),
           Some("Mathematical foundations for signal processing")
         )
 
@@ -199,8 +199,8 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "My Title",
-        "subtitle" -> "Line 1\nLine 2\nLine 3"
+        SlotName.Title -> "My Title",
+        SlotName.Subtitle -> "Line 1\nLine 2\nLine 3"
       )
     )
 
@@ -221,7 +221,7 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> ""
+        SlotName.Title -> ""
       )
     )
 
@@ -245,8 +245,8 @@ class SlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "title",
       slots = Map(
-        "title" -> "Line 1\nLine 2\nLine 3",  // Too many lines
-        "author" -> "x" * 100  // Too many chars
+        SlotName.Title -> "Line 1\nLine 2\nLine 3",  // Too many lines
+        SlotName.Author -> "x" * 100  // Too many chars
       )
     )
 
@@ -269,7 +269,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title")
+      slots = Map(SlotName.Title -> "My Title")
     )
 
     assertEquals(slide.backgroundImage, None)
@@ -279,7 +279,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title"),
+      slots = Map(SlotName.Title -> "My Title"),
       backgroundImage = Some("backgrounds/custom.png")
     )
 
@@ -295,7 +295,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title"),
+      slots = Map(SlotName.Title -> "My Title"),
       backgroundImage = Some(config)
     )
 
@@ -311,14 +311,14 @@ class SlideSpec extends munit.FunSuite:
     val slideWithString = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "Test"),
+      slots = Map(SlotName.Title -> "Test"),
       backgroundImage = Some("path/to/bg.png")
     )
 
     val slideWithConfig = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "Test"),
+      slots = Map(SlotName.Title -> "Test"),
       backgroundImage = Some(BackgroundConfig("path/to/bg.png", Some(0.3)))
     )
 
@@ -333,7 +333,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title")
+      slots = Map(SlotName.Title -> "My Title")
     )
 
     assertEquals(slide.notes, None)
@@ -343,7 +343,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title"),
+      slots = Map(SlotName.Title -> "My Title"),
       notes = Some("Remember to pause after this point.")
     )
 
@@ -354,7 +354,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "title",
-      slots = Map("title" -> "My Title"),
+      slots = Map(SlotName.Title -> "My Title"),
       notes = Some("")
     )
 
@@ -366,7 +366,7 @@ class SlideSpec extends munit.FunSuite:
     val slide = Slide(
       id = slideId,
       templateName = "content",
-      slots = Map("heading" -> "My Heading", "body" -> "Content"),
+      slots = Map(SlotName.Heading -> "My Heading", SlotName.Body -> "Content"),
       notes = Some(multiLineNotes)
     )
 

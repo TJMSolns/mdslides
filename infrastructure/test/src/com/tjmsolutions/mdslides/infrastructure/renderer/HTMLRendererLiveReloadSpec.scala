@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Theme}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, Theme, SlotName}
 import cats.data.NonEmptyList
 import munit.FunSuite
 
@@ -17,7 +17,7 @@ class HTMLRendererLiveReloadSpec extends FunSuite:
     SlideDeck(NonEmptyList.one(Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "Test", "subtitle" -> "sub")
+      slots = Map(SlotName.Title -> "Test", SlotName.Subtitle -> "sub")
     )))
 
   // R5 — default: no meta refresh

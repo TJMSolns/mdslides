@@ -29,8 +29,8 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Architecture Overview",
-        "caption" -> "System components and interactions"
+        SlotName.Heading -> "Architecture Overview",
+        SlotName.Caption -> "System components and interactions"
       )
     )
 
@@ -53,7 +53,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Simple Diagram"
+        SlotName.Heading -> "Simple Diagram"
         // No caption
       )
     )
@@ -73,7 +73,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "diagram",
-      slots = Map("heading" -> "Test")
+      slots = Map(SlotName.Heading -> "Test")
     )
 
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -91,8 +91,8 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "Test",
-        "caption" -> "Test caption"
+        SlotName.Heading -> "Test",
+        SlotName.Caption -> "Test caption"
       )
     )
 
@@ -111,8 +111,8 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "closing",
       slots = Map(
-        "heading" -> "Thank You",
-        "body" -> "Questions?\n\nContact: tony@example.com"
+        SlotName.Heading -> "Thank You",
+        SlotName.Body -> "Questions?\n\nContact: tony@example.com"
       )
     )
 
@@ -135,7 +135,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "closing",
       slots = Map(
-        "heading" -> "Thank You"
+        SlotName.Heading -> "Thank You"
         // No body
       )
     )
@@ -153,7 +153,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "closing",
-      slots = Map("heading" -> "Thank You")
+      slots = Map(SlotName.Heading -> "Thank You")
     )
 
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -169,7 +169,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "section-title",
       slots = Map(
-        "heading" -> "Part 2: Implementation"
+        SlotName.Heading -> "Part 2: Implementation"
       )
     )
 
@@ -188,8 +188,8 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "section-title",
       slots = Map(
-        "heading" -> "Part 2: Implementation",
-        "body" -> "Deep dive into the architecture"
+        SlotName.Heading -> "Part 2: Implementation",
+        SlotName.Body -> "Deep dive into the architecture"
       )
     )
 
@@ -206,7 +206,7 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "section-title",
-      slots = Map("heading" -> "Part 2")
+      slots = Map(SlotName.Heading -> "Part 2")
     )
 
     val deck = SlideDeck(NonEmptyList.one(slide))
@@ -222,13 +222,13 @@ class HTMLRendererTemplateV2Spec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "diagram",
       slots = Map(
-        "heading" -> "System Architecture",
-        "body" -> """```mermaid
+        SlotName.Heading -> "System Architecture",
+        SlotName.Body -> """```mermaid
 graph TD
   A[Client] --> B[Server]
   B --> C[Database]
 ```""",
-        "caption" -> "High-level system overview"
+        SlotName.Caption -> "High-level system overview"
       )
     )
 

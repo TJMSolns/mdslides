@@ -21,8 +21,8 @@ class HTMLRendererTwoColumnSpec extends FunSuite:
       id = SlideId.unsafe(1),
       templateName = "two-column",
       slots = Map(
-        "leftColumn" -> leftContent,
-        "rightColumn" -> rightContent
+        SlotName.LeftColumn -> leftContent,
+        SlotName.RightColumn -> rightContent
       )
     )
 

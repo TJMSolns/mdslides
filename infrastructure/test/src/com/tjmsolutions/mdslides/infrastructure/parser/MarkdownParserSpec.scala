@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.parser
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlotName}
 
 /**
  * Tests for MarkdownParser.
@@ -32,9 +32,9 @@ class MarkdownParserSpec extends munit.FunSuite:
         assertEquals(deck.slideCount, 1)
         val slide = deck.getSlide(0).get
         assertEquals(slide.templateName, "title")
-        assertEquals(slide.getSlot("title"), Some("Welcome to MDSlides"))
-        assertEquals(slide.getSlot("subtitle"), None)
-        assertEquals(slide.getSlot("author"), None)
+        assertEquals(slide.getSlot(SlotName.Title), Some("Welcome to MDSlides"))
+        assertEquals(slide.getSlot(SlotName.Subtitle), None)
+        assertEquals(slide.getSlot(SlotName.Author), None)
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -53,9 +53,9 @@ class MarkdownParserSpec extends munit.FunSuite:
     result match
       case Right(deck) =>
         val slide = deck.getSlide(0).get
-        assertEquals(slide.getSlot("title"), Some("MDSlides Framework"))
-        assertEquals(slide.getSlot("subtitle"), Some("Building Better Presentations"))
-        assertEquals(slide.getSlot("author"), Some("John Doe"))
+        assertEquals(slide.getSlot(SlotName.Title), Some("MDSlides Framework"))
+        assertEquals(slide.getSlot(SlotName.Subtitle), Some("Building Better Presentations"))
+        assertEquals(slide.getSlot(SlotName.Author), Some("John Doe"))
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -75,9 +75,9 @@ class MarkdownParserSpec extends munit.FunSuite:
       case Right(deck) =>
         val slide = deck.getSlide(0).get
         assertEquals(slide.templateName, "content")
-        assertEquals(slide.getSlot("heading"), Some("Key Principles"))
-        assert(slide.getSlot("body").get.contains("Domain-Driven Design"))
-        assert(slide.getSlot("body").get.contains("Test-Driven Development"))
+        assertEquals(slide.getSlot(SlotName.Heading), Some("Key Principles"))
+        assert(slide.getSlot(SlotName.Body).get.contains("Domain-Driven Design"))
+        assert(slide.getSlot(SlotName.Body).get.contains("Test-Driven Development"))
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -110,19 +110,19 @@ class MarkdownParserSpec extends munit.FunSuite:
         // Check first slide (title)
         val slide1 = deck.getSlide(0).get
         assertEquals(slide1.templateName, "title")
-        assertEquals(slide1.getSlot("title"), Some("Introduction"))
+        assertEquals(slide1.getSlot(SlotName.Title), Some("Introduction"))
 
         // Check second slide (content)
         val slide2 = deck.getSlide(1).get
         assertEquals(slide2.templateName, "content")
-        assertEquals(slide2.getSlot("heading"), Some("Overview"))
-        assertEquals(slide2.getSlot("body"), Some("This is the overview."))
+        assertEquals(slide2.getSlot(SlotName.Heading), Some("Overview"))
+        assertEquals(slide2.getSlot(SlotName.Body), Some("This is the overview."))
 
         // Check third slide (content)
         val slide3 = deck.getSlide(2).get
         assertEquals(slide3.templateName, "content")
-        assertEquals(slide3.getSlot("heading"), Some("Conclusion"))
-        assertEquals(slide3.getSlot("body"), Some("Thank you!"))
+        assertEquals(slide3.getSlot(SlotName.Heading), Some("Conclusion"))
+        assertEquals(slide3.getSlot(SlotName.Body), Some("Thank you!"))
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -140,7 +140,7 @@ class MarkdownParserSpec extends munit.FunSuite:
       case Right(deck) =>
         val slide = deck.getSlide(0).get
         assertEquals(slide.templateName, "content")
-        assertEquals(slide.getSlot("heading"), Some("Default Content"))
+        assertEquals(slide.getSlot(SlotName.Heading), Some("Default Content"))
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -187,7 +187,7 @@ class MarkdownParserSpec extends munit.FunSuite:
     result match
       case Right(deck) =>
         val slide = deck.getSlide(0).get
-        val body = slide.getSlot("body").get
+        val body = slide.getSlot(SlotName.Body).get
 
         // Markdown should be preserved as-is (not rendered to HTML)
         assert(body.contains("**bold**"))
@@ -216,8 +216,8 @@ class MarkdownParserSpec extends munit.FunSuite:
     result match
       case Right(deck) =>
         val slide = deck.getSlide(0).get
-        assertEquals(slide.getSlot("title"), Some("Title with Extra Whitespace"))
-        assertEquals(slide.getSlot("subtitle"), Some("Subtitle"))
+        assertEquals(slide.getSlot(SlotName.Title), Some("Title with Extra Whitespace"))
+        assertEquals(slide.getSlot(SlotName.Subtitle), Some("Subtitle"))
 
       case Left(error) =>
         fail(s"Expected successful parse, got error: $error")
@@ -237,7 +237,7 @@ class MarkdownParserSpec extends munit.FunSuite:
     result match
       case Right(deck) =>
         val slide = deck.getSlide(0).get
-        val body = slide.getSlot("body").get
+        val body = slide.getSlot(SlotName.Body).get
 
         // Newlines should be preserved
         assert(body.contains("\n"))

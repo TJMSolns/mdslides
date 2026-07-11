@@ -27,7 +27,7 @@ class SlideDeckSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "My Presentation")
+      slots = Map(SlotName.Title -> "My Presentation")
     )
 
     val deck = SlideDeck.unsafe(slide)
@@ -45,9 +45,9 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 2: Create valid deck with multiple slides
   test("create valid deck with multiple slides") {
     val slides = List(
-      Slide(SlideId.unsafe(1), "title", Map("title" -> "Introduction")),
-      Slide(SlideId.unsafe(2), "content", Map("heading" -> "Overview", "body" -> "This is the content.")),
-      Slide(SlideId.unsafe(3), "content", Map("heading" -> "Conclusion", "body" -> "Thank you."))
+      Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "Introduction")),
+      Slide(SlideId.unsafe(2), "content", Map(SlotName.Heading -> "Overview", SlotName.Body -> "This is the content.")),
+      Slide(SlideId.unsafe(3), "content", Map(SlotName.Heading -> "Conclusion", SlotName.Body -> "Thank you."))
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -67,7 +67,7 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 3: Deck exceeds max 200 slides
   test("deck exceeds max 200 slides") {
     val slides = (1 to 201).map { i =>
-      Slide(SlideId.unsafe(i), "content", Map("heading" -> s"Slide $i", "body" -> "Content"))
+      Slide(SlideId.unsafe(i), "content", Map(SlotName.Heading -> s"Slide $i", SlotName.Body -> "Content"))
     }.toList
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -85,9 +85,9 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 4: Deck with duplicate slide IDs
   test("deck with duplicate slide IDs") {
     val slides = List(
-      Slide(SlideId.unsafe(1), "title", Map("title" -> "Introduction")),
-      Slide(SlideId.unsafe(1), "content", Map("heading" -> "Overview", "body" -> "Content")),  // Duplicate ID
-      Slide(SlideId.unsafe(2), "content", Map("heading" -> "Conclusion", "body" -> "End"))
+      Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "Introduction")),
+      Slide(SlideId.unsafe(1), "content", Map(SlotName.Heading -> "Overview", SlotName.Body -> "Content")),  // Duplicate ID
+      Slide(SlideId.unsafe(2), "content", Map(SlotName.Heading -> "Conclusion", SlotName.Body -> "End"))
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -106,8 +106,8 @@ class SlideDeckSpec extends munit.FunSuite:
   test("deck with invalid slide ID out of range") {
     // SlideId.unsafe allows invalid values for testing
     val slides = List(
-      Slide(SlideId.unsafe(0), "title", Map("title" -> "Introduction")),  // ID 0 is invalid
-      Slide(SlideId.unsafe(1), "content", Map("heading" -> "Overview", "body" -> "Content"))
+      Slide(SlideId.unsafe(0), "title", Map(SlotName.Title -> "Introduction")),  // ID 0 is invalid
+      Slide(SlideId.unsafe(1), "content", Map(SlotName.Heading -> "Overview", SlotName.Body -> "Content"))
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -125,9 +125,9 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 6: Deck with mix of valid and invalid slides
   test("deck with mix of valid and invalid slides") {
     val slides = List(
-      Slide(SlideId.unsafe(1), "title", Map("title" -> "Introduction")),
-      Slide(SlideId.unsafe(2), "content", Map("heading" -> "x" * 100)),  // Missing body (structure error)
-      Slide(SlideId.unsafe(3), "content", Map("heading" -> "Conclusion", "body" -> "End"))
+      Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "Introduction")),
+      Slide(SlideId.unsafe(2), "content", Map(SlotName.Heading -> "x" * 100)),  // Missing body (structure error)
+      Slide(SlideId.unsafe(3), "content", Map(SlotName.Heading -> "Conclusion", SlotName.Body -> "End"))
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -145,7 +145,7 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 7: Deck at boundary (exactly 200 slides)
   test("deck with exactly 200 slides passes validation") {
     val slides = (1 to 200).map { i =>
-      Slide(SlideId.unsafe(i), "content", Map("heading" -> s"Slide $i", "body" -> "Content"))
+      Slide(SlideId.unsafe(i), "content", Map(SlotName.Heading -> s"Slide $i", SlotName.Body -> "Content"))
     }.toList
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -162,9 +162,9 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 8: Get slide by index
   test("get slide by index") {
     val slides = List(
-      Slide(SlideId.unsafe(1), "title", Map("title" -> "Introduction")),
-      Slide(SlideId.unsafe(2), "content", Map("heading" -> "Overview", "body" -> "Content")),
-      Slide(SlideId.unsafe(3), "content", Map("heading" -> "Conclusion", "body" -> "End"))
+      Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "Introduction")),
+      Slide(SlideId.unsafe(2), "content", Map(SlotName.Heading -> "Overview", SlotName.Body -> "Content")),
+      Slide(SlideId.unsafe(3), "content", Map(SlotName.Heading -> "Conclusion", SlotName.Body -> "End"))
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get
@@ -178,11 +178,11 @@ class SlideDeckSpec extends munit.FunSuite:
 
   // Test 9: Slide count
   test("slide count returns correct value") {
-    val slides1 = List(Slide(SlideId.unsafe(1), "title", Map("title" -> "Test")))
+    val slides1 = List(Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "Test")))
     val deck1 = SlideDeck.fromList(slides1).toOption.get
     assertEquals(deck1.slideCount, 1)
 
-    val slides5 = (1 to 5).map(i => Slide(SlideId.unsafe(i), "content", Map("heading" -> s"$i", "body" -> "x"))).toList
+    val slides5 = (1 to 5).map(i => Slide(SlideId.unsafe(i), "content", Map(SlotName.Heading -> s"$i", SlotName.Body -> "x"))).toList
     val deck5 = SlideDeck.fromList(slides5).toOption.get
     assertEquals(deck5.slideCount, 5)
   }
@@ -203,9 +203,9 @@ class SlideDeckSpec extends munit.FunSuite:
   // Test 11: Collect all slide errors
   test("validation collects all slide errors") {
     val slides = List(
-      Slide(SlideId.unsafe(1), "title", Map("title" -> "x" * 200)),  // Title too long (not enforced in current impl, but shows error collection)
-      Slide(SlideId.unsafe(2), "content", Map("heading" -> "Test")),  // Missing body
-      Slide(SlideId.unsafe(3), "content", Map("body" -> "Content"))  // Missing heading
+      Slide(SlideId.unsafe(1), "title", Map(SlotName.Title -> "x" * 200)),  // Title too long (not enforced in current impl, but shows error collection)
+      Slide(SlideId.unsafe(2), "content", Map(SlotName.Heading -> "Test")),  // Missing body
+      Slide(SlideId.unsafe(3), "content", Map(SlotName.Body -> "Content"))  // Missing heading
     )
 
     val deck = SlideDeck.fromList(slides).toOption.get

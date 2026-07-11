@@ -29,11 +29,11 @@ class TemplateV2Spec extends FunSuite:
   test("diagram template has required heading and optional caption"):
     val template = Template.fromName("diagram").getOrElse(fail("Diagram template should exist"))
 
-    val heading = template.getSlot("heading")
+    val heading = template.getSlot(SlotName.Heading)
     assert(heading.isDefined, "Diagram template should have heading slot")
     assert(heading.get.required, "Heading should be required")
 
-    val caption = template.getSlot("caption")
+    val caption = template.getSlot(SlotName.Caption)
     assert(caption.isDefined, "Diagram template should have caption slot")
     assert(!caption.get.required, "Caption should be optional")
 
@@ -49,11 +49,11 @@ class TemplateV2Spec extends FunSuite:
   test("closing template has required heading and optional body"):
     val template = Template.fromName("closing").getOrElse(fail("Closing template should exist"))
 
-    val heading = template.getSlot("heading")
+    val heading = template.getSlot(SlotName.Heading)
     assert(heading.isDefined, "Closing template should have heading slot")
     assert(heading.get.required, "Heading should be required")
 
-    val body = template.getSlot("body")
+    val body = template.getSlot(SlotName.Body)
     assert(body.isDefined, "Closing template should have body slot")
     assert(!body.get.required, "Body should be optional")
 
@@ -69,11 +69,11 @@ class TemplateV2Spec extends FunSuite:
   test("section-title template has required heading and optional body"):
     val template = Template.fromName("section-title").getOrElse(fail("Section-title template should exist"))
 
-    val heading = template.getSlot("heading")
+    val heading = template.getSlot(SlotName.Heading)
     assert(heading.isDefined, "Section-title template should have heading slot")
     assert(heading.get.required, "Heading should be required")
 
-    val body = template.getSlot("body")
+    val body = template.getSlot(SlotName.Body)
     assert(body.isDefined, "Section-title template should have body slot")
     assert(!body.get.required, "Body should be optional for section-title")
 
@@ -102,18 +102,18 @@ class TemplateV2Spec extends FunSuite:
     val template = Template.fromName("diagram").getOrElse(fail("Expected diagram template"))
     val required = template.requiredSlots.map(_.name)
 
-    assertEquals(required, List("heading"), "Diagram template should require only heading")
+    assertEquals(required, List(SlotName.Heading), "Diagram template should require only heading")
 
   test("closing template optional slots"):
     val template = Template.fromName("closing").getOrElse(fail("Expected closing template"))
     val optional = template.optionalSlots.map(_.name).toSet
 
-    assert(optional.contains("body"), "Closing template should have optional body")
+    assert(optional.contains(SlotName.Body), "Closing template should have optional body")
 
   test("section-title template slots"):
     val template = Template.fromName("section-title").getOrElse(fail("Expected section-title template"))
 
-    assertEquals(template.requiredSlots.map(_.name), List("heading"))
-    assert(template.optionalSlots.map(_.name).contains("body"))
+    assertEquals(template.requiredSlots.map(_.name), List(SlotName.Heading))
+    assert(template.optionalSlots.map(_.name).contains(SlotName.Body))
 
 end TemplateV2Spec

@@ -34,8 +34,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Key Takeaways",
-        "body" -> "Domain-Driven Design helps us build better software."
+        SlotName.Heading -> "Key Takeaways",
+        SlotName.Body -> "Domain-Driven Design helps us build better software."
       )
     )
 
@@ -44,8 +44,8 @@ class ContentSlideSpec extends munit.FunSuite:
     result match
       case Right(validSlide) =>
         assertEquals(validSlide.templateName, "content")
-        assertEquals(validSlide.getSlot("heading"), Some("Key Takeaways"))
-        assertEquals(validSlide.getSlot("body"), Some("Domain-Driven Design helps us build better software."))
+        assertEquals(validSlide.getSlot(SlotName.Heading), Some("Key Takeaways"))
+        assertEquals(validSlide.getSlot(SlotName.Body), Some("Domain-Driven Design helps us build better software."))
 
       case Left(errors) =>
         fail(s"Expected validation to succeed, but got errors: ${errors.toList.map(_.displayMessage).mkString(", ")}")
@@ -62,8 +62,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Key Principles",
-        "body" -> body
+        SlotName.Heading -> "Key Principles",
+        SlotName.Body -> body
       )
     )
 
@@ -71,8 +71,8 @@ class ContentSlideSpec extends munit.FunSuite:
 
     result match
       case Right(validSlide) =>
-        assertEquals(validSlide.getSlot("heading"), Some("Key Principles"))
-        assertEquals(validSlide.getSlot("body"), Some(body))
+        assertEquals(validSlide.getSlot(SlotName.Heading), Some("Key Principles"))
+        assertEquals(validSlide.getSlot(SlotName.Body), Some(body))
         // Body has 4 lines
         assertEquals(SlotContent.fromPlainText(body).lineCount, 4)
 
@@ -92,8 +92,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Why Functional Programming?",
-        "body" -> body
+        SlotName.Heading -> "Why Functional Programming?",
+        SlotName.Body -> body
       )
     )
 
@@ -102,9 +102,9 @@ class ContentSlideSpec extends munit.FunSuite:
     result match
       case Right(validSlide) =>
         // Markdown formatting preserved
-        assert(validSlide.getSlot("body").get.contains("**immutability**"))
-        assert(validSlide.getSlot("body").get.contains("*no side effects*"))
-        assert(validSlide.getSlot("body").get.contains("[FP Resources]"))
+        assert(validSlide.getSlot(SlotName.Body).get.contains("**immutability**"))
+        assert(validSlide.getSlot(SlotName.Body).get.contains("*no side effects*"))
+        assert(validSlide.getSlot(SlotName.Body).get.contains("[FP Resources]"))
         // Body has 5 lines
         assertEquals(SlotContent.fromPlainText(body).lineCount, 5)
 
@@ -120,8 +120,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Long Content",
-        "body" -> body
+        SlotName.Heading -> "Long Content",
+        SlotName.Body -> body
       )
     )
 
@@ -146,8 +146,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Overly Verbose Content",
-        "body" -> body
+        SlotName.Heading -> "Overly Verbose Content",
+        SlotName.Body -> body
       )
     )
 
@@ -169,7 +169,7 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "body" -> "This is just body text with no heading."
+        SlotName.Body -> "This is just body text with no heading."
       )
     )
 
@@ -192,7 +192,7 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Lonely Heading"
+        SlotName.Heading -> "Lonely Heading"
       )
     )
 
@@ -217,8 +217,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> longHeading,
-        "body" -> "Some body content."
+        SlotName.Heading -> longHeading,
+        SlotName.Body -> "Some body content."
       )
     )
 
@@ -242,8 +242,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Boundary Test",
-        "body" -> body
+        SlotName.Heading -> "Boundary Test",
+        SlotName.Body -> body
       )
     )
 
@@ -265,8 +265,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> "Boundary Test",
-        "body" -> body
+        SlotName.Heading -> "Boundary Test",
+        SlotName.Body -> body
       )
     )
 
@@ -289,8 +289,8 @@ class ContentSlideSpec extends munit.FunSuite:
       id = slideId,
       templateName = "content",
       slots = Map(
-        "heading" -> longHeading,  // Too long
-        "body" -> body              // Too many lines
+        SlotName.Heading -> longHeading,  // Too long
+        SlotName.Body -> body              // Too many lines
       )
     )
 

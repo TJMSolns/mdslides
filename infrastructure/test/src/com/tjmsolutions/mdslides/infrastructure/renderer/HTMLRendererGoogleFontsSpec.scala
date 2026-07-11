@@ -17,7 +17,7 @@ class HTMLRendererGoogleFontsSpec extends FunSuite:
   private def anySlide = Slide(
     id = SlideId.unsafe(1),
     templateName = "title",
-    slots = Map("title" -> "Test", "subtitle" -> "sub")
+    slots = Map(SlotName.Title -> "Test", SlotName.Subtitle -> "sub")
   )
 
   private def renderWithFonts(googleFonts: List[String]): String =

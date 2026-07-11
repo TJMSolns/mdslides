@@ -1,6 +1,6 @@
 package com.tjmsolutions.mdslides.infrastructure.renderer
 
-import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId}
+import com.tjmsolutions.mdslides.domain.{Slide, SlideDeck, SlideId, SlotName}
 import cats.data.NonEmptyList
 import munit.FunSuite
 
@@ -22,7 +22,7 @@ class HTMLRendererOverflowSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Test", "body" -> "Normal content.")
+      slots = Map(SlotName.Heading -> "Test", SlotName.Body -> "Normal content.")
     )
     SlideDeck(NonEmptyList.one(slide))
 
@@ -51,7 +51,7 @@ class HTMLRendererOverflowSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Dense Slide", "body" -> denseBody)
+      slots = Map(SlotName.Heading -> "Dense Slide", SlotName.Body -> denseBody)
     )
     val html = HTMLRenderer.renderDeck(SlideDeck(NonEmptyList.one(slide)))
 
@@ -65,7 +65,7 @@ class HTMLRendererOverflowSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "content",
-      slots = Map("heading" -> "Architecture Overview", "body" -> "Key points here.")
+      slots = Map(SlotName.Heading -> "Architecture Overview", SlotName.Body -> "Key points here.")
     )
     val html = HTMLRenderer.renderDeck(SlideDeck(NonEmptyList.one(slide)))
 
@@ -78,7 +78,7 @@ class HTMLRendererOverflowSpec extends munit.FunSuite:
     val slide = Slide(
       id = SlideId.unsafe(1),
       templateName = "title",
-      slots = Map("title" -> "My Presentation", "subtitle" -> "A subtitle")
+      slots = Map(SlotName.Title -> "My Presentation", SlotName.Subtitle -> "A subtitle")
     )
     val html = HTMLRenderer.renderDeck(SlideDeck(NonEmptyList.one(slide)))
 
