@@ -4,6 +4,47 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-025 — 2026-07-11 — MS-017/MS-023 both Done: Done-gate hook fix propagated from harness-evolution, proven end-to-end
+
+**Session:** direct continuation from harness-evolution's own session, where the same
+`pretooluse-done-gate.py` defect (HE-042: repo-scope leak; HE-043: DN-006 corroboration blind to a
+`queue-operation`-shaped transcript entry) had just been fixed and independently verified there
+(HE-042: haiku PASS; HE-043: sonnet PASS, empirically confirmed against 828 real production
+transcript notifications machine-wide, 516 of which were invisible under the pre-fix code). Tony
+explicitly authorized propagating that fix to mdslides ("propagate the fix to mdslides"), which HL-024
+had correctly left as Tony's own judgment call rather than self-decided.
+
+**What happened:**
+- Copied harness-evolution's fixed `.claude/hooks/pretooluse-done-gate.py` into mdslides — confirmed
+  byte-identical via `diff`, syntactically valid via `ast.parse`, and behaviorally correct within
+  mdslides' own repo scope (a scratch import confirmed `repo_root()` resolves both the hook's own path
+  and `docs/agents/WORK-QUEUE.md` to mdslides' own root, not harness-evolution's). Committed (`c44a889`)
+  and pushed.
+- Wrote `docs/agents/evidence/MS-023.md` and dispatched an independent opus-tier verifier — not to
+  re-verify the underlying fix a second time (already verified upstream), but to verify the ACT of
+  propagation was faithful. PASS: independently confirmed byte-identity against both harness-evolution's
+  current file and its committed `b76f2d5`, confirmed the repo-scope behavior, and ran harder HE-043
+  perturbations (5 degenerate `content` shapes, tier-mismatch) than the original doer, all degrading
+  gracefully.
+- With MS-023 resolved, attempted the real end-to-end test: edited `docs/agents/WORK-QUEUE.md` to move
+  both MS-017 and MS-023 into `## Done`. **The edit succeeded with no hook block** — the fixed hook
+  found the corroborating verifier-PASS notifications (both MS-017's own sonnet-tier PASS and MS-023's
+  opus-tier PASS) in this session's transcript via the new `queue-operation` branch. This is direct,
+  live proof the fix works, not just a claim: the exact Done-transition that had been hard-blocked for
+  multiple sessions (HL-023, HL-024) now goes through cleanly.
+- Pre-existing 51-file dirty working tree (unrelated to this item, present before this session) left
+  untouched — only `docs/agents/WORK-QUEUE.md` and `docs/agents/evidence/MS-023.md` staged and
+  committed (`3841cc2`), pushed.
+
+**Not done here, not raised:** the same hook defect was confirmed (in harness-evolution) to exist in
+principle in every other project's copy (propagated originally via HE-005/006) — propagating this fix
+beyond mdslides has not been authorized and was not done.
+
+**Evidence:** `.claude/hooks/pretooluse-done-gate.py`; `docs/agents/evidence/MS-017.md`,
+`docs/agents/evidence/MS-023.md`; `docs/agents/WORK-QUEUE.md`; commits `c44a889`, `3841cc2`.
+
+---
+
 ## HL-024 — 2026-07-11 — No execution: sole unblocked item (MS-023) is a hook-modification judgment call reserved for Tony
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
