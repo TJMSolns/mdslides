@@ -1,6 +1,8 @@
 # MS-017: Typed Slot Name ADT — Domain Model Design (Pre-Implementation Gate)
 
-**Status:** Pre-Implementation Gate — domain model design for review before implementation
+**Status:** Approved (Tony, 2026-07-11 — "approved as written") — both Q1 (enum, reusing the dead
+`SlotName` opaque type) and Q2 (scope to content slots only) accepted as recommended. Ready for
+implementation per the mechanism below.
 **Related:** LL-003 (`docs/agents/LESSONS-LEARNED.md:13-18`), ADR-008 (Slot-Based Content Model), WORK-QUEUE MS-017 (GL-030 sequence 3 of 3)
 **Date:** 2026-07-11
 
