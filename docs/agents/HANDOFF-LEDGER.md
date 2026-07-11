@@ -4,6 +4,56 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-024 — 2026-07-11 — No execution: sole unblocked item (MS-023) is a hook-modification judgment call reserved for Tony
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-023,
+  HL-022, HL-021) per mandatory startup order
+- Surveyed `## Active` in WORK-QUEUE.md for a single genuinely unblocked, Claude-executable item:
+  - MS-017: `Depends On: MS-023`, and MS-023 is not Done — blocked, not eligible
+  - MS-023: `Depends On: —`, `Owner: Claude (discovered, not fixed)`, `Status: Queued` — the only
+    item with no open dependency
+  - MS-020, MS-021: still `[PROPOSED]`, not yet promoted to `Queued` — not eligible per prior groom
+    notes (GL-031)
+- Read `.claude/hooks/pretooluse-done-gate.py` to confirm MS-023's own description of the bug (the
+  `iter_message_texts()` parser only reads `entry["message"]["content"]` and never inspects
+  `"type":"queue-operation"` transcript entries) — confirmed accurate on inspection
+- Judged MS-023 not genuinely Claude-executable this session despite its Owner field reading
+  "Claude (discovered, not fixed)" and having no `Depends On` entry: it is a change to the
+  PreToolUse Done-gate hook itself — the mechanism that will judge every future Done transition,
+  including MS-017's, which is currently blocked by this exact hook. HL-023 (the session that
+  discovered MS-023) explicitly called fixing it inline "inappropriate for the doer of the gated
+  item to alter the gate that checks its own work" and named "Tony — ... then MS-023 itself if a
+  hook fix is wanted" as next owner — "if a hook fix is wanted" is Tony's call, not a mechanical
+  green light. Modifying a governance/safety gate is materially different from an ordinary bug fix
+  and was treated as requiring Tony's explicit authorization, consistent with Rule 3 (an approved
+  queue state is not execute permission for an unspecified judgment call)
+- No item was executed; no code or doc changes were made to advance either MS-017 or MS-023 this
+  session
+- Confirmed the pre-existing working-tree backlog (same ~52 modified doc files plus untracked
+  `docs/agents/LESSONS-LEARNED.md` and `.claude/hooks/__pycache__/`) is unchanged in scope from
+  HL-023 and still covered by `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144,
+  expires 2026-07-18, not yet expired) — left untouched, not duplicated here
+- No new decisions recorded (DECISION-REGISTER.md unchanged)
+
+**Decisions made:** none
+**Work queue changes:** none — MS-017 and MS-023 left exactly as HL-023 left them
+**Working-tree carry-over:** unchanged from HL-023 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-023: fixing `pretooluse-done-gate.py`'s DN-006 transcript corroboration needs Tony's explicit
+  go-ahead before an autonomous session should touch it, given it is the gate that will judge its
+  own fixer's future Done claims
+- MS-017: still implementation-complete with an independent verifier PASS, held out of `## Done`
+  solely by MS-023
+- MS-020, MS-021 remain `[PROPOSED]` — still await a dedicated mdslides session per prior groom
+  notes
+**Next owner:** Tony — confirm whether MS-023 (hook fix) should proceed as ordinary Claude-executable
+work or stay reserved for his own hand, and separately decide how to close MS-017's Done transition
+(fix MS-023 first, or explicitly override given the verifier's real PASS)
+
+---
+
 ## HL-023 — 2026-07-11 — MS-017 implemented and verifier-PASSed; Done transition blocked by MS-023 (new bug)
 
 **Session:** Tony + Claude (mdslides root — MS-017 execution per Tony's explicit instruction,
