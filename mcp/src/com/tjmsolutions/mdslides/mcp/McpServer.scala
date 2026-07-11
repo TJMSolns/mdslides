@@ -2,7 +2,7 @@ package com.tjmsolutions.mdslides.mcp
 
 import cats.effect.IO
 import com.tjmsolutions.mdslides.mcp.model.*
-import com.tjmsolutions.mdslides.mcp.tools.{RenderDeckTool, ValidateDeckTool}
+import com.tjmsolutions.mdslides.mcp.tools.{GetDeckInfoTool, ListThemesTool, RenderDeckTool, ValidateDeckTool}
 import io.circe.{Json, parser}
 import io.circe.syntax.*
 
@@ -18,7 +18,7 @@ object McpServer:
     ),
     "serverInfo" -> Json.obj(
       "name" -> Json.fromString("mdslides"),
-      "version" -> Json.fromString("1.0.5")
+      "version" -> Json.fromString("1.0.7")
     ),
     "protocolVersion" -> Json.fromString("2024-11-05")
   )
@@ -62,6 +62,38 @@ object McpServer:
         "name" -> Json.fromString("validate_deck"),
         "description" -> Json.fromString(
           "Validate a markdown slide deck without rendering. Returns errors and density warnings."
+        ),
+        "inputSchema" -> Json.obj(
+          "type" -> Json.fromString("object"),
+          "properties" -> Json.obj(
+            "input_path" -> Json.obj(
+              "type" -> Json.fromString("string"),
+              "description" -> Json.fromString("Absolute or relative path to the .md deck file")
+            )
+          ),
+          "required" -> Json.arr(Json.fromString("input_path"))
+        )
+      ),
+      Json.obj(
+        "name" -> Json.fromString("list_themes"),
+        "description" -> Json.fromString(
+          "List available built-in and directory-based themes."
+        ),
+        "inputSchema" -> Json.obj(
+          "type" -> Json.fromString("object"),
+          "properties" -> Json.obj(
+            "themes_dir" -> Json.obj(
+              "type" -> Json.fromString("string"),
+              "description" -> Json.fromString("Directory containing directory-based themes (default: ./themes)")
+            )
+          ),
+          "required" -> Json.arr()
+        )
+      ),
+      Json.obj(
+        "name" -> Json.fromString("get_deck_info"),
+        "description" -> Json.fromString(
+          "Inspect a markdown slide deck without rendering: slide count, templates used, images referenced, and whether it contains Mermaid diagrams."
         ),
         "inputSchema" -> Json.obj(
           "type" -> Json.fromString("object"),
@@ -160,6 +192,46 @@ object McpServer:
             ValidateDeckTool.execute(params).flatMap {
               case Right(result) =>
                 import com.tjmsolutions.mdslides.mcp.model.ValidationResult.given
+                emit(out, McpResponse.success(req.id,
+                  Json.obj("content" -> Json.arr(
+                    Json.obj(
+                      "type" -> Json.fromString("text"),
+                      "text" -> Json.fromString(result.asJson.noSpaces)
+                    )
+                  ))
+                ))
+              case Left(err) =>
+                emit(out, McpResponse.error(req.id, -32603, err))
+            }
+
+      case Some("list_themes") =>
+        ListThemesTool.parseParams(argsJson) match
+          case Left(err) =>
+            emit(out, McpResponse.error(req.id, -32602, err))
+          case Right(params) =>
+            ListThemesTool.execute(params).flatMap {
+              case Right(result) =>
+                import com.tjmsolutions.mdslides.mcp.model.ThemesResult.given
+                emit(out, McpResponse.success(req.id,
+                  Json.obj("content" -> Json.arr(
+                    Json.obj(
+                      "type" -> Json.fromString("text"),
+                      "text" -> Json.fromString(result.asJson.noSpaces)
+                    )
+                  ))
+                ))
+              case Left(err) =>
+                emit(out, McpResponse.error(req.id, -32603, err))
+            }
+
+      case Some("get_deck_info") =>
+        GetDeckInfoTool.parseParams(argsJson) match
+          case Left(err) =>
+            emit(out, McpResponse.error(req.id, -32602, err))
+          case Right(params) =>
+            GetDeckInfoTool.execute(params).flatMap {
+              case Right(result) =>
+                import com.tjmsolutions.mdslides.mcp.model.DeckInfo.given
                 emit(out, McpResponse.success(req.id,
                   Json.obj("content" -> Json.arr(
                     Json.obj(

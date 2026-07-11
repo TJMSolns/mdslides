@@ -5,6 +5,13 @@ All notable changes to MDSlides will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-07-11
+
+### Added
+- **MCP server Tier 2 (MS-019):** Completes the 4-tool ADR-013 capability surface. Two new tools over the existing JSON-RPC 2.0 stdio transport: `list_themes(themes_dir?)` → `ThemesResult` (built-in themes `light`/`dark`/`corporate` plus any directory-based themes found via `ThemeLoader`; a missing `themes_dir` is not an error) and `get_deck_info(input_path)` → `DeckInfo` (slide count, templates used, images referenced, whether the deck contains Mermaid diagrams) — read-only inspection, no rendering or validation. 8 new integration tests in `McpServerSpec`. Pre-scaffold gate: sequence diagrams in `doc/internal/planning/design-MS-019-mcp-server-tier2.md`.
+
+---
+
 ## [1.0.6] - 2026-05-17
 
 ### Added

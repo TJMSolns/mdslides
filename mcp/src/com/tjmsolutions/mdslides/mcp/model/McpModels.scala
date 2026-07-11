@@ -68,3 +68,20 @@ case class ValidationResult(
 
 object ValidationResult:
   given Encoder[ValidationResult] = deriveEncoder
+
+/** Result returned by list_themes tool. */
+case class ThemesResult(themes: List[String])
+
+object ThemesResult:
+  given Encoder[ThemesResult] = deriveEncoder
+
+/** Result returned by get_deck_info tool. */
+case class DeckInfo(
+  slideCount: Int,
+  templatesUsed: List[String],
+  imagesReferenced: List[String],
+  hasMermaidDiagrams: Boolean
+)
+
+object DeckInfo:
+  given Encoder[DeckInfo] = deriveEncoder
