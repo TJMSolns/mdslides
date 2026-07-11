@@ -2,7 +2,26 @@
 
 P4 priority. Work items are driven by feature requests, bugs, and maintenance needs.
 
-*Last groomed: 2026-07-10 (GL-030; first substantive groom action since GL-029 — MS-017/MS-018/MS-019 three-way tie (unresolved across HL-008 through HL-019, 12 consecutive autonomous sessions) flagged via SEQUENCE-NEEDED marker below per Rule 1/3, not auto-ranked; Done items re-verified, all have evidence; MS-018's `[⬇ WQ-179 (OAP)]` annotation confirmed still accurate; no blocked items, no splits needed; MS-020/MS-021 remain [PROPOSED] and out of the tie-group per checklist scoping; active-idle per POL-018 DR-027 (clock stopped); 52 uncommitted artifacts pending commit — still tracked org-wide by WQ-P4-144/DEFER-001 (expires 2026-07-18), not duplicated here)*
+*Last groomed: 2026-07-11 (GL-031; targeted single-project groom following up on GL-030's sequencing —
+MS-018 and MS-019 independently re-verified Done with real evidence: commits `1fca48a`/`f02dd27`/
+`c26eb98` (MS-018) and `06f3b5b`/`6c4fc82`/`94df7d1` (MS-019) all confirmed present in `git log` with
+matching diffs; `docs/agents/evidence/MS-018.md` and `MS-019.md` both confirmed on disk with real
+haiku-tier and opus-tier PASS verdicts respectively; v1.0.7 release independently confirmed real via
+`gh release view v1.0.7` — both `md-slides.jar` and `mdslides-mcp.jar` present, timestamps
+2026-07-11T04:18:2xZ, matching `build.sc`'s `mdSlidesVersion = "1.0.7"` and `CHANGELOG.md`'s `[1.0.7]`
+entry. MS-017's Pre-Implementation Gate independently confirmed real —
+`doc/internal/planning/design-MS-017-typed-slot-name.md` exists and states exactly the two design
+decisions claimed (Q1: `enum SlotName` vs. reuse of the existing dead-code opaque `SlotName` type;
+Q2: scope `SlotName` to the 8 template-declared content slots only, vs. also cover the 3 frontmatter
+metadata keys — `header`/`footer`/`vertical-align` — that piggyback on the same `Slide.slots` map);
+MS-017's WORK-QUEUE row accurately states "Gated — awaiting Tony review" with no overclaiming; gate
+correctly left unresolved for Tony, not guessed at, per its own purpose. WQ-179 (OAP) cross-checked
+(informational only, not edited): OAP's own WORK-QUEUE.md already records WQ-179 as "fully unblocked"
+now that MS-018 is Done. No blocked items misdescribed; no splits needed; reorder not required — MS-017
+(gated, the only non-proposed active item) remains ahead of MS-020/MS-021 ([PROPOSED], not yet promoted
+to Queued, so not "unblocked active work" in the reorder sense); active-idle per POL-018 DR-027 (clock
+stopped); working-tree backlog still tracked org-wide by WQ-P4-144/DEFER-001 (expires 2026-07-18), not
+duplicated here)*
 
 ---
 
