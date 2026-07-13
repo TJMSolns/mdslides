@@ -4,6 +4,38 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-030 — 2026-07-13 — No execution: no unblocked, Claude-executable item in queue (repeat of HL-026/HL-027/HL-028/HL-029)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-029,
+  HL-028, HL-027) per mandatory startup order
+- Surveyed `## Active` in WORK-QUEUE.md for a single genuinely unblocked, Claude-executable item —
+  same conclusion as HL-026/HL-027/HL-028/HL-029, nothing has changed since:
+  - The only two rows in `## Active` are still MS-020 and MS-021, both `[PROPOSED]`. Per GL-031's
+    groom note (carried through HL-024, HL-026, HL-027, HL-028, HL-029), PROPOSED items are "not yet
+    promoted to Queued, so not 'unblocked active work' in the reorder sense" — they require `/groom`
+    to promote before they're eligible for autonomous execution
+  - No `/groom` has run since HL-026/HL-027/HL-028/HL-029; no row anywhere has `Status: Queued`
+- Concluded there is no eligible item to execute this session
+- No code, queue, or governance changes made this session beyond this ledger entry
+- Confirmed the pre-existing working-tree backlog (51 modified/untracked doc files: client-name
+  redaction sweep plus `docs/agents/CONTEXT-KERNEL.md`, untracked `docs/agents/LESSONS-LEARNED.md`
+  and `.claude/hooks/__pycache__/`) is unchanged in scope from HL-029 and still covered by
+  `docs/agents/GIT-DURABILITY-DEFER.md` DEFER-001 (org WQ-P4-144, expires 2026-07-18, not yet
+  expired) — left untouched, not duplicated here
+
+**Decisions made:** none
+**Work queue changes:** none
+**Working-tree carry-over:** unchanged from HL-029 — still DEFER-001 scope, expires 2026-07-18
+**Open items carried forward:**
+- MS-020, MS-021: still `[PROPOSED]` — need `/groom` to promote to `Queued` before they're eligible
+  for autonomous execution
+**Next owner:** Tony — run `/groom` to promote MS-020/MS-021 (or add new items) if mdslides work is
+wanted next session; otherwise this project stays active-idle per POL-018 (DR-027)
+
+---
+
 ## HL-029 — 2026-07-13 — No execution: no unblocked, Claude-executable item in queue (repeat of HL-026/HL-027/HL-028)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
