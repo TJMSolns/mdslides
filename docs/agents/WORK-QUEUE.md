@@ -23,6 +23,11 @@ to Queued, so not "unblocked active work" in the reorder sense); active-idle per
 stopped); working-tree backlog still tracked org-wide by WQ-P4-144/DEFER-001 (expires 2026-07-18), not
 duplicated here)*
 
+> **PROPAGATION-STALE:** `.claude/hooks/stop-git-durability-gate.py` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
+> **PROPAGATION-STALE:** `.claude/skills/next/SKILL.md` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
+> **PROPAGATION-STALE:** `.claude/skills/handoff/SKILL.md` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
+> **PROPAGATION-STALE:** `.claude/settings.json` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
+
 ---
 
 ## Active
