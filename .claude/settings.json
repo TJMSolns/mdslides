@@ -91,6 +91,16 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "matcher": "Bash|RemoteTrigger",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/pretooluse-crontab-remotetrigger-gate.py",
+            "timeout": 5000
+          }
+        ]
       }
     ]
   }
