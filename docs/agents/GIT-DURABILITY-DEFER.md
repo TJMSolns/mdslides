@@ -7,8 +7,8 @@ never unilaterally by an agent excusing its own current work. See
 
 ## DEFER-001 — 2026-07-04 — pre-existing 54-file backlog (org WQ-P4-144)
 
-**Scope:** working-tree
-**Expires:** 2026-07-18
+**Scope:** none (RESOLVED 2026-07-16 — debt cleared, defers nothing)
+**Expires:** 2026-07-16 (closed early — the condition ended)
 **Reason:** Known ~3-week-old backlog predating rails propagation (since 2026-06-10, HL-068; also
 noted in mdslides' own GL-028 groom log: "54 uncommitted artifacts pending commit at that session").
 Tony's explicit direction (harness-evolution session, 2026-07-04): leave this as-is and treat it as
@@ -17,3 +17,8 @@ propagation. This defer does NOT apply to any NEW dirty state introduced after t
 commit — only to files already uncommitted before it.
 
 ---
+
+
+## RESOLVED 2026-07-16
+
+50 documentation files committed and pushed; working tree clean, level with origin/main. Verified docs-only, no secrets. `__pycache__` gitignored, never committed. Closed because the debt is gone, not because a date passed.
