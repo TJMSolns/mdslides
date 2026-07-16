@@ -122,7 +122,7 @@
 **Variables used in templates**:
 - `projectName` - kebab-case name (e.g., "ecommerce-platform")
 - `projectTitle` - Title case name (e.g., "Ecommerce Platform")
-- `organization` - GitHub organization (e.g., "RETISIO")
+- `organization` - GitHub organization (e.g., "the prior organization")
 - `description` - Short project description
 - `createdDate` - ISO date (e.g., "2025-12-16")
 

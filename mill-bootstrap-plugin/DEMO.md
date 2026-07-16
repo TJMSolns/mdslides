@@ -62,7 +62,7 @@ cd mill-bootstrap-plugin
 
 **Results**:
 - ✅ GITHUB_TOKEN set (40 characters)
-- ✅ Git configured (user: tmoores-retisio)
+- ✅ Git configured (user: TJMSolns)
 - ✅ Mill 0.11.6 installed
 - ✅ Source repository valid (HOW-WE-WORK.md exists)
 - ✅ Repository name available (test-bootstrap-demo)
@@ -105,12 +105,12 @@ cd mill-bootstrap-plugin
 - **Status**: Working (token set, 40 characters)
 
 ### Check 2: Organization Exists ✅
-- **Method**: GET https://api.github.com/orgs/RETISIO
+- **Method**: GET https://api.github.com/orgs/the prior organization
 - **Validates**: Organization accessible with token
-- **Status**: Working (RETISIO exists)
+- **Status**: Working (the prior organization exists)
 
 ### Check 3: Repository Name Available ✅
-- **Method**: GET https://api.github.com/repos/RETISIO/test-bootstrap-demo
+- **Method**: GET https://api.github.com/repos/the prior organization/test-bootstrap-demo
 - **Validates**: 404 = available, 200 = exists
 - **Status**: Working (test-bootstrap-demo available)
 
@@ -123,7 +123,7 @@ cd mill-bootstrap-plugin
 ### Check 5: Git Configured ✅
 - **Method**: git config user.name, git config user.email
 - **Validates**: Git identity set
-- **Status**: Working (tmoores-retisio configured)
+- **Status**: Working (TJMSolns configured)
 
 ### Check 6: Mill 0.11.6+ Installed ✅
 - **Method**: mill --version, version comparison
@@ -228,7 +228,7 @@ cd mill-bootstrap-plugin
 
 ### Step 7: Create Initial Commit ✅
 - git add -A, git commit
-- Commit message: "Initial project bootstrap from RETISIO/copilot-training v1.0.0"
+- Commit message: "Initial project bootstrap from the prior organization/copilot-training v1.0.0"
 - **Time**: ~1 second
 
 ### Step 8: Push to GitHub ✅

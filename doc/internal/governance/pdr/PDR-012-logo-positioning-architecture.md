@@ -10,7 +10,7 @@
 
 Corporate presentations need consistent branding via logo placement. We need to support:
 
-1. **Theme-level logos** - Corporate identity (e.g., Retisio logo on all slides)
+1. **Theme-level logos** - Corporate identity (e.g., the prior organization logo on all slides)
 2. **Template-specific logos** - Different logos for different slide types (optional)
 3. **Per-slide logo overrides** - Individual slide customization (optional)
 
@@ -72,7 +72,7 @@ enum LogoSize:
 **Rationale:**
 - **Most common use case**: One logo for entire presentation (corporate branding)
 - **Theme-level makes sense**: Logo is part of visual identity (like colors, fonts)
-- **Simple mental model**: "Retisio theme includes Retisio logo"
+- **Simple mental model**: "the prior organization theme includes the prior organization logo"
 
 ### Template-Specific Logo Support (Future Extension)
 
@@ -255,7 +255,7 @@ enum LogoSize:
 
 ```json
 {
-  "name": "Retisio Corporate",
+  "name": "the prior organization Corporate",
   "logo": {
     "url": "logos/retisio-logo-white.png",
     "position": "top-right",
@@ -314,7 +314,7 @@ def extractAllImages(deck: SlideDeck, theme: Theme): List[String] =
 **Behavior:**
 
 1. **Local logos**: `logos/retisio-logo.png` → Copied to `output-dir/logos/retisio-logo.png`
-2. **External logos**: `https://cdn.retisio.com/logo.png` → Referenced directly (not copied)
+2. **External logos**: `https://cdn.tjm.solutions/logo.png` → Referenced directly (not copied)
 3. **Data URLs**: `data:image/png;base64,...` → Embedded directly (not copied)
 
 **Respects --no-copy-images flag:**
@@ -554,7 +554,7 @@ div(cls := "slide")(
 - [US-010: Theme Logo Support](../../planning/product-backlog.md#us-010-theme-logo-support-should)
 - [PDR-011: Background Image Architecture](PDR-011-background-image-architecture.md)
 - [US-006: Image Asset Copying](../../ceremonies/v0.3.0.md#us-006-image-asset-copying)
-- [Retisio Theme Analysis](../../planning/retisio-theme-analysis.md)
+- [the prior organization Theme Analysis](../../planning/retisio-theme-analysis.md)
 
 ---
 

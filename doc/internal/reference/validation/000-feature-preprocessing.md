@@ -88,7 +88,7 @@
 
 ## Feature Processing
 
-1. Identify all RETISIO gifting services required to implement this feature
+1. Identify all the prior organization gifting services required to implement this feature
 2. for each service related to this feature, analyze this feature against the service docs impl/<service>/src/main/resources/openapi.yaml 
 3. Identify all endpoints required to implement this feature.
 4. identify any missing endpoints or services that should be add if there is a gap
@@ -109,7 +109,7 @@
 <PARAGRAPH-DESCRIBING-THIS-FEATURE-SUITABLE-FOR-RFP>
 <PARAGRAPH-DESCRIBING-CUSTOMER-VALUE-PROPOSITION>
 <PARAGRAPH-DESCRIBING-OPERATOR-VALUE-PROPOSITION>
-<PARAGRAPH-DESCRIBING-RETISIO-VALUE-PROPOSITION>
+<PARAGRAPH-DESCRIBING-the prior organization-VALUE-PROPOSITION>
 
 ### Applicable ADRs
  <LIST-OF-APPLICABLE-ADRs>

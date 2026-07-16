@@ -10,7 +10,7 @@
 ## Service Information
 
 **Service Name**: `<service-name>`  
-**Repository**: `https://github.com/RETISIO/<service-name>`  
+**Repository**: `https://github.com/the prior organization/<service-name>`  
 **Container Registry**: `ghcr.io/retisio/<service-name>`  
 **Maintainer Team**: `@retisio/<team-name>`  
 **Last Updated**: `<ISO-8601-timestamp>`
@@ -55,7 +55,7 @@
 **Namespace**: `<service-name>-dev`  
 **Current Version**: `v1.2.3`  
 **Desired Version**: `v1.2.4`  
-**Last Deployed**: `2025-12-15T14:30:00Z` by `alice@retisio.com`  
+**Last Deployed**: `2025-12-15T14:30:00Z` by `alice@tjm.solutions`  
 **Status**: 🟢 Healthy  
 
 **Configuration**:
@@ -81,7 +81,7 @@
 
 **Access**: All developers (via `~/.kube/config-dev`)
 
-**Service URL**: `http://<service-name>.dev.retisio.internal`
+**Service URL**: `http://<service-name>.dev.tjm.internal`
 
 ---
 
@@ -92,7 +92,7 @@
 **Namespace**: `<service-name>-staging`  
 **Current Version**: `v1.2.2`  
 **Desired Version**: `v1.2.3`  
-**Last Deployed**: `2025-12-14T10:00:00Z` by `bob-techLead@retisio.com`  
+**Last Deployed**: `2025-12-14T10:00:00Z` by `bob-techLead@tjm.solutions`  
 **Status**: 🟢 Healthy  
 
 **Configuration**:
@@ -123,7 +123,7 @@
 
 **Access**: Tech Leads + Platform Team (via `~/.kube/config-staging`)
 
-**Service URL**: `http://<service-name>.staging.retisio.internal`
+**Service URL**: `http://<service-name>.staging.tjm.internal`
 
 **Approval Process**:
 1. Create GitHub issue: `Deploy <service-name> to Staging - v<version>`
@@ -141,7 +141,7 @@
 **Namespace**: `<service-name>-prod`  
 **Current Version**: `v1.2.1`  
 **Desired Version**: `v1.2.2`  
-**Last Deployed**: `2025-12-10T16:00:00Z` by `platform-team@retisio.com`  
+**Last Deployed**: `2025-12-10T16:00:00Z` by `platform-team@tjm.solutions`  
 **Status**: 🟢 Healthy  
 
 **Configuration**:
@@ -172,7 +172,7 @@
 
 **Access**: Platform Team ONLY (via `~/.kube/config-prod`, MFA required)
 
-**Service URL**: `https://<service-name>.retisio.com`
+**Service URL**: `https://<service-name>.tjm.solutions`
 
 **Approval Process**:
 1. Create GitHub issue: `Deploy <service-name> to Production - v<version>`
@@ -194,16 +194,16 @@
 
 | Version | Environment | Timestamp | Deployed By | Status | Duration | Approval |
 |---------|-------------|-----------|-------------|--------|----------|----------|
-| `v1.2.4` | dev | 2025-12-15T14:30:00Z | alice@retisio.com | 🟢 success | 90s | N/A |
-| `v1.2.3` | dev | 2025-12-14T16:00:00Z | alice@retisio.com | 🟢 success | 85s | N/A |
-| `v1.2.3` | staging | 2025-12-14T10:00:00Z | bob-techLead@retisio.com | 🟢 success | 120s | [#456](https://github.com/RETISIO/copilot-training/issues/456) |
-| `v1.2.2` | dev | 2025-12-13T11:00:00Z | alice@retisio.com | 🟢 success | 95s | N/A |
-| `v1.2.2` | staging | 2025-12-12T14:00:00Z | bob-techLead@retisio.com | 🟢 success | 110s | [#450](https://github.com/RETISIO/copilot-training/issues/450) |
-| `v1.2.2` | production | 2025-12-10T16:00:00Z | platform-team@retisio.com | 🟢 success | 180s | [#445](https://github.com/RETISIO/copilot-training/issues/445) |
-| `v1.2.1` | production | 2025-12-05T15:00:00Z | platform-team@retisio.com | 🟢 success | 175s | [#430](https://github.com/RETISIO/copilot-training/issues/430) |
-| `v1.2.0` | production | 2025-12-03T14:00:00Z | platform-team@retisio.com | 🔴 failed | 320s | [#425](https://github.com/RETISIO/copilot-training/issues/425) |
+| `v1.2.4` | dev | 2025-12-15T14:30:00Z | alice@tjm.solutions | 🟢 success | 90s | N/A |
+| `v1.2.3` | dev | 2025-12-14T16:00:00Z | alice@tjm.solutions | 🟢 success | 85s | N/A |
+| `v1.2.3` | staging | 2025-12-14T10:00:00Z | bob-techLead@tjm.solutions | 🟢 success | 120s | [#456](https://github.com/the prior organization/copilot-training/issues/456) |
+| `v1.2.2` | dev | 2025-12-13T11:00:00Z | alice@tjm.solutions | 🟢 success | 95s | N/A |
+| `v1.2.2` | staging | 2025-12-12T14:00:00Z | bob-techLead@tjm.solutions | 🟢 success | 110s | [#450](https://github.com/the prior organization/copilot-training/issues/450) |
+| `v1.2.2` | production | 2025-12-10T16:00:00Z | platform-team@tjm.solutions | 🟢 success | 180s | [#445](https://github.com/the prior organization/copilot-training/issues/445) |
+| `v1.2.1` | production | 2025-12-05T15:00:00Z | platform-team@tjm.solutions | 🟢 success | 175s | [#430](https://github.com/the prior organization/copilot-training/issues/430) |
+| `v1.2.0` | production | 2025-12-03T14:00:00Z | platform-team@tjm.solutions | 🔴 failed | 320s | [#425](https://github.com/the prior organization/copilot-training/issues/425) |
 | `v1.1.9` | production | 2025-12-03T14:06:00Z | mill-deploy-plugin | 🔄 rolled_back | 95s | N/A (automatic) |
-| `v1.2.0` | staging | 2025-12-02T10:00:00Z | bob-techLead@retisio.com | 🟢 success | 125s | [#420](https://github.com/RETISIO/copilot-training/issues/420) |
+| `v1.2.0` | staging | 2025-12-02T10:00:00Z | bob-techLead@tjm.solutions | 🟢 success | 125s | [#420](https://github.com/the prior organization/copilot-training/issues/420) |
 
 **Status Legend**:
 - 🟢 `success` - Deployment completed successfully
@@ -297,7 +297,7 @@ mill <service-name>.runMigrations <environment>
 **Metrics**: Prometheus (`:9090/metrics` endpoint)  
 **Traces**: OpenTelemetry → Jaeger  
 **Logs**: Structured JSON → Loki  
-**Dashboards**: Grafana (`https://grafana.retisio.internal/d/<service-name>`)  
+**Dashboards**: Grafana (`https://grafana.tjm.internal/d/<service-name>`)  
 **Alerts**: PagerDuty (production only)
 
 **Key Metrics**:
@@ -377,7 +377,7 @@ mill <service-name>.deployRollback <env> --version=v1.2.0
 **Verification**:
 1. Check pods healthy: `kubectl get pods -n <service-name>-<env>`
 2. Check logs: `kubectl logs -n <service-name>-<env> deployment/<service-name>`
-3. Test service: `curl https://<service-name>.<env>.retisio.com/health`
+3. Test service: `curl https://<service-name>.<env>.tjm.solutions/health`
 
 ---
 

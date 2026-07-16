@@ -321,7 +321,7 @@ $ mdslides render my-preso --theme retisio
 
 Output:
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 Reading markdown from: my-preso.md
 Parsing markdown...
 ✓ Parsed 2 slide(s)
@@ -331,7 +331,7 @@ Validating slide deck...
 Speaker Notes Summary:
   - 2 slides with notes
 
-Rendering HTML with theme: Retisio
+Rendering HTML with theme: the prior organization
 ✓ Generated 12KB HTML
 Writing to: my-preso/index.html
 Copying 5 theme backgrounds to my-preso/backgrounds/

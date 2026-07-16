@@ -64,7 +64,7 @@ $ mdslides render my-preso --theme retisio
 **Expected Output:**
 ```
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 Reading markdown from: my-preso.md
 ...
 Copying 5 theme backgrounds to my-preso/backgrounds/

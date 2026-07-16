@@ -14,7 +14,7 @@
 
 ## Project Overview
 
-MDSlides is a test of the **mill-bootstrap-plugin** and the **ceremony-based SDLC framework** from RETISIO/copilot-training. It demonstrates how a greenfield project integrates:
+MDSlides is a test of the **mill-bootstrap-plugin** and the **ceremony-based SDLC framework** from the prior organization/copilot-training. It demonstrates how a greenfield project integrates:
 
 - ✅ **Domain-Driven Design** - Bounded contexts, aggregates, value objects
 - ✅ **Behavior-Driven Development** - Karate BDD scenarios, example mapping
@@ -76,7 +76,7 @@ MDSlides is a test of the **mill-bootstrap-plugin** and the **ceremony-based SDL
 ### Phase 4: Integration & Release
 
 1. **Integration Testing** → Cross-boundary contracts
-2. **Production Spinoff** → Extract to RETISIO GitHub org
+2. **Production Spinoff** → Extract to the prior organization GitHub org
 3. **Deployment** → Kubernetes via mill-deploy-plugin
 
 ## Mill Commands
@@ -189,7 +189,7 @@ For questions about ceremonies, architecture, or patterns:
 
 ## License
 
-This project is bootstrapped from RETISIO/copilot-training and follows the same license.
+This project is bootstrapped from the prior organization/copilot-training and follows the same license.
 
 ---
 

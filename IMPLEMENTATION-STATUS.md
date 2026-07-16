@@ -45,7 +45,7 @@
 - ✅ Light (default)
 - ✅ Dark
 - ✅ TJM Solutions (corporate branding)
-- ✅ Retisio (with template backgrounds)
+- ✅ the prior organization (with template backgrounds)
 
 ---
 

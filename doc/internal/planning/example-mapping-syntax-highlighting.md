@@ -187,7 +187,7 @@ public class Example {}
 
 ---
 
-### Example 6: Retisio theme uses light highlighting ✅
+### Example 6: the prior organization theme uses light highlighting ✅
 **Given**: Markdown with JavaScript code block
 ```markdown
 ```javascript
@@ -476,7 +476,7 @@ const veryLongVariableName = "some very long string that exceeds slide width and
 4. Light theme → github.min.css
 5. Dark theme → monokai-sublime.min.css
 6. Corporate theme → github.min.css
-7. Retisio theme → github.min.css
+7. the prior organization theme → github.min.css
 
 **Test Group 3: Code Block Rendering**
 8. Code block with language hint → `class="language-{lang}"`

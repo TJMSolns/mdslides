@@ -115,7 +115,7 @@ Theme Designer: Creates theme with template-specific backgrounds
 
 themes/retisio/theme.json:
 {
-  "name": "Retisio",
+  "name": "the prior organization",
   "templateBackgrounds": {
     "title": "backgrounds/title-page.png",
     "content": "backgrounds/content-page.png",

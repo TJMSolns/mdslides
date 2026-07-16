@@ -7,9 +7,9 @@
 |PRODUCTMANAGER, please replace this text with a short mission statement for this frontend|PRODUCTMANAGER, please replace this text with a short, "elevator pitch," describing the principal value proposition of the frontend|PRODUCTMANAGER, please replace this text with a short description of the ideal customer and/or target audience of this frontend.|
 | | **Dependencies** | |
 | *Type* | *Target* | *Version* |
-| RETISIO Service | [microservice-name-linked-to-canvas](#) | v0.0.* |
-| RETISIO Frontend | [microfrontend-name-linked-to-canvas](#) | v0.0.* |
-| RETISIO Product | [product-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Service | [microservice-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Frontend | [microfrontend-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Product | [product-name-linked-to-canvas](#) | v0.0.* |
 | External/3rd Party Service | [asset-name-linked-to-src](#) | v0.0.* |
 | External/3rd Party Product| [asset-name-linked-to-src](#) | v0.0.* |
 | | **MICROFRONTENDNAME ROUTES** | |

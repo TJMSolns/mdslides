@@ -23,7 +23,7 @@ This directory contains example presentations demonstrating MDSlides features.
 
 **How to Render:**
 ```bash
-# Using Retisio theme (recommended)
+# Using the prior organization theme (recommended)
 java -jar ../out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar \
   mdslides-tutorial.md \
   tutorial-output.html \
@@ -204,7 +204,7 @@ Slide content goes here with **bold**, *italic*, and `code`.
 
 ### Custom Themes
 
-#### Retisio
+#### the prior organization
 ```bash
 --theme retisio
 ```
@@ -291,7 +291,7 @@ code here
 
 ## Creating Custom Themes
 
-See the Retisio theme as an example:
+See the the prior organization theme as an example:
 
 ### 1. Create Theme Directory
 ```bash

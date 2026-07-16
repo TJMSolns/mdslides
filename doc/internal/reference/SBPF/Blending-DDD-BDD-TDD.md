@@ -1213,7 +1213,7 @@ Event Storming revealed design elements that would have been missed or discovere
    - ProvisioningRetried, RetryLimitReached, PlatformTenantProtected
 
 3. **4 Critical Invariants**
-   - RETISIO platform tenant cannot be suspended/archived
+   - the prior organization platform tenant cannot be suspended/archived
    - Tenant slug must be globally unique
    - Provisioning retries limited to 3 attempts
    - Valid state transition rules (can't suspend archived tenant)
@@ -1514,10 +1514,10 @@ public void reactivate() {
 }
 ```
 
-**Bug 3: Archiving RETISIO Platform Tenant**
+**Bug 3: Archiving the prior organization Platform Tenant**
 ```java
 // ❌ BUG: Platform tenant (slug = "retisio") could be archived
-Tenant tenant = Tenant.create("RETISIO", contact);  // Platform tenant
+Tenant tenant = Tenant.create("the prior organization", contact);  // Platform tenant
 tenant.archive();  // Should block, but didn't (WRONG)
 
 // ✅ FIX: Add platform tenant protection

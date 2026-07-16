@@ -8,10 +8,10 @@ Example template for documenting services ready for spinoff from training reposi
 
 ## Overview
 
-This document tracks bounded contexts within this service that are candidates for spinning off to independent production repositories under `RETISIO/*`.
+This document tracks bounded contexts within this service that are candidates for spinning off to independent production repositories under `the prior organization/*`.
 
 **Spinoff Process**: See `doc/reference/SBPF/Service-Repository-Spinoff-Process.md`  
-**Mill Plugin**: https://github.com/RETISIO/mill-spinoff-plugin
+**Mill Plugin**: https://github.com/the prior organization/mill-spinoff-plugin
 
 ---
 
@@ -31,7 +31,7 @@ After successful spinoff execution:
 ### Step 1: Verify Production Repository
 ```bash
 curl -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/RETISIO/${service-name}-service
+  https://api.github.com/repos/the prior organization/${service-name}-service
 ```
 
 ### Step 2: Delete Source Directory (MANDATORY)
@@ -40,7 +40,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
 ```bash
 rm -rf services/${service-name}/
 git add -A
-git commit -m "Remove ${ServiceName} after spinoff to RETISIO/${service-name}-service"
+git commit -m "Remove ${ServiceName} after spinoff to the prior organization/${service-name}-service"
 git push origin main
 ```
 
@@ -53,7 +53,7 @@ git push origin main
 
 ### Step 3: Update This Document
 Change status from 🔴 Triggered → ✅ Complete, add:
-- **Repository**: Link to `RETISIO/${service-name}-service`
+- **Repository**: Link to `the prior organization/${service-name}-service`
 - **Spun Off**: Date of spinoff
 - **Spinoff ADR**: Link to ADR-001 in production repo
 
@@ -97,10 +97,10 @@ Services must have STRUCTURE and SCAFFOLDING in place (even if marked TODO/scaff
 - **Value Objects** (draft): 6 (TenantId, CompanyName, TenantStatus, SubscriptionTier, BillingCycle, QuotaLimits)
 - **Domain Events** (draft): 5 (TenantProvisioned, TenantActivated, TenantSuspended, SubscriptionUpgraded, QuotaExceeded)
 - **Readiness**: 100% (13/13 checks passed - scaffold structure complete)
-- **Team**: @RETISIO/platform-team
+- **Team**: @the prior organization/platform-team
 - **Upstream Contexts**: None (foundation service)
 - **Downstream Contexts**: Authentication (Conformist), Product Catalog (ACL), Activity Logger (OHS)
-- **Post-Spinoff Ceremonies**: Phase 1-3 ceremonies executed in `RETISIO/tenant-management-service` repo
+- **Post-Spinoff Ceremonies**: Phase 1-3 ceremonies executed in `the prior organization/tenant-management-service` repo
 - **Duration**: 4 weeks (includes all ceremonies)
 - **Phase**: 1 - Foundation
 - **Repository**: (To be created by Mill Spinoff Plugin)
@@ -125,7 +125,7 @@ mill commerceCoreService.spinoffExecute TenantManagement
 - **Value Objects**: 7 (UserId, Email, PasswordHash, JWTToken, RoleName, PermissionScope, SessionId)
 - **Domain Events**: 6 (UserAuthenticated, UserLoggedOut, RoleAssigned, PermissionGranted, SessionExpired, APIKeyRevoked)
 - **Readiness**: 92% (12/13 checks passed)
-- **Team**: @RETISIO/platform-team
+- **Team**: @the prior organization/platform-team
 - **Upstream Contexts**: Tenant Management (Conformist)
 - **Downstream Contexts**: All services (Published Language - JWT tokens)
 - **Duration**: 4 weeks
@@ -150,7 +150,7 @@ mill commerceCoreService.spinoffExecute TenantManagement
 - **Value Objects**: 5 (AssetId, S3Key, MimeType, FileSize, TenantStorageQuota)
 - **Domain Events**: 4 (AssetUploaded, AssetDeleted, FolderCreated, QuotaExceeded)
 - **Readiness**: 61% (8/13 checks passed)
-- **Team**: @RETISIO/content-team
+- **Team**: @the prior organization/content-team
 - **Upstream Contexts**: Tenant Management (ACL - quota enforcement)
 - **Downstream Contexts**: Content (Conformist), Product Catalog (ACL - product images)
 - **Duration**: 4 weeks
@@ -178,7 +178,7 @@ mill commerceCoreService.spinoffExecute TenantManagement
 - **Value Objects**: 12 (ProductId, SKU, ProductName, Description, CategoryPath, VariantKey, AttributeName, AttributeType, WorkflowStatus, PublishDate, ExpirationDate, TenantCatalogScope)
 - **Domain Events**: 10 (ProductCreated, ProductPublished, ProductRetired, VariantAdded, CategoryAssigned, AttributeUpdated, LifecycleTransitioned, ProductDuplicated, BulkImportCompleted, TenantCatalogSynced)
 - **Readiness**: 38% (5/13 checks passed)
-- **Team**: @RETISIO/commerce-core-team
+- **Team**: @the prior organization/commerce-core-team
 - **Upstream Contexts**: Authentication (Conformist), Digital Media (ACL - product images)
 - **Downstream Contexts**: Pricing (Published Language), Inventory (Shared Kernel - SKU), Shopping Cart (ACL), Catalog Search (OHS)
 - **Duration**: 6 weeks (longest service)
@@ -208,10 +208,10 @@ _(None yet - Program starts February 2026)_
 ### N. ${Service Name}
 
 - **Status**: ✅ Complete
-- **Repository**: [RETISIO/${service-name}-service](https://github.com/RETISIO/${service-name}-service)
+- **Repository**: [the prior organization/${service-name}-service](https://github.com/the prior organization/${service-name}-service)
 - **Spun Off**: YYYY-MM-DD
-- **Spinoff ADR**: [ADR-001](https://github.com/RETISIO/${service-name}-service/blob/main/doc/governance/ADR/ADR-001-spinoff-from-training-repository.md)
-- **Team**: @RETISIO/${team-name}
+- **Spinoff ADR**: [ADR-001](https://github.com/the prior organization/${service-name}-service/blob/main/doc/governance/ADR/ADR-001-spinoff-from-training-repository.md)
+- **Team**: @the prior organization/${team-name}
 - **Source Deleted**: ✅ Yes (removed from training repo on YYYY-MM-DD)
 - **Charter**: Still maintained in training repo at [CHARTER-XX-${SERVICE-NAME}.md](../../CHARTER-XX-${SERVICE-NAME}.md)
 ```
@@ -237,7 +237,7 @@ mill commerceCoreService.spinoffValidate ProductCatalog
 ```bash
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 mill commerceCoreService.spinoffValidate TenantManagement   # Confirm 13/13 checks
-mill commerceCoreService.spinoffExecute TenantManagement    # Create RETISIO/tenant-management-service
+mill commerceCoreService.spinoffExecute TenantManagement    # Create the prior organization/tenant-management-service
 ```
 
 ---
@@ -270,6 +270,6 @@ This document is reviewed during:
 - **ADR-060**: Spinoff via Mill Plugin
 - **POL-028**: Repository-Per-Service Mandate
 - **POL-029**: Mill Spinoff Plugin Usage Policy
-- **Mill Spinoff Plugin**: https://github.com/RETISIO/mill-spinoff-plugin
+- **Mill Spinoff Plugin**: https://github.com/the prior organization/mill-spinoff-plugin
 - **Service-Repository-Spinoff-Process**: `doc/reference/SBPF/Service-Repository-Spinoff-Process.md`
 - **SERVICE-SPINOFF-TRACKING**: `doc/planning/SERVICE-SPINOFF-TRACKING.md`

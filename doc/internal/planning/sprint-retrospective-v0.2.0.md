@@ -48,7 +48,7 @@
 **Outcome:**
 - JSON-based custom themes (PDR-007)
 - Built-in themes: light, dark, corporate
-- Retisio corporate theme with Varela Round font
+- the prior organization corporate theme with Varela Round font
 - 8 tests for theme JSON parsing
 
 **Impact:** Presentations can match corporate branding

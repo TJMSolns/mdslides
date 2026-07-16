@@ -128,11 +128,11 @@ mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects
 
 # With new GitHub repo
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
-mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects --create-repo --org RETISIO
-git clone git@github.com:RETISIO/order-mgmt.git
+mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects --create-repo --org the prior organization
+git clone git@github.com:the prior organization/order-mgmt.git
 
 # Link existing GitHub repo
-mill bootstrap.bootstrapExecute --name order-mgmt --repo https://github.com/RETISIO/order-mgmt
+mill bootstrap.bootstrapExecute --name order-mgmt --repo https://github.com/the prior organization/order-mgmt
 ```
 
 **Key Differences**:

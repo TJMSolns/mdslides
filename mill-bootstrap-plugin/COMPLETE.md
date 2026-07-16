@@ -331,10 +331,10 @@ mill millBootstrapPlugin.test     # Run unit tests
 
 **Plugin Location**: `mill-bootstrap-plugin/`  
 **Documentation**: `mill-bootstrap-plugin/README.md`  
-**Issues**: GitHub Issues in RETISIO/copilot-training  
+**Issues**: GitHub Issues in the prior organization/copilot-training  
 **Questions**: Slack #ceremony-based-sdlc or GitHub Discussions
 
-**Maintainer**: RETISIO Engineering Team  
+**Maintainer**: the prior organization Engineering Team  
 **Contributors**: [Add as contributors join]
 
 ---

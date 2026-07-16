@@ -64,7 +64,7 @@ Create `~/.mill/ammonite/mill-repos.sc` to add GitHub Packages as a resolver:
 import coursier.maven.MavenRepository
 
 interp.repositories() = interp.repositories() :+ MavenRepository(
-  "https://maven.pkg.github.com/RETISIO/*",
+  "https://maven.pkg.github.com/the prior organization/*",
   authentication = Some(coursier.core.Authentication(
     sys.env.getOrElse("GITHUB_USERNAME", ""),
     sys.env.getOrElse("GITHUB_TOKEN", "")
@@ -90,7 +90,7 @@ import com.retisio.mill.SpinoffModule
 object billingService extends JavaModule with SpinoffModule {
   def spinoffCandidatesPath = T { millSourcePath / "doc" / "SPINOFF-CANDIDATES.md" }
   def contextMapPath = T { millSourcePath / "doc" / "domain-models" / "CONTEXT-MAP.md" }
-  def targetOrg = T { "RETISIO" }
+  def targetOrg = T { "the prior organization" }
 }
 ```
 
@@ -181,7 +181,7 @@ mill billingService.spinoffExecute Invoice
 
 **Process** (8 steps):
 1. ✅ Validate spinoff readiness (13/13 checks must pass)
-2. ✅ Create GitHub repository (`RETISIO/invoice-service`)
+2. ✅ Create GitHub repository (`the prior organization/invoice-service`)
 3. ✅ Extract bounded context code (domain, application, infrastructure)
 4. ✅ Generate repository structure (build.sc, CI/CD, Dockerfile, k8s/)
 5. ✅ Create spinoff ADR (`ADR-001-spinoff-from-training-repository.md`)
@@ -196,14 +196,14 @@ After successful spinoff, the source directory **MUST** be deleted from the trai
 ```bash
 # Verify production repo exists
 curl -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/RETISIO/invoice-service
+  https://api.github.com/repos/the prior organization/invoice-service
 
 # Delete source from training repo
 rm -rf services/billing-service/bounded-contexts/invoice/
 
 # Commit cleanup
 git add -A
-git commit -m "Remove Invoice after spinoff to RETISIO/invoice-service"
+git commit -m "Remove Invoice after spinoff to the prior organization/invoice-service"
 git push origin main
 ```
 
@@ -224,7 +224,7 @@ Step 1/8: Validating spinoff readiness...
 ✅ Validation passed (13/13 checks)
 
 Step 2/8: Creating GitHub repository...
-✅ Created repository: https://github.com/RETISIO/invoice-service
+✅ Created repository: https://github.com/the prior organization/invoice-service
 
 Step 3/8: Extracting bounded context code...
 ✅ Extracted code to: /tmp/spinoff-invoice-xyz
@@ -240,7 +240,7 @@ Step 5/8: Creating spinoff ADR...
 ✅ Created spinoff ADR: /tmp/spinoff-invoice-xyz/doc/governance/ADR/ADR-001-spinoff-from-training-repository.md
 
 Step 6/8: Pushing initial code to GitHub...
-✅ Pushed initial code to https://github.com/RETISIO/invoice-service
+✅ Pushed initial code to https://github.com/the prior organization/invoice-service
 
 Step 7/8: Configuring repository settings...
 ✅ Configured branch protection and permissions
@@ -251,10 +251,10 @@ Step 8/8: Updating SPINOFF-CANDIDATES.md...
 ================================================================================
 ✅ Spinoff COMPLETE for Invoice
 
-Repository: https://github.com/RETISIO/invoice-service
+Repository: https://github.com/the prior organization/invoice-service
 
 Next steps:
-  1. Review repository: https://github.com/RETISIO/invoice-service
+  1. Review repository: https://github.com/the prior organization/invoice-service
   2. Configure CI/CD secrets (GitHub Actions)
   3. Deploy to staging environment
   4. Update cross-boundary integration tests
@@ -279,7 +279,7 @@ Document services ready for spinoff:
 - **Aggregates**: 4 (Invoice, InvoiceLineItem, InvoiceTax, InvoicePayment)
 - **Readiness**: 100%
 - **Domain Events**: InvoiceCreated, InvoiceApproved, InvoiceVoided, InvoicePaid
-- **Team**: @RETISIO/billing-team
+- **Team**: @the prior organization/billing-team
 - **Repository**: (To be created)
 - **Spun Off**: (Pending)
 ```
@@ -375,7 +375,7 @@ object myService extends JavaModule with SpinoffModule {
   // Override configuration paths if needed
   def spinoffCandidatesPath = T { millSourcePath / "doc" / "SPINOFF-CANDIDATES.md" }
   def contextMapPath = T { millSourcePath / "doc" / "domain-models" / "CONTEXT-MAP.md" }
-  def targetOrg = T { "RETISIO" }
+  def targetOrg = T { "the prior organization" }
 }
 ```
 
@@ -393,7 +393,7 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 
 ### Repository Already Exists
 
-**Error**: `Repository RETISIO/invoice-service already exists`
+**Error**: `Repository the prior organization/invoice-service already exists`
 
 **Solution**: Delete existing repository or rename the service in `SPINOFF-CANDIDATES.md`.
 
@@ -426,7 +426,7 @@ This plugin is mandated by:
 - **ADR-060**: Spinoff via Mill Plugin
 - **POL-029**: Mill Spinoff Plugin Usage Policy (services MUST use ≥1.0.0)
 
-**Policy**: All RETISIO services MUST use the Mill Spinoff Plugin for spinoffs. Custom spinoff scripts are prohibited.
+**Policy**: All the prior organization services MUST use the Mill Spinoff Plugin for spinoffs. Custom spinoff scripts are prohibited.
 
 ## Contributing
 
@@ -436,7 +436,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
 
 1. **Clone repository**:
    ```bash
-   git clone https://github.com/RETISIO/mill-spinoff-plugin.git
+   git clone https://github.com/the prior organization/mill-spinoff-plugin.git
    cd mill-spinoff-plugin
    ```
 
@@ -468,9 +468,9 @@ Apache License 2.0 - See [LICENSE](./LICENSE)
 
 ## Support
 
-- **GitHub Issues**: https://github.com/RETISIO/mill-spinoff-plugin/issues
-- **Slack**: #mill-spinoff-plugin (RETISIO workspace)
-- **Email**: architecture@retisio.com
+- **GitHub Issues**: https://github.com/the prior organization/mill-spinoff-plugin/issues
+- **Slack**: #mill-spinoff-plugin (the prior organization workspace)
+- **Email**: architecture@tjm.solutions
 
 ## References
 

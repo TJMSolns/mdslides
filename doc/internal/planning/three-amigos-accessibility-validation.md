@@ -483,7 +483,7 @@ Summary: 1 error, 0 warnings, 3 passes
 - [ ] Light theme passes WCAG 2.1 AA
 - [ ] Dark theme passes WCAG 2.1 AA
 - [ ] Corporate theme passes WCAG 2.1 AA
-- [ ] Retisio theme passes WCAG 2.1 AA
+- [ ] the prior organization theme passes WCAG 2.1 AA
 
 ### Edge Cases
 - [ ] Transparent background handled gracefully

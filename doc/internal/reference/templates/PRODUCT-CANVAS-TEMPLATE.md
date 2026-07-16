@@ -25,9 +25,9 @@
 |some feature|**Differentiator** This is what we have that they do not|some vendor/product| 
 | | **Dependencies** | |
 | *Type* | *Target* | *Version* |
-| RETISIO Service | [microservice-name-linked-to-canvas](#) | v0.0.* |
-| RETISIO Frontend | [microfrontend-name-linked-to-canvas](#) | v0.0.* |
-| RETISIO Product | [product-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Service | [microservice-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Frontend | [microfrontend-name-linked-to-canvas](#) | v0.0.* |
+| the prior organization Product | [product-name-linked-to-canvas](#) | v0.0.* |
 | External/3rd Party Service | [asset-name-linked-to-src](#) | v0.0.* |
 | External/3rd Party Product| [asset-name-linked-to-src](#) | v0.0.* |
 | | **Documentation** | |

@@ -2,7 +2,7 @@
 
 **Create new projects with complete ceremony-based SDLC framework in <60 seconds**
 
-Bootstrap new project repositories with the full **DDD + BDD + TDD ceremony framework** from RETISIO/copilot-training. Each bootstrapped project includes:
+Bootstrap new project repositories with the full **DDD + BDD + TDD ceremony framework** from the prior organization/copilot-training. Each bootstrapped project includes:
 
 - ✅ **HOW-WE-WORK.md** (complete SDLC playbook)
 - ✅ **14 Copilot Instructions** (.github/copilot-instructions*.md)
@@ -93,7 +93,7 @@ mill bootstrap.bootstrapExecute --name my-service
 # → services/my-service/ (uses ../mill-*-plugin)
 
 # Graduate to standalone repo (production)
-mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects --create-repo --org RETISIO
+mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects --create-repo --org the prior organization
 # → ~/projects/order-mgmt/ with vendored mill-plugins/
 ```
 
@@ -106,7 +106,7 @@ mill bootstrap.bootstrapExecute --name order-mgmt --path ~/projects --create-rep
 - **Mill 0.11.6+**: Install via Coursier (`cs install mill`)
 - **Git**: Configured with `user.name` and `user.email`
 - **GitHub Token**: Personal Access Token with `repo` (full) and `admin:org` scopes
-- **copilot-training**: Clone of RETISIO/copilot-training (source of framework files)
+- **copilot-training**: Clone of the prior organization/copilot-training (source of framework files)
 
 ### Add Plugin to build.sc
 
@@ -116,7 +116,7 @@ import $ivy.`com.retisio::mill-bootstrap:1.0.0`
 import com.retisio.mill.BootstrapModule
 
 object bootstrap extends BootstrapModule {
-  def targetOrg = T { "RETISIO" }  // Default organization (can override)
+  def targetOrg = T { "the prior organization" }  // Default organization (can override)
 }
 ```
 
@@ -147,10 +147,10 @@ mill bootstrap.validate ecommerce-platform
 
 Validation Results:
 ✅ Check 1: GitHub token valid (scopes: repo, admin:org)
-✅ Check 2: Target organization exists (RETISIO)
-✅ Check 3: Repository name available (RETISIO/ecommerce-platform)
+✅ Check 2: Target organization exists (the prior organization)
+✅ Check 3: Repository name available (the prior organization/ecommerce-platform)
 ✅ Check 4: Project name follows conventions (kebab-case)
-✅ Check 5: Git configured locally (user: tmoores-retisio, email: tom@retisio.com)
+✅ Check 5: Git configured locally (user: TJMSolns, email: tom@tjm.solutions)
 ✅ Check 6: Mill 0.11.6+ installed (version: 0.11.6)
 ✅ Check 7: Source repo valid (/home/tjm/Cloud/GitHub/copilot-training)
 
@@ -165,7 +165,7 @@ Ready to bootstrap!
 mill bootstrap.bootstrapExecute --name ecommerce-platform
 
 # Or create in custom location with GitHub repo
-mill bootstrap.bootstrapExecute --name ecommerce-platform --path ~/projects --create-repo --org RETISIO
+mill bootstrap.bootstrapExecute --name ecommerce-platform --path ~/projects --create-repo --org the prior organization
 ```
 
 **Output** (successful bootstrap in services/):
@@ -201,10 +201,10 @@ mill bootstrap.bootstrapExecute --name ecommerce-platform --path ~/projects --cr
   ✅ 23 files updated
 
 [7/9] Creating initial commit...
-  ✅ Commit: Initial project bootstrap from RETISIO/copilot-training v1.0.0
+  ✅ Commit: Initial project bootstrap from the prior organization/copilot-training v1.0.0
 
 [8/9] Pushing to GitHub (main branch)...
-  ✅ Pushed to https://github.com/RETISIO/ecommerce-platform
+  ✅ Pushed to https://github.com/the prior organization/ecommerce-platform
 
 [9/9] Configuring repository settings...
   ✅ Branch protection enabled (main)
@@ -213,10 +213,10 @@ mill bootstrap.bootstrapExecute --name ecommerce-platform --path ~/projects --cr
 
 ✅ Bootstrap Complete!
 
-Repository: https://github.com/RETISIO/ecommerce-platform
-Clone URL: git@github.com:RETISIO/ecommerce-platform.git
+Repository: https://github.com/the prior organization/ecommerce-platform
+Clone URL: git@github.com:the prior organization/ecommerce-platform.git
 Next Steps:
-  1. Clone repository: git clone git@github.com:RETISIO/ecommerce-platform.git
+  1. Clone repository: git clone git@github.com:the prior organization/ecommerce-platform.git
   2. Complete CHARTER.md (Phase 0: Program Initiation)
   3. Run Phase 1: Event Storming (see .github/copilot-instructions-phase1-event-storming-architect.md)
 
@@ -226,7 +226,7 @@ Time: 47 seconds
 ### 4. Clone and Start Working
 
 ```bash
-git clone git@github.com:RETISIO/ecommerce-platform.git
+git clone git@github.com:the prior organization/ecommerce-platform.git
 cd ecommerce-platform
 
 # Verify build configuration
@@ -276,7 +276,7 @@ Validation Results:
    Error: Organization 'Acme' does not exist or is not accessible
 ✅ Check 3: Repository name available (Acme/ecommerce-platform)
 ✅ Check 4: Project name follows conventions (kebab-case)
-✅ Check 5: Git configured locally (user: tmoores-retisio, email: tom@retisio.com)
+✅ Check 5: Git configured locally (user: TJMSolns, email: tom@tjm.solutions)
 ✅ Check 6: Mill 0.11.6+ installed (version: 0.11.6)
 ✅ Check 7: Source repo valid (/home/tjm/Cloud/GitHub/copilot-training)
 
@@ -302,7 +302,7 @@ mill bootstrap.bootstrapExecute --name <project-name> [flags]
 - `--path <directory>`: Target directory (default: services/ subdirectory in current repo)
 - `--create-repo`: Create new GitHub repository
 - `--repo <url>`: Link to existing GitHub repository
-- `--org <organization>`: GitHub organization (default: RETISIO)
+- `--org <organization>`: GitHub organization (default: the prior organization)
 
 **Exit Codes**:
 - `0`: Bootstrap successful
@@ -317,10 +317,10 @@ mill bootstrap.bootstrapExecute --name order-management
 mill bootstrap.bootstrapExecute --name order-management --path ~/my-projects
 
 # Custom path with new GitHub repo
-mill bootstrap.bootstrapExecute --name order-management --path ~/projects --create-repo --org RETISIO
+mill bootstrap.bootstrapExecute --name order-management --path ~/projects --create-repo --org the prior organization
 
 # Link to existing GitHub repo
-mill bootstrap.bootstrapExecute --name order-management --repo https://github.com/RETISIO/order-mgmt
+mill bootstrap.bootstrapExecute --name order-management --repo https://github.com/the prior organization/order-mgmt
 ```
 
 **Output**: See [Quick Start](#3-execute-bootstrap) for detailed output example.
@@ -421,13 +421,13 @@ mill bootstrap.list --limit 20
 
 **Output**:
 ```
-📋 Recently Bootstrapped Projects (RETISIO)
+📋 Recently Bootstrapped Projects (the prior organization)
 
 Repository                           Created              Description
 -----------------------------------  -------------------  ---------------------------------
-RETISIO/ecommerce-platform           2025-12-16 14:23:45  Multi-tenant ecommerce platform
-RETISIO/api-gateway                  2025-12-15 09:15:22  API gateway for microservices
-RETISIO/data-pipeline                2025-12-14 16:42:18  Real-time data processing pipeline
+the prior organization/ecommerce-platform           2025-12-16 14:23:45  Multi-tenant ecommerce platform
+the prior organization/api-gateway                  2025-12-15 09:15:22  API gateway for microservices
+the prior organization/data-pipeline                2025-12-14 16:42:18  Real-time data processing pipeline
 
 Total: 3 projects
 Filter: topic:ceremony-based
@@ -471,7 +471,7 @@ Before running bootstrap, ensure the following prerequisites are met:
 
 **Requirement**: Repository name not already taken in organization
 
-**Error Example**: "Repository 'RETISIO/ecommerce-platform' already exists"  
+**Error Example**: "Repository 'the prior organization/ecommerce-platform' already exists"  
 **Resolution**: Choose different name or delete existing repository
 
 ---
@@ -539,7 +539,7 @@ mill --version  # Should be 0.11.6 or higher
 
 **Setup**:
 ```bash
-git clone https://github.com/RETISIO/copilot-training.git
+git clone https://github.com/the prior organization/copilot-training.git
 cd copilot-training
 ```
 
@@ -556,7 +556,7 @@ cd copilot-training
 // In copilot-training/build.sc
 object bootstrap extends BootstrapModule {
   // Default organization (can override via --org flag)
-  def targetOrg = T { "RETISIO" }
+  def targetOrg = T { "the prior organization" }
   
   // GitHub token from environment (GITHUB_TOKEN)
   // def githubToken = T { sys.env("GITHUB_TOKEN") }  // Default implementation
@@ -578,7 +578,7 @@ mill bootstrap.execute my-project "Description" --org Acme
 ```scala
 // In build.sc (if copilot-training not in current directory)
 object bootstrap extends BootstrapModule {
-  def targetOrg = T { "RETISIO" }
+  def targetOrg = T { "the prior organization" }
   def sourceRepoPath = T { os.Path("/custom/path/to/copilot-training") }
 }
 ```
@@ -612,7 +612,7 @@ object bootstrap extends BootstrapModule {
 
 3. **Clone Repository**:
    ```bash
-   git clone git@github.com:RETISIO/ecommerce-platform.git
+   git clone git@github.com:the prior organization/ecommerce-platform.git
    cd ecommerce-platform
    ```
 
@@ -644,7 +644,7 @@ After Program Initiation, run Strategic DDD ceremonies:
 
 ## Examples
 
-### Example 1: Internal RETISIO Project
+### Example 1: Internal the prior organization Project
 
 **Scenario**: Create new internal project for real-time analytics.
 
@@ -657,12 +657,12 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 mill bootstrap.execute analytics-platform "Real-time analytics platform for business intelligence"
 
 # Clone and verify
-git clone git@github.com:RETISIO/analytics-platform.git
+git clone git@github.com:the prior organization/analytics-platform.git
 cd analytics-platform
 mill resolve __
 ```
 
-**Result**: `RETISIO/analytics-platform` repository with complete framework.
+**Result**: `the prior organization/analytics-platform` repository with complete framework.
 
 ---
 
@@ -809,7 +809,7 @@ User
   │        │    └─ Replace "copilot-training" → "<project-name>" (23 files)
   │        │
   │        ├─> [7/9] GitOperations.commit()
-  │        │    └─> git commit -m "Initial project bootstrap from RETISIO/copilot-training v1.0.0"
+  │        │    └─> git commit -m "Initial project bootstrap from the prior organization/copilot-training v1.0.0"
   │        │
   │        ├─> [8/9] GitOperations.push()
   │        │    └─> git push origin main
@@ -858,7 +858,7 @@ User
 
 ---
 
-### Issue: "Repository 'RETISIO/ecommerce-platform' already exists"
+### Issue: "Repository 'the prior organization/ecommerce-platform' already exists"
 
 **Cause**: Repository name already taken in organization.
 
@@ -903,7 +903,7 @@ mill --version  # Should be 0.11.6+
 **Solution**:
 ```bash
 # Clone copilot-training
-git clone https://github.com/RETISIO/copilot-training.git
+git clone https://github.com/the prior organization/copilot-training.git
 
 # Run bootstrap from copilot-training directory
 cd copilot-training
@@ -1021,8 +1021,8 @@ mill bootstrap.execute <project-name> <description>
 
 ## Contributing
 
-**Issues**: https://github.com/RETISIO/copilot-training/issues  
-**Discussions**: https://github.com/RETISIO/copilot-training/discussions  
+**Issues**: https://github.com/the prior organization/copilot-training/issues  
+**Discussions**: https://github.com/the prior organization/copilot-training/discussions  
 **Pull Requests**: Follow HOW-WE-WORK.md process (BDD scenarios → TDD → implementation)
 
 ---
@@ -1035,6 +1035,6 @@ Same as copilot-training (see LICENSE in copilot-training repository).
 
 ## Contact
 
-**Program Manager**: RETISIO Engineering Team  
+**Program Manager**: the prior organization Engineering Team  
 **Architect**: [Your Name]  
 **Questions**: Slack #ceremony-based-sdlc or GitHub Discussions

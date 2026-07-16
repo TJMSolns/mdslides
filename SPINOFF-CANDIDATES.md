@@ -3,8 +3,8 @@
 ## MDSlides (READY)
 
 **Status**: Ready for spinoff
-**Organization**: tmoores-retisio  
-**Repository**: https://github.com/tmoores-retisio/mdslides
+**Organization**: TJMSolns  
+**Repository**: https://github.com/TJMSolns/mdslides
 
 **Description**:
 A test of the ceremony-based SDLC framework demonstrating DDD + BDD + TDD practices.

@@ -89,11 +89,11 @@ Three deployment models supported.
 - Uses shared Mill tasks from parent repo
 
 **Standalone with GitHub:**
-- `mill bootstrap.bootstrapExecute --name order-mgmt --create-repo --org RETISIO`
+- `mill bootstrap.bootstrapExecute --name order-mgmt --create-repo --org the prior organization`
 - Copies all Mill tasks for complete autonomy
 
 **Link Existing Repo:**
-- `mill bootstrap.bootstrapExecute --name order-mgmt --repo https://github.com/RETISIO/order-mgmt`
+- `mill bootstrap.bootstrapExecute --name order-mgmt --repo https://github.com/the prior organization/order-mgmt`
 
 ---
 template: content

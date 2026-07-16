@@ -13,7 +13,7 @@ Template Configuration allows theme authors to define presentation-specific over
 
 | Term | Definition | Examples |
 |------|------------|----------|
-| **Template Configuration** | Theme-level defaults for a specific template type | Retisio theme: title template bottom-aligned |
+| **Template Configuration** | Theme-level defaults for a specific template type | the prior organization theme: title template bottom-aligned |
 | **Template Override** | Per-slide frontmatter that supersedes theme config | Slide-level `vertical-align: top` overrides theme default |
 | **Vertical Alignment** | Positioning of slide content (top, center, bottom) | Title slide aligned to bottom for branded header |
 | **Template Layout** | Structural arrangement of template content | Section-title rendered as two columns |

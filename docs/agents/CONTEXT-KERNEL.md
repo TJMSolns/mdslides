@@ -2,8 +2,14 @@
 
 *Single source of truth for this implementation repo. Update at phase transitions only.*
 
-**Last updated:** 2026-05-07
+**Last updated:** 2026-05-28 (Seam E status decision per WQ-P4-121)
 **Phase:** Active maintenance — P4 org priority
+
+---
+
+## Status
+
+**Dormancy decision (POL-009):** active — gated by Tony bandwidth — 2026-05-28 — P4 priority; LMS spike awaits dedicated session; no external pull yet.
 
 ---
 

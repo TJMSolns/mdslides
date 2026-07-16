@@ -10,7 +10,7 @@
 
 ## Purpose
 
-Create a Mill plugin that **bootstraps new project repositories** with the complete ceremony-based SDLC framework (SBPFs, templates, GitHub Copilot instructions, governance structure) from the RETISIO copilot-training repository.
+Create a Mill plugin that **bootstraps new project repositories** with the complete ceremony-based SDLC framework (SBPFs, templates, GitHub Copilot instructions, governance structure) from the the prior organization copilot-training repository.
 
 **Key Distinction from mill-spinoff-plugin**:
 - **mill-spinoff-plugin**: Extracts existing bounded context code → production service repo
@@ -21,7 +21,7 @@ Create a Mill plugin that **bootstraps new project repositories** with the compl
 ## Use Cases
 
 ### Primary Use Case
-**New Organization/Platform**: Create a new project repository following RETISIO's ceremony-based process
+**New Organization/Platform**: Create a new project repository following the prior organization's ceremony-based process
 
 ```bash
 mill bootstrap.execute ecommerce-platform \
@@ -39,7 +39,7 @@ mill bootstrap.execute ecommerce-platform \
 - ✅ Empty service directory (ready for bounded contexts)
 
 ### Secondary Use Cases
-1. **Internal Projects**: New RETISIO projects (not part of main platform)
+1. **Internal Projects**: New the prior organization projects (not part of main platform)
 2. **Client Projects**: Deliver ceremony framework to consulting clients
 3. **Open Source**: Share process framework with community
 4. **Training**: Classroom/workshop environments
@@ -276,7 +276,7 @@ Step 5/9: Generating project stubs...
   ✓ Generated STATUS.md
 
 Step 6/9: Creating initial commit...
-  ✓ Committed: "Initial project bootstrap from RETISIO/copilot-training"
+  ✓ Committed: "Initial project bootstrap from the prior organization/copilot-training"
 
 Step 7/9: Pushing to GitHub...
   ✓ Pushed to main branch
@@ -319,8 +319,8 @@ Recently Bootstrapped Projects
 
 Name                      Organization  Created              Topics
 ecommerce-platform        Acme          2025-12-16 10:30 UTC ceremony-based, ddd, bdd
-client-portal             RETISIO       2025-12-15 14:22 UTC ceremony-based, nextjs
-internal-tools            RETISIO       2025-12-10 09:15 UTC ceremony-based, scala
+client-portal             the prior organization       2025-12-15 14:22 UTC ceremony-based, nextjs
+internal-tools            the prior organization       2025-12-10 09:15 UTC ceremony-based, scala
 
 Found 3 bootstrapped projects
 ```
@@ -775,7 +775,7 @@ TODO: Choose license (Apache 2.0, MIT, Proprietary, etc.)
 
 ## Configuration
 
-### Usage in build.sc (RETISIO/copilot-training)
+### Usage in build.sc (the prior organization/copilot-training)
 
 ```scala
 import $ivy.`com.retisio::mill-bootstrap:1.0.0`
@@ -783,7 +783,7 @@ import com.retisio.mill.BootstrapModule
 
 object bootstrap extends BootstrapModule {
   // Configuration with defaults
-  def targetOrg = T { "RETISIO" }  // Can override per project
+  def targetOrg = T { "the prior organization" }  // Can override per project
   def sourceRepoPath = T { os.pwd }  // Current repo
 }
 ```

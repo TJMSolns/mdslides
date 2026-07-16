@@ -11,7 +11,7 @@
 
 ### Primary Goal
 ✅ **Implement directory-based themes with template-specific backgrounds**
-✅ **Create working tutorial using Retisio theme**
+✅ **Create working tutorial using the prior organization theme**
 ✅ **Follow TDD and ceremony-based development process**
 
 ### User Stories Completed
@@ -36,7 +36,7 @@
 **Implementation:** Complete and tested
 - Theme.templateBackgrounds field added to domain
 - JSON parsing with full backward compatibility
-- Retisio theme demonstrates feature
+- the prior organization theme demonstrates feature
 
 **Tests:** 7/7 passing
 - Domain aggregate (3 tests)
@@ -72,7 +72,7 @@
 
 ---
 
-## 🎨 Retisio Theme
+## 🎨 the prior organization Theme
 
 ### Migration Complete
 ✅ Migrated from single-file to directory-based structure
@@ -143,14 +143,14 @@ themes/retisio/
 $ java -jar mdslides.jar examples/mdslides-tutorial.md output.html --theme retisio
 
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 ✓ Parsed 15 slide(s)
 ✓ Validation passed
 ✓ Generated 11507 characters of HTML
 ✓ Successfully created presentation
 ```
 
-**Output:** 11.5 KB HTML with Retisio theme applied
+**Output:** 11.5 KB HTML with the prior organization theme applied
 
 ---
 
@@ -322,7 +322,7 @@ java -jar mdslides.jar examples/mdslides-tutorial.md output.html --theme retisio
 
 ### Quick Start
 ```bash
-# Render tutorial with Retisio theme
+# Render tutorial with the prior organization theme
 java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar \
   examples/mdslides-tutorial.md \
   /tmp/tutorial.html \
@@ -332,7 +332,7 @@ java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar 
 ### Expected Output
 ```
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 Reading markdown from: examples/mdslides-tutorial.md
 Parsing markdown...
 ✓ Parsed 15 slide(s)
@@ -340,7 +340,7 @@ Validating slide deck...
 ✓ Validation passed
 Copying images...
   No local images to copy
-Rendering HTML with theme: Retisio
+Rendering HTML with theme: the prior organization
 ✓ Generated 11507 characters of HTML
 Writing HTML to: /tmp/tutorial.html
 ✓ Successfully created presentation: /tmp/tutorial.html
@@ -353,9 +353,9 @@ ls -lh /tmp/tutorial.html
 # Output: -rw-rw-r-- 1 user user 12K Dec 26 15:09 /tmp/tutorial.html
 
 # Verify theme colors applied
-grep "#002C74" /tmp/tutorial.html  # Retisio navy blue
-grep "#FCC010" /tmp/tutorial.html  # Retisio gold
-grep "Varela Round" /tmp/tutorial.html  # Retisio font
+grep "#002C74" /tmp/tutorial.html  # the prior organization navy blue
+grep "#FCC010" /tmp/tutorial.html  # the prior organization gold
+grep "Varela Round" /tmp/tutorial.html  # the prior organization font
 
 # Open in browser
 xdg-open /tmp/tutorial.html
@@ -363,7 +363,7 @@ xdg-open /tmp/tutorial.html
 
 ### What You'll See
 - 15 professional slides
-- Retisio brand colors throughout
+- the prior organization brand colors throughout
 - 'Varela Round' font
 - Keyboard navigation working
 - Slide counter (e.g., "5 / 15")
@@ -395,7 +395,7 @@ xdg-open /tmp/tutorial.html
 5. ✅ Update ThemeJsonAdapter for templateBackgrounds
 6. ✅ Write 4 ThemeJsonAdapter tests
 7. ✅ Update Main.scala to use ThemeLoader
-8. ✅ Migrate Retisio theme to directory structure
+8. ✅ Migrate the prior organization theme to directory structure
 9. ✅ Create tutorial presentation (15 slides)
 10. ✅ Test end-to-end rendering
 11. ✅ Verify theme colors applied
@@ -505,7 +505,7 @@ xdg-open /tmp/tutorial.html
 - ✅ 100% coverage on new code
 
 ### Working Demo
-- ✅ Tutorial renders with Retisio theme
+- ✅ Tutorial renders with the prior organization theme
 - ✅ 11.5 KB HTML output
 - ✅ Theme colors verified (#002C74, #FCC010)
 - ✅ Theme font verified ('Varela Round')
@@ -564,14 +564,14 @@ xdg-open /tmp/tutorial.html
 - ✅ Theme loading time < 50ms
 - ✅ Zero path resolution bugs
 - ✅ Error messages clear and helpful
-- ✅ Retisio theme demonstrates feature
+- ✅ the prior organization theme demonstrates feature
 
 ### US-012 Success Metrics
 - ✅ Fallback chain infrastructure works
 - ✅ Template backgrounds parsed correctly
 - ✅ Backward compatible (v0.3.0 themes load)
 - ✅ Zero rendering bugs
-- ✅ Retisio theme shows all 5 backgrounds
+- ✅ the prior organization theme shows all 5 backgrounds
 
 ### Overall Quality
 - ✅ 100% test coverage on new code
@@ -590,7 +590,7 @@ xdg-open /tmp/tutorial.html
 A **production-ready, fully-tested, well-documented** implementation of:
 - Directory-based theme system
 - Template-specific background infrastructure
-- Retisio theme with 5 professional backgrounds
+- the prior organization theme with 5 professional backgrounds
 - 15-slide tutorial demonstrating all features
 - Comprehensive documentation suite
 

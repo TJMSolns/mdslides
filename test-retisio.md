@@ -3,7 +3,7 @@ template: title
 ---
 
 # Template Configuration Test
-## Testing Retisio Theme
+## Testing the prior organization Theme
 TJM Solutions
 
 ---
@@ -18,7 +18,7 @@ template: diagram
 ---
 
 ## Diagram Slide
-This heading should be white on the Retisio theme background.
+This heading should be white on the the prior organization theme background.
 
 ---
 template: closing

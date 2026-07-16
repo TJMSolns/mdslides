@@ -64,7 +64,7 @@ Template names must be valid, two-column requires column config, colors must be 
 
 ### Rule 2: Vertical Alignment
 
-**Example 2.1: Bottom-aligned title slide (Retisio)**
+**Example 2.1: Bottom-aligned title slide (the prior organization)**
 - Theme template config: `title.verticalAlign: "bottom"`
 - Background has branded graphics at top, whitespace at bottom
 - Result: Title content positioned at bottom of slide
@@ -117,7 +117,7 @@ Template names must be valid, two-column requires column config, colors must be 
 
 **Example 5.1: Branded footer on title slides**
 - Theme template config: `title.footer: "{{company}} Confidential | {{date}}"`
-- Slide renders with resolved placeholders: "Retisio Confidential | 2026-01-02"
+- Slide renders with resolved placeholders: "the prior organization Confidential | 2026-01-02"
 
 **Example 5.2: Page numbers on content slides**
 - Theme template config: `content.footer: "{{pageNumber}}/{{totalPages}}"`

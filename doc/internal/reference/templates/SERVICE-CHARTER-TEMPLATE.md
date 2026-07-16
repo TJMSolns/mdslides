@@ -452,5 +452,5 @@ order-service {
 ---
 
 **Last Updated**: {date}  
-**Author**: RETISIO Engineering  
+**Author**: the prior organization Engineering  
 **Review Cycle**: Quarterly per PDR-060

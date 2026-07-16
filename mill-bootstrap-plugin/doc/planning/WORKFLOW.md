@@ -205,7 +205,7 @@ mill bootstrap.execute my-project "Description" --org CustomOrg
 ┌─────────────────────────────────────────────────────────────┐
 │ Step 7/9: Create initial commit                             │
 │ - git add -A                                                │
-│ - git commit -m "Initial project bootstrap from RETISIO/... │
+│ - git commit -m "Initial project bootstrap from the prior organization/... │
 │ - Include commit metadata (bootstrap plugin version)        │
 └─────────────────────────────────────────────────────────────┘
                             ↓
@@ -284,7 +284,7 @@ Step 6/9: Updating file references...
   ✓ Updated 47 references: copilot-training → ecommerce-platform
 
 Step 7/9: Creating initial commit...
-  ✓ Committed: "Initial project bootstrap from RETISIO/copilot-training v1.0.0"
+  ✓ Committed: "Initial project bootstrap from the prior organization/copilot-training v1.0.0"
   ✓ Commit SHA: a1b2c3d
 
 Step 8/9: Pushing to GitHub...
@@ -385,10 +385,10 @@ Recently Bootstrapped Projects
 
 Name                      Organization  Created              Topics
 ecommerce-platform        Acme          2025-12-16 10:30 UTC ceremony-based, ddd, bdd
-client-portal             RETISIO       2025-12-15 14:22 UTC ceremony-based, nextjs
-internal-tools            RETISIO       2025-12-10 09:15 UTC ceremony-based, scala
+client-portal             the prior organization       2025-12-15 14:22 UTC ceremony-based, nextjs
+internal-tools            the prior organization       2025-12-10 09:15 UTC ceremony-based, scala
 supply-chain              Acme          2025-12-08 16:45 UTC ceremony-based, ddd
-analytics-platform        RETISIO       2025-12-01 11:30 UTC ceremony-based, kafka
+analytics-platform        the prior organization       2025-12-01 11:30 UTC ceremony-based, kafka
 
 Found 5 bootstrapped projects in Acme organization
 
@@ -435,7 +435,7 @@ Note: Only showing repositories with 'ceremony-based' topic
 ```scala
 object bootstrap extends BootstrapModule {
   // GitHub organization (can override per execution)
-  def targetOrg = T { "RETISIO" }
+  def targetOrg = T { "the prior organization" }
   
   // Path to copilot-training source repository
   def sourceRepoPath = T { os.pwd }  // Current directory

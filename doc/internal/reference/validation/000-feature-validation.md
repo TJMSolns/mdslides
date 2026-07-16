@@ -267,7 +267,7 @@ This document provides a comprehensive checklist to validate that feature analys
    # Count paragraphs in Overview section (before "### Applicable ADRs")
    sed -n '/^## Overview/,/^### Applicable ADRs/p' doc/features/<feature-name>.md | grep -c "^[A-Z]"
    ```
-   Should be ≥ 4 (RFP, Customer, Operator, RETISIO value propositions)
+   Should be ≥ 4 (RFP, Customer, Operator, the prior organization value propositions)
 
 4. **Validate governance lists exist and have links**:
    ```bash

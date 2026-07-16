@@ -23,7 +23,7 @@ themes/retisio/
 **Theme Configuration (`themes/retisio/theme.json`):**
 ```json
 {
-  "name": "Retisio",
+  "name": "the prior organization",
   "version": "1.0.0",
   "background": {
     "color": "#FFFFFF"
@@ -62,7 +62,7 @@ themes/retisio/
 - ✅ Theme loader resolves paths correctly
 
 **Configuration Ready:**
-The Retisio theme includes template-specific backgrounds that will be applied when the HTML renderer is enhanced (future work):
+The the prior organization theme includes template-specific backgrounds that will be applied when the HTML renderer is enhanced (future work):
 - Title slides → `backgrounds/retisio-title-page.png`
 - Content slides → `backgrounds/retisio-content-page.png`
 - Diagram slides → `backgrounds/retisio-diagram-page.png`
@@ -77,7 +77,7 @@ java -jar mdslides.jar examples/mdslides-tutorial.md output.html --theme retisio
 **Output:**
 ```
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 Reading markdown from: examples/mdslides-tutorial.md
 Parsing markdown...
 ✓ Parsed 15 slide(s)
@@ -85,7 +85,7 @@ Validating slide deck...
 ✓ Validation passed
 Copying images...
   No local images to copy
-Rendering HTML with theme: Retisio
+Rendering HTML with theme: the prior organization
 ✓ Generated 11507 characters of HTML
 Writing HTML to: output.html
 ✓ Successfully created presentation: output.html
@@ -98,24 +98,24 @@ Writing HTML to: output.html
 body {
   font-family: 'Varela Round', Arial, sans-serif;
   background-color: #FFFFFF;
-  color: #002C74;              /* Retisio navy blue */
+  color: #002C74;              /* the prior organization navy blue */
   overflow: hidden;
 }
 
 .slide-heading {
   font-size: 36px;
   font-family: 'Varela Round', Arial, sans-serif;
-  color: #002C74;              /* Retisio navy blue */
+  color: #002C74;              /* the prior organization navy blue */
   margin: 1.5rem 0;
 }
 
 a {
-  color: #0B9655;              /* Retisio green */
+  color: #0B9655;              /* the prior organization green */
   text-decoration: none;
 }
 ```
 
-**Result:** Presentation uses Retisio branding colors throughout!
+**Result:** Presentation uses the prior organization branding colors throughout!
 
 ### 5. Error Handling
 
@@ -173,7 +173,7 @@ java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar 
 - Input: 232 lines of Markdown
 - Output: 11.5 KB HTML
 - Slides: 15
-- Theme: Retisio v1.0.0
+- Theme: the prior organization v1.0.0
 - Rendering time: < 1 second
 
 ---
@@ -315,7 +315,7 @@ tree themes/retisio/
 #     ├── retisio-section-title-page.png
 #     └── retisio-end-page.png
 
-# 3. Render tutorial with Retisio theme
+# 3. Render tutorial with the prior organization theme
 java -jar out/cli/assembly.super/mill/scalalib/JavaModule/assembly.dest/out.jar \
   examples/mdslides-tutorial.md \
   /tmp/tutorial-output.html \
@@ -329,7 +329,7 @@ grep "Varela Round" /tmp/tutorial-output.html
 # Output: font-family: 'Varela Round', Arial, sans-serif;
 
 grep "#002C74" /tmp/tutorial-output.html
-# Output: color: #002C74; (Retisio navy blue)
+# Output: color: #002C74; (the prior organization navy blue)
 ```
 
 ---
@@ -348,7 +348,7 @@ grep "#002C74" /tmp/tutorial-output.html
 - ✅ Theme.templateBackgrounds field works
 - ✅ JSON parsing handles all cases (present, empty, missing)
 - ✅ Backward compatible with v0.3.0 themes
-- ✅ Retisio theme demonstrates feature
+- ✅ the prior organization theme demonstrates feature
 - ✅ Infrastructure ready for renderer integration
 
 ### Overall Quality
@@ -385,7 +385,7 @@ grep "#002C74" /tmp/tutorial-output.html
 **What Works Now:**
 - ✅ Directory-based theme loading
 - ✅ Template backgrounds infrastructure
-- ✅ Retisio theme with 5 background images
+- ✅ the prior organization theme with 5 background images
 - ✅ Theme colors and fonts applied
 - ✅ 15-slide tutorial renders successfully
 - ✅ Clear error messages

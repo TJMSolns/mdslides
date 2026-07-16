@@ -543,7 +543,7 @@ template: content
 
 1. **light**: Clean, professional (default)
 2. **dark**: Dark mode with high contrast
-3. **retisio**: Retisio corporate branding (v0.4.0)
+3. **retisio**: the prior organization corporate branding (v0.4.0)
 4. **tjm-solutions**: TJM Solutions corporate style
 
 **Usage:**

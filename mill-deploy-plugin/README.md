@@ -1,8 +1,8 @@
 # Mill Deploy Plugin
 
-**Automated deployment validation and execution for RETISIO microservices**
+**Automated deployment validation and execution for the prior organization microservices**
 
-[![Build Status](https://github.com/RETISIO/copilot-training/actions/workflows/mill-deploy-plugin.yml/badge.svg)](https://github.com/RETISIO/copilot-training/actions)
+[![Build Status](https://github.com/the prior organization/copilot-training/actions/workflows/mill-deploy-plugin.yml/badge.svg)](https://github.com/the prior organization/copilot-training/actions)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ---
@@ -323,7 +323,7 @@ mill tenantManagement.deployExecute Staging
   ✅ deployment "tenant-management" successfully rolled out (45s)
 
 [7/8] Running smoke tests...
-  ✅ Health check: http://tenant-management.staging.retisio.internal/health → 200 OK
+  ✅ Health check: http://tenant-management.staging.tjm.internal/health → 200 OK
   ✅ Readiness check: 3/3 pods ready
 
 [8/8] Post-deployment monitoring (5 minutes)...
@@ -342,7 +342,7 @@ mill tenantManagement.deployExecute Staging
 ║ Environment:  staging                                                       ║
 ║ Version:      v1.2.3                                                        ║
 ║ Duration:     6m 45s                                                        ║
-║ Deployed By:  bob-techLead@retisio.com                                     ║
+║ Deployed By:  bob-techLead@tjm.solutions                                     ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
 Updated: services/tenant-management/DEPLOY-TARGETS.md
@@ -702,7 +702,7 @@ mill myService.deployRollback Dev
 
 ```bash
 # Clone repository
-git clone https://github.com/RETISIO/copilot-training.git
+git clone https://github.com/the prior organization/copilot-training.git
 cd copilot-training/mill-deploy-plugin
 
 # Compile plugin
@@ -770,10 +770,10 @@ Apache License 2.0 - see [LICENSE](LICENSE) for details
 
 ## Support
 
-- **Issues**: https://github.com/RETISIO/copilot-training/issues
-- **Discussions**: https://github.com/RETISIO/copilot-training/discussions
+- **Issues**: https://github.com/the prior organization/copilot-training/issues
+- **Discussions**: https://github.com/the prior organization/copilot-training/discussions
 - **Slack**: #platform-team (internal)
-- **Email**: platform-team@retisio.com
+- **Email**: platform-team@tjm.solutions
 
 ---
 

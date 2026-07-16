@@ -66,7 +66,7 @@ All paths in `theme.json` are relative to the theme directory.
 **Example (`themes/retisio/theme.json`):**
 ```json
 {
-  "name": "Retisio",
+  "name": "the prior organization",
   "background": {
     "color": "#FFFFFF",
     "image": "backgrounds/default.png"

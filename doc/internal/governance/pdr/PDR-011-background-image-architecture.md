@@ -124,7 +124,7 @@ case class Theme(
 
 ```json
 {
-  "name": "Retisio Corporate",
+  "name": "the prior organization Corporate",
   "background": {
     "color": "#FFFFFF",
     "image": "backgrounds/default.png"
@@ -168,7 +168,7 @@ def getBackgroundImage(slide: Slide, theme: Theme): Option[String] =
    - Structure (Template) vs Styling (Theme)
 
 2. **Flexible Theming:**
-   - One theme can style templates differently (Retisio: fancy title page, simple content)
+   - One theme can style templates differently (the prior organization: fancy title page, simple content)
    - Another theme can use uniform backgrounds across all templates
 
 3. **User Control:**
@@ -432,7 +432,7 @@ Background is more subtle with lower opacity.
 
 ```json
 {
-  "name": "Retisio Corporate",
+  "name": "the prior organization Corporate",
   "templateBackgrounds": {
     "title": "backgrounds/retisio-title-page.png",
     "content": "backgrounds/retisio-content-page.png",
@@ -476,7 +476,7 @@ Background is more subtle with lower opacity.
 - [US-012: Template-Specific Background Defaults](../../planning/product-backlog.md#us-012-template-specific-background-defaults-should)
 - [US-006: Image Asset Copying](../../ceremonies/v0.3.0.md#us-006-image-asset-copying)
 - [ADR-008: Slot-Based Content Model](../adr/ADR-008-slot-based-content-model.md) (existing)
-- [Retisio Theme Analysis](../../planning/retisio-theme-analysis.md)
+- [the prior organization Theme Analysis](../../planning/retisio-theme-analysis.md)
 
 ---
 

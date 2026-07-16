@@ -143,7 +143,7 @@ The following placeholders must be supported in header/footer templates:
 
 | Placeholder | Description | Example Output |
 |-------------|-------------|----------------|
-| `{{company}}` | Company name from config | "Retisio" |
+| `{{company}}` | Company name from config | "the prior organization" |
 | `{{date}}` | Current date | "2026-01-02" |
 | `{{pageNumber}}` | Current slide number (1-indexed) | "5" |
 | `{{totalPages}}` | Total number of slides | "10" |
@@ -222,7 +222,7 @@ Valid template names (as defined in domain model):
 
 1. **All 28 scenarios pass** in the feature file
 2. **Theme validation** catches all invalid configurations
-3. **Retisio theme** can be configured with:
+3. **the prior organization theme** can be configured with:
    - Title slides bottom-aligned
    - Section-title slides as two-column with white left column headings
    - Diagram/closing slides with white headings

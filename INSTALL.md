@@ -173,7 +173,7 @@ open examples/mdslides-tutorial/index.html
 You should see:
 ```
 Loading theme: retisio
-✓ Loaded theme: Retisio v1.0.0
+✓ Loaded theme: the prior organization v1.0.0
 Reading markdown from: ./examples/mdslides-tutorial.md
 Parsing markdown...
 ✓ Parsed 16 slide(s)
@@ -181,7 +181,7 @@ Validating slide deck...
 ✓ Validation passed
 Copying images...
 ✓ Copied 6 image(s) (767.1 KB total)
-Rendering HTML with theme: Retisio
+Rendering HTML with theme: the prior organization
 ✓ Generated XXXXX characters of HTML
 Writing HTML to: examples/mdslides-tutorial/index.html
 ✓ Successfully created presentation: examples/mdslides-tutorial/

@@ -168,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Scalatags rendering bug**: Fixed fragment combining issue where nested lists concatenated text instead of preserving HTML structure
   - Changed from `Seq(...).flatten` to `++` concatenation with varargs
   - Nested `<ul>` and `<ol>` tags now render correctly
-- **Retisio theme**: Removed confusing `futureTemplates` section from theme.json
+- **the prior organization theme**: Removed confusing `futureTemplates` section from theme.json
   - Templates referenced (diagram, closing, section-title) are deferred to v2.0
 
 ### Changed
@@ -328,7 +328,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template-specific backgrounds (US-012)
 - Per-slide background images (US-011)
 - List support (unordered and ordered)
-- Retisio theme with 5 template backgrounds
+- the prior organization theme with 5 template backgrounds
 
 ## [0.1.0-MVP] - 2024-12-21
 
@@ -542,7 +542,7 @@ This is the initial release. No migration required.
 - **Theme System** (US-008, US-009)
   - JSON-based custom themes
   - Built-in themes: light, dark, corporate
-  - Retisio corporate theme with Varela Round font
+  - the prior organization corporate theme with Varela Round font
   - Theme schema with colors, fonts, spacing, syntax highlighting
   - 8 tests for theme JSON parsing
 

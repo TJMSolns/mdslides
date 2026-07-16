@@ -120,7 +120,7 @@
 - Domain: Theme.templateBackgrounds field (Map[String, String])
 - Infrastructure: ThemeJsonAdapter custom decoder
 - Renderer: Fallback chain implementation
-- Retisio theme demonstrates feature with 5 template backgrounds
+- the prior organization theme demonstrates feature with 5 template backgrounds
 
 **Priority:** SHOULD
 **Complexity:** Medium
@@ -259,7 +259,7 @@
 
 **Related Governance:**
 - retisio-theme-analysis.md §1: Google Fonts Support
-- Retisio theme uses "Varela Round" (currently falling back to Arial)
+- the prior organization theme uses "Varela Round" (currently falling back to Arial)
 
 **Technical Notes:**
 - Domain: Add `googleFonts: List[String]` to Theme aggregate
@@ -267,7 +267,7 @@
 - URL encoding: `"Varela Round"` → `https://fonts.googleapis.com/css2?family=Varela+Round&display=swap`
 
 **Estimated Complexity**: Low
-**Impact**: High (enables Retisio theme completion)
+**Impact**: High (enables the prior organization theme completion)
 
 ---
 
@@ -289,7 +289,7 @@
 - 223+ tests passing (all tests)
 - 4 new list tests added
 - 13 theme-related tests from earlier
-- Retisio theme with 5 background images
+- the prior organization theme with 5 background images
 - Tutorial presentation with 15 slides
 
 **v0.4.0 Status:** ✅ 95% COMPLETE (ready for v1.0 planning)
@@ -642,7 +642,7 @@ To promote a backlog item to a sprint:
     - Recursive parser logic (10 tests)
     - HTML renderer with Scalatags fix (9 tests)
   - **Bug Fix:** Fixed Scalatags fragment combining issue discovered during integration testing
-- **BUG FIX**: Retisio Theme Template References
+- **BUG FIX**: the prior organization Theme Template References
   - Removed `futureTemplates` section from theme.json
   - Cleaned up references to non-existent templates (deferred to v2.0)
 - **Tutorial Update**: Comprehensive Feature Demonstration

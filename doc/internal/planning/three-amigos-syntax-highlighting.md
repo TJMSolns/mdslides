@@ -55,7 +55,7 @@ This session validates the analysis from [Event Storming: Syntax Highlighting](e
 
 **QA**: "What about corporate and retisio themes?"
 
-**Product Owner**: "Corporate is light → 'github'. Retisio is light → 'github'. If users want custom themes later, they can override CSS."
+**Product Owner**: "Corporate is light → 'github'. the prior organization is light → 'github'. If users want custom themes later, they can override CSS."
 
 **Decision**:
 - light → github
@@ -474,7 +474,7 @@ trait Service {
 - [ ] Light theme → github highlight.js theme loaded
 - [ ] Dark theme → monokai-sublime highlight.js theme loaded
 - [ ] Corporate theme → github highlight.js theme loaded
-- [ ] Retisio theme → github highlight.js theme loaded
+- [ ] the prior organization theme → github highlight.js theme loaded
 
 ### Graceful Degradation
 - [ ] Render HTML, open without internet → code still readable, no errors
