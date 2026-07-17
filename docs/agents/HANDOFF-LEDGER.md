@@ -4,6 +4,52 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-060 — 2026-07-17 — No execution: no unblocked, Claude-executable item in queue (repeat of HL-026 through HL-059)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-059,
+  HL-058, HL-057) per mandatory startup order
+- Surveyed `## Active` in WORK-QUEUE.md for a single genuinely unblocked, Claude-executable item —
+  same conclusion as HL-026 through HL-059, nothing has changed since:
+  - The only two rows in `## Active` are still MS-020 and MS-021, both `[PROPOSED]`. Per GL-031's
+    groom note, PROPOSED items are "not yet promoted to Queued, so not 'unblocked active work' in
+    the reorder sense" — they require `/groom` to promote before they're eligible for autonomous
+    execution
+  - No `/groom` has run since HL-026; grep confirmed zero eligible status rows
+    (`Queued`/`Ready`/`In Progress`) in WORK-QUEUE.md
+- Concluded there is no eligible item to execute this session. No verifier tier drawn, no evidence
+  artifact written — correctly, since no item was executed
+- No code, queue, or governance changes made this session beyond this ledger entry
+- Working tree confirmed clean at session start (`git status --porcelain` → 0 lines), unchanged from
+  HL-059
+
+**Pattern worth Tony's attention:** this is the 35th consecutive no-op session (HL-026 through
+HL-060), all reaching the identical conclusion from an unchanged queue. The autonomous pick is
+working as designed — it is correctly declining to self-promote `[PROPOSED]` items — but the loop
+that keeps invoking it cannot make progress until Tony either runs `/groom` or stops scheduling
+mdslides sessions. Flagging as a signal, not a request; no action taken.
+
+**Still open (not this session's to act on):** the four PROPAGATION-STALE flags at the top of
+WORK-QUEUE.md (`stop-git-durability-gate.py`, `next/SKILL.md`, `handoff/SKILL.md`, `settings.json`,
+all flagged 2026-07-15 by the HE-057 mechanism). Each says "review — copy over, or merge if this
+project has real local customization," which is a copy-vs-merge judgment call about whether local
+divergence is intentional, not a mechanical propagation. Not executed autonomously; still flagged for
+Tony.
+
+**Decisions made:** none
+**Work queue changes:** none
+**Working-tree carry-over:** none — clean
+**Open items carried forward:**
+- MS-020, MS-021: still `[PROPOSED]` — need `/groom` to promote to `Queued` before they're eligible
+  for autonomous execution
+- 4 PROPAGATION-STALE flags — need a copy-vs-merge judgment call (see above)
+**Next owner:** Tony — run `/groom` to promote MS-020/MS-021 (or add new items) if mdslides work is
+wanted next session, and decide the PROPAGATION-STALE reviews; otherwise this project stays
+active-idle per POL-018 (DR-027)
+
+---
+
 ## HL-059 — 2026-07-17 — No execution: no unblocked, Claude-executable item in queue (repeat of HL-026 through HL-058)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
