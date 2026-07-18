@@ -2,26 +2,53 @@
 
 P4 priority. Work items are driven by feature requests, bugs, and maintenance needs.
 
-*Last groomed: 2026-07-11 (GL-031; targeted single-project groom following up on GL-030's sequencing —
-MS-018 and MS-019 independently re-verified Done with real evidence: commits `1fca48a`/`f02dd27`/
-`c26eb98` (MS-018) and `06f3b5b`/`6c4fc82`/`94df7d1` (MS-019) all confirmed present in `git log` with
-matching diffs; `docs/agents/evidence/MS-018.md` and `MS-019.md` both confirmed on disk with real
-haiku-tier and opus-tier PASS verdicts respectively; v1.0.7 release independently confirmed real via
-`gh release view v1.0.7` — both `md-slides.jar` and `mdslides-mcp.jar` present, timestamps
-2026-07-11T04:18:2xZ, matching `build.sc`'s `mdSlidesVersion = "1.0.7"` and `CHANGELOG.md`'s `[1.0.7]`
-entry. MS-017's Pre-Implementation Gate independently confirmed real —
-`doc/internal/planning/design-MS-017-typed-slot-name.md` exists and states exactly the two design
-decisions claimed (Q1: `enum SlotName` vs. reuse of the existing dead-code opaque `SlotName` type;
-Q2: scope `SlotName` to the 8 template-declared content slots only, vs. also cover the 3 frontmatter
-metadata keys — `header`/`footer`/`vertical-align` — that piggyback on the same `Slide.slots` map);
-MS-017's WORK-QUEUE row accurately states "Gated — awaiting Tony review" with no overclaiming; gate
-correctly left unresolved for Tony, not guessed at, per its own purpose. WQ-179 (OAP) cross-checked
-(informational only, not edited): OAP's own WORK-QUEUE.md already records WQ-179 as "fully unblocked"
-now that MS-018 is Done. No blocked items misdescribed; no splits needed; reorder not required — MS-017
-(gated, the only non-proposed active item) remains ahead of MS-020/MS-021 ([PROPOSED], not yet promoted
-to Queued, so not "unblocked active work" in the reorder sense); active-idle per POL-018 DR-027 (clock
-stopped); working-tree backlog still tracked org-wide by WQ-P4-144/DEFER-001 (expires 2026-07-18), not
-duplicated here)*
+*Last groomed: 2026-07-18 (GL-031 — org-wide `/groom-all` full sweep, Wave B).*
+*Previous: "GL-031" (2026-07-11, targeted single-project groom) — MS-018/MS-019 evidence + v1.0.7
+release + MS-017's Pre-Implementation Gate all independently reconfirmed real that session (see
+HL-023–HL-025 and prior header text in file history for detail).*
+
+> **GL-ID COLLISION (flag only, not resolved here):** this project's own header already used the
+> label "GL-031" for the 2026-07-11 targeted single-project groom above. That session's use of
+> GL-031 was never recorded in the org root's `docs/agents/GROOM-LOG.md` (whose last full-sweep
+> entry before this run was GL-030, 2026-07-10) — so this run's org-assigned GL-031 for the full
+> `/groom-all` sweep collides with a label already spent on a different, narrower session. Not
+> resolved unilaterally here (mirrors the SEQUENCE-NEEDED/PROPAGATION-STALE "surface, don't
+> auto-resolve" convention) — flagged for Tony/orchestrator to reconcile the org GL-numbering
+> sequence. Flagged 2026-07-18.
+
+**This run's findings and changes:**
+1. **DN-005/DEFER-001 expiry (2026-07-18, today) did NOT lapse — it was already resolved 2 days
+   early.** `git status` reconfirmed 0 uncommitted files this run (working tree fully clean, level
+   with `origin/main`). `docs/agents/GIT-DURABILITY-DEFER.md` shows DEFER-001 closed 2026-07-16 ("50
+   documentation files committed and pushed; working tree clean... Closed because the debt is gone,
+   not because a date passed"). The "working-tree backlog... expires 2026-07-18" language in the
+   prior header paragraph above is now stale/superseded — corrected here, not duplicated as a new
+   escalation since there is nothing outstanding to escalate.
+2. **MS-020 promoted `[PROPOSED]` → `Queued`.** Its org source, WQ-P4-092 (mdslides theme/asset
+   rename), is itself `Queued`/unblocked (`Depends On: —`) in the org `WORK-QUEUE.md` as of this
+   run, so nothing blocks MS-020 from proceeding. This breaks the 35-consecutive-no-op-session stall
+   recorded in HL-026 through HL-060 (queue had zero rows with an eligible `Queued`/`Ready`/`In
+   Progress` status). Implementation still requires its own Pre-Implementation Gate per project
+   convention (MS-012/017/019 precedent) — promotion only makes it eligible for `/next` to pick up.
+3. **MS-021 reclassified `[PROPOSED]` → `Blocked`** (not promoted). Its org source, WQ-P4-094
+   (mdslides package rename), has `Depends On: WQ-P4-093` in the org queue, and WQ-P4-093
+   (project-template package rename) is still `Queued`, not Done, as of this run. `Depends On`
+   column corrected from `—` to `WQ-P4-093 (org)`. **Also corrected a real content-staleness bug
+   while touching this row:** MS-021's description still cited the superseded target namespace
+   `com.tjmsolutions.*`; WQ-P4-094 was revised per POL-020/DR-029 to the authoritative
+   `solutions.tjm.mdslides.*` (reverse-DNS of `tjm.solutions`) and its scope was expanded
+   (WQ-P4-136 scan) to cover 117 app-module files beyond the original 4 mill plugins — MS-021's text
+   updated to match, so a future executor doesn't work off a stale, under-scoped description. No
+   SEQUENCE-NEEDED tie created by this run — MS-020 is the sole Claude-owned Queued/unblocked item
+   after these changes.
+4. **Done-item evidence spot-checked** — `docs/agents/evidence/{MS-017,MS-018,MS-019,MS-023}.md`,
+   `docs/spikes/spike-MS-001-fs2-ce-performance.md`, and
+   `doc/internal/planning/design-{MS-012-mcp-server,MS-017-typed-slot-name,MS-019-mcp-server-tier2}.md`
+   all confirmed present on disk. No evidence-missing Done items found; no reversions needed.
+5. **Unchanged, out of this run's scope:** the 4 PROPAGATION-STALE flags below (flagged 2026-07-15 —
+   resolving them is the org-orchestrator's Step 2b hash-diff check, not this per-project pass); the
+   historical MS-017/018/019 SEQUENCE-NEEDED tie (flagged GL-030, fully resolved 2026-07-11 — all 3
+   Done, see "Sequenced" line below `## Active`); active-idle status per POL-018 DR-027 unchanged.
 
 > **PROPAGATION-STALE:** `.claude/hooks/stop-git-durability-gate.py` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
 > **PROPAGATION-STALE:** `.claude/skills/next/SKILL.md` differs from harness-evolution's current copy — review (copy over, or merge if this project has real local customization) as the first action next time this project is touched. Flagged 2026-07-15 (harness-evolution HE-057 mechanism, applied directly this session per Tony's instruction — not a full /groom-all run).
@@ -47,8 +74,8 @@ duplicated here)*
 
 **Sequenced (Tony, GL-030, 2026-07-10):** MS-018 → MS-019 → MS-017 (Bayesian-nudge rationale: MS-018 directly feeds open-agentic-platform's WQ-179 — nudged up; MS-019 completes the MCP surface, a stated precondition for "any new MCP work" — nudged up moderately; MS-017 is a valuable, self-contained bug-class fix with nothing else named depending on it). MS-018 (1 of 3) done 2026-07-10; MS-019 (2 of 3) done 2026-07-11; MS-017 (3 of 3) done 2026-07-11 — see `## Done` below. MS-023 (the Done-gate hook bug MS-017's own closing attempt discovered) also resolved 2026-07-11 by propagating harness-evolution's already-verified fix.
 
-| [PROPOSED] MS-020 | **P4 MAINTENANCE** [⬆ WQ-P4-092 (org)] — Execute theme/asset rename: update any `retisio`-keyed theme identifiers, asset filenames, and references in mdslides source and examples to `tjmsolutions`-prefixed equivalents. Run `mill __.compile && mill __.test` to validate; bump PATCH version if any CLI-visible strings change. Source: HL-060 / WQ-P4-092 deferred to mdslides session. | Claude | [PROPOSED] | — |
-| [PROPOSED] MS-021 | **P4 MAINTENANCE** [⬆ WQ-P4-094 (org)] — Execute package rename: replace all `com.retisio.*` package declarations and imports with `com.tjmsolutions.*` across the mdslides Mill monorepo (domain, infrastructure, cli, mcp modules). Validate with `mill __.compile && mill __.test`; update CHANGELOG; bump MINOR version (breaking package API). Source: HL-060 / WQ-P4-094 deferred to mdslides session. | Claude | [PROPOSED] | — |
+| MS-020 | **P4 MAINTENANCE** [⬆ WQ-P4-092 (org)] — Execute theme/asset rename: update any `retisio`-keyed theme identifiers, asset filenames, and references in mdslides source and examples to `tjmsolutions`-prefixed equivalents. Run `mill __.compile && mill __.test` to validate; bump PATCH version if any CLI-visible strings change. Source: HL-060 / WQ-P4-092 deferred to mdslides session. **[Promoted Queued — GL-031, 2026-07-18: org source WQ-P4-092 confirmed Queued/unblocked, `Depends On: —`.]** | Claude | Queued | — |
+| MS-021 | **P4 MAINTENANCE** [⬆ WQ-P4-094 (org)] — Execute package rename: replace `com.retisio.*` (mill plugins) **and** `com.tjmsolutions.mdslides.*` (117 app-module source/test files across domain/cli/infrastructure/mcp + `build.sc` + coupled docs) with **`solutions.tjm.mdslides.*`** — target corrected GL-031 (2026-07-18) to match WQ-P4-094's current, POL-020/DR-029-revised text (this row previously cited the superseded `com.tjmsolutions.*` form). Validate with `mill __.compile && mill __.test` (full 300+-test suite); update CHANGELOG; bump MINOR version (breaking package API); update coupled docs (CLAUDE.md build command, README, ADR-009/012, PDR-014, POL-001 examples) in the same pass per WQ-P4-094. Source: WQ-P4-094 deferred to mdslides session. **[Blocked — GL-031, 2026-07-18: org source WQ-P4-094 itself depends on WQ-P4-093 (project-template package rename), still Queued/not Done.]** | Claude | Blocked | WQ-P4-093 (org) |
 | ~~[PROPOSED] MS-022~~ | ~~**P4 GOVERNANCE** — Record active-idle dormancy status decision.~~ | ~~Claude~~ | ~~done~~ | ~~—~~ |
 
 ---
