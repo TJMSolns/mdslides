@@ -4,6 +4,58 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-065 — 2026-07-18 — No execution: MS-020 still gated on Tony's decision (fifth same-day observation)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries
+  (HL-064, HL-063, HL-062) per mandatory startup order
+- Queue survey: `## Active` holds exactly two live rows. **MS-021** is `Blocked` (org WQ-P4-093
+  still `Queued`/not Done). **MS-020** is the only `Queued`, Claude-owned, `Depends On: —` row, so
+  the "exactly one unblocked candidate" test passes on its face
+- **Did not execute it.** MS-020 still carries HL-061's `SCOPE-BLOCKED` marker: two open questions
+  that are Tony's calls, not Claude's — (1) the actual target theme identifier, since `tjm-solutions`
+  is already taken by a substantively different theme; (2) delete-vs-rename for RETISIO's
+  client-brand PNGs and logos, and whether breaking `--theme retisio` for decks in use is accepted.
+  That is the "candidate needs Tony's judgment" exclusion — skipped, not attempted
+- **Re-checked the gate rather than assuming.** Re-read WQ-P4-092 in the org `WORK-QUEUE.md`
+  (line 155): text unchanged since HL-064 — still `Queued`, still `[Sequence: 5 of 8 — GL-030]`,
+  still a plain rename whose text presumes a free target name and says nothing about asset
+  disposition. HL-061's findings stand unmodified and were not re-derived
+- No Pre-Implementation Gate opened, no verifier tier drawn, no evidence artifact written —
+  correctly, since nothing was executed. Working tree clean at session start
+  (`git status --short` → 0 lines), level with `origin/main` at `dd5f5ad`
+
+**Decisions made:** none
+**Work queue changes:** none — MS-020's `SCOPE-BLOCKED` annotation remains current and accurate;
+status deliberately left `Queued` (reclassifying is a `/groom` action and would hide the item from
+Tony's next sweep)
+**CONTEXT-KERNEL change:** none — file untouched this session
+**Working-tree carry-over:** none — session was read-only apart from this ledger entry, committed and
+pushed this session
+**Harvest candidates:** none
+
+**Open items carried forward (unchanged from HL-064):**
+- **MS-020 — needs Tony's decision on two points**, best fixed by revising WQ-P4-092's text at org
+  level, since the under-specification originates there
+- MS-021 — `Blocked` on org WQ-P4-093 (project-template package rename), still Queued/not Done
+- 4 PROPAGATION-STALE flags (`stop-git-durability-gate.py`, `next/SKILL.md`, `handoff/SKILL.md`,
+  `settings.json`, flagged 2026-07-15) — copy-vs-merge judgment call; folded into org WQ-P4-164
+
+**Signal worth noting (escalating again from HL-064):** **fifth** autonomous session in a single day
+producing a materially identical entry from byte-identical input. HL-063 and HL-064 both recommended
+the same remedy and neither has been acted on. The ledger is now accumulating five near-duplicate
+records of one unchanged fact, which degrades its value as a continuity artifact. Recommend pausing
+mdslides' autonomous `/next` schedule until WQ-P4-092 is disambiguated (same remedy
+open-agentic-platform queued as WQ-188) — a pause is reversible and loses nothing, since the only
+state change that can break this loop is a Tony edit at org level.
+
+**Next owner:** Tony. Until WQ-P4-092 is disambiguated, mdslides has no Claude-executable queue item
+and stays active-idle per POL-018 (DR-027).
+
+---
+
 ## HL-064 — 2026-07-18 — No execution: MS-020 still gated on Tony's decision (fourth same-day observation)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
