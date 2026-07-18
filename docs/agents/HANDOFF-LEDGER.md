@@ -4,6 +4,84 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-061 — 2026-07-18 — MS-020 unblocked but NOT executed: needs Tony's decision
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries (HL-060,
+  HL-059, HL-058) per mandatory startup order
+- **The 35-session stall is broken:** GL-031 (2026-07-18, commit `fed6834`) promoted **MS-020** from
+  `[PROPOSED]` to `Queued` and reclassified MS-021 to `Blocked`. MS-020 is therefore the sole
+  Claude-owned, `Queued`, `Depends On: —` item — exactly one candidate, correctly selected
+- **Did NOT execute it.** Scoping investigation (read-only: `grep`, `find`, `md5sum`, `cat` — no
+  files modified) surfaced two facts that make MS-020 as written not mechanically executable, both
+  turning on a call that is Tony's, not Claude's. Stopped before the Pre-Implementation Gate; no
+  verifier tier drawn, no evidence artifact written — correctly, since nothing was executed
+
+**Finding 1 — the rename target already exists and is a different theme (namespace collision).**
+MS-020 / WQ-P4-092 says rename the `retisio` theme to a "`tjmsolutions`-prefixed equivalent." But a
+`tjm-solutions` theme is already present in both resolution forms `ThemeLoader` supports —
+`themes/tjm-solutions.json` and `themes/tjm-solutions/theme.json` — and it is a *substantively
+different* theme, not a stale duplicate:
+
+| | `retisio` | `tjm-solutions` |
+|---|---|---|
+| heading/accent | `#002C74` navy / `#FCC010` gold / `#0B9655` green | `#C00000` red |
+| body font | Varela Round | Lato |
+| `templateBackgrounds` | 5 full-bleed PNGs | `{}` (none) |
+| `templateConfig` | per-template layout + colour overrides | absent |
+
+The org item's text assumed a free target name. There isn't one. Picking the actual target
+(overwrite `tjm-solutions`? coin a third name? merge the two?) is a product decision, not a `sed`.
+
+**Finding 2 — the assets are a client's brand artwork, so renaming them would make things worse.**
+The 5 background PNGs are RETISIO's corporate slide artwork (navy/gold/green), byte-identical
+(`md5 989ac398…` for `*-title-page.png`) across **5 locations**: `themes/retisio/backgrounds/`,
+`doc/internal/reference/tmp/`, `examples/mdslides-tutorial-retisio/backgrounds/`,
+`examples/mdslides-tutorial-dark/backgrounds/`, `test-retisio/backgrounds/`. The same `tmp/` dir also
+holds `RETISIO-Logo-white-Hi Res-02.png` and `RETISIO-Logo- Black HiRes-Transparent.png`.
+Renaming these files to `tjmsolutions-*.png` leaves the *pixels* as another company's branded
+artwork while relabelling them as TJM Solutions' — that is a worse state than today, not a scrub.
+The defensible disposition is probably **delete** the client-branded theme and assets (POL-001
+client-confidentiality territory), which is a materially different action from the "rename" MS-020
+authorises — and it is precisely the deck-breaking change WQ-P4-092 named as its own reason for
+deferring in the first place ("rename would break any existing deck (Tony's personal + customer
+decks) using `--theme retisio` by old name").
+
+**Why this stopped rather than proceeding:** both live options (rename-onto-a-collision vs.
+delete-client-assets) exceed what MS-020's text authorises, and one is destructive to decks in use.
+Per Harness Rule 2 and the queue's own "surface, don't auto-resolve" convention, recorded rather
+than decided. No inline fix, no self-sequencing, no scope expansion.
+
+**Decisions made:** none
+**Work queue changes:** MS-020 row annotated with a `SCOPE-BLOCKED` marker recording the above so the
+next session doesn't re-derive it. **Status deliberately left `Queued`, not changed to `Blocked`** —
+reclassifying is a `/groom` action and would also mask the item from Tony's next sweep.
+**CONTEXT-KERNEL change:** none — file untouched this session
+**Working-tree carry-over:** none — investigation was read-only; only this ledger entry and the
+WORK-QUEUE annotation changed, both committed this session
+**Harvest candidates:** none — Finding 1/2 are specific to this asset set, not a generalisable pattern
+
+**Open items carried forward:**
+- **MS-020 — needs Tony's decision on two points before any execution:** (1) what the actual target
+  theme identifier is, given `tjm-solutions` is taken by a different theme; (2) whether the RETISIO
+  background PNGs + logos should be **deleted** rather than renamed, and if so whether breaking
+  `--theme retisio` for existing personal/customer decks is accepted (a compat alias is possible but
+  is itself a decision). Worth resolving at org level on WQ-P4-092 itself, since its text is what is
+  under-specified — this is not an mdslides-local misreading
+- MS-021 — `Blocked` on org WQ-P4-093 (project-template package rename), still Queued/not Done
+- 4 PROPAGATION-STALE flags (`stop-git-durability-gate.py`, `next/SKILL.md`, `handoff/SKILL.md`,
+  `settings.json`, flagged 2026-07-15) — still a copy-vs-merge judgment call, not executed
+  autonomously. Now also folded into org **WQ-P4-164** (fleet-wide consolidated review, GL-031)
+
+**Next owner:** Tony — answer MS-020's two open points above (ideally by revising WQ-P4-092's text at
+org level, since the under-specification originates there). Until then MS-020 is not autonomously
+executable and mdslides has no Claude-executable queue item; this project stays active-idle per
+POL-018 (DR-027).
+
+---
+
 ## HL-060 — 2026-07-17 — No execution: no unblocked, Claude-executable item in queue (repeat of HL-026 through HL-059)
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
