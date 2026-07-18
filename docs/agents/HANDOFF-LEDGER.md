@@ -4,6 +4,63 @@ Append-only. New entries at the top.
 
 ---
 
+## HL-062 — 2026-07-18 — No execution: MS-020 still gated on Tony's decision (re-confirmation of HL-061, same day)
+
+**Session:** Tony + Claude (mdslides root — autonomous single-item pick)
+
+**What happened:**
+- Read CLAUDE.md, CONTEXT-KERNEL.md, WORK-QUEUE.md, and the last 3 HANDOFF-LEDGER entries per
+  mandatory startup order
+- Queue survey: `## Active` holds exactly two rows. **MS-021** is `Blocked` (org WQ-P4-093 still
+  Queued/not Done). **MS-020** is the only `Queued`, Claude-owned, `Depends On: —` row — so the
+  "exactly one unblocked candidate" test passes on its face
+- **Did not execute it.** MS-020 carries the `SCOPE-BLOCKED` marker written by HL-061 earlier today:
+  it is not mechanically executable as written and turns on two calls that are Tony's, not Claude's
+  (target theme identifier, given `tjm-solutions` is already taken by a substantively different
+  theme; and whether RETISIO's client-brand PNGs/logos should be **deleted** rather than renamed,
+  accepting the break to `--theme retisio` for decks in use). That places it squarely in the
+  "candidate needs Tony's judgment" exclusion — skipped, not attempted
+- **Checked whether the gate had moved rather than assuming it hadn't.** Re-read WQ-P4-092 in the
+  org `WORK-QUEUE.md`: text unchanged since HL-061 — still `Queued`, still `[Sequence: 5 of 8 —
+  GL-030]`, still describing a plain rename with no target-collision handling and no asset
+  disposition. Nothing was revised at org level in the interval, so HL-061's conclusion stands
+  unmodified. No re-derivation of HL-061's findings attempted — that investigation is recorded and
+  durable
+- No Pre-Implementation Gate opened, no verifier tier drawn, no evidence artifact written —
+  correctly, since nothing was executed. Working tree confirmed clean at session start
+  (`git status --porcelain` → 0 lines), level with `origin/main` at `3c6ecea`
+
+**Note on the session-count signal:** HL-060 flagged 35 consecutive no-op sessions. That streak did
+genuinely break at HL-061 — GL-031's promotion made a real candidate available and it was correctly
+selected. This session is not a 37th repeat of the *old* stall (empty queue); it is the second
+observation of a *new*, narrower state: a promoted item whose blocking under-specification lives in
+the org item's own text. The remedy is one edit to WQ-P4-092, not a groom pass here.
+
+**Decisions made:** none
+**Work queue changes:** none — MS-020's `SCOPE-BLOCKED` annotation from HL-061 is current and
+accurate; status deliberately left `Queued` (reclassifying is a `/groom` action and would mask the
+item from Tony's next sweep)
+**CONTEXT-KERNEL change:** none — file untouched this session
+**Working-tree carry-over:** none — session was read-only apart from this ledger entry, committed and
+pushed this session
+**Harvest candidates:** none
+
+**Open items carried forward (unchanged from HL-061):**
+- **MS-020 — needs Tony's decision on two points**, ideally by revising WQ-P4-092's text at org
+  level since the under-specification originates there: (1) the actual target theme identifier;
+  (2) delete-vs-rename for the RETISIO background PNGs and logos, and whether breaking
+  `--theme retisio` for existing personal/customer decks is accepted (a compat alias is possible but
+  is itself a decision)
+- MS-021 — `Blocked` on org WQ-P4-093 (project-template package rename), still Queued/not Done
+- 4 PROPAGATION-STALE flags (`stop-git-durability-gate.py`, `next/SKILL.md`, `handoff/SKILL.md`,
+  `settings.json`, flagged 2026-07-15) — copy-vs-merge judgment call, not executed autonomously;
+  folded into org WQ-P4-164 (fleet-wide consolidated review, GL-031)
+
+**Next owner:** Tony — same as HL-061. Until WQ-P4-092 is disambiguated, mdslides has no
+Claude-executable queue item and stays active-idle per POL-018 (DR-027).
+
+---
+
 ## HL-061 — 2026-07-18 — MS-020 unblocked but NOT executed: needs Tony's decision
 
 **Session:** Tony + Claude (mdslides root — autonomous single-item pick)
